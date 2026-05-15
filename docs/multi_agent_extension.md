@@ -35,3 +35,10 @@ python scripts/run_gemini_cli.py --next --commit --push
 Do not run two processes for the same run ID.
 
 Codex extension rows are included in `runs/agent_extension_run_plan.csv`; a Codex-specific runner should follow the same lifecycle before those rows are executed.
+Run Codex extension cells:
+
+```bash
+python scripts/run_codex_exec.py --next --commit --push
+```
+
+Codex runs use `codex exec` with `--sandbox workspace-write`, `--ask-for-approval never`, and `--json` by default. Output is streamed live, written under `runs/raw/RUN_ID/transcripts/`, and scanned for stop-condition language.
