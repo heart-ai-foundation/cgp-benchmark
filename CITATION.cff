@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: "CGP Drift Reduction Benchmark"
+message: "If you use this benchmark, please cite the repository and any associated DOI."
+type: software
+authors:
+  - family-names: Mobley
+    given-names: Dylan D.
+date-released: 2026-05-14
+license: MIT
+repository-code: "https://github.com/heart-ai-foundation/cgp-benchmark"

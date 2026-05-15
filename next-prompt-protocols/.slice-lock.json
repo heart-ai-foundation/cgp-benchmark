@@ -1,0 +1,27 @@
+{
+  "lock_version": 1,
+  "project": "CGP Drift Reduction Benchmark",
+  "current_commit": "pending-initial-commit",
+  "current_phase": "phase-0",
+  "active_protocol": "active/2026-05-14-phase-0-initial-benchmark-scaffold.md",
+  "active_protocol_sha256": "sha256:83ca96ab261fce19077e59cd23a756426a74b64a7e7e346172c54a18b170f9d4",
+  "active_objective": "Create the initial `cgp-benchmark` repository with a passing Python and frontend benchmark app, orientation docs, raw and processed run directories, paper placeholder, and Next-Prompt Protocol scaffold.",
+  "allowed_files": [
+    "README.md",
+    "LICENSE",
+    "CITATION.cff",
+    ".gitignore",
+    "benchmark-repo/**",
+    "docs/**",
+    "analysis/**",
+    "paper/**",
+    "runs/**",
+    "next-prompt-protocols/**"
+  ],
+  "verification": {
+    "python_tests": "python -m pytest",
+    "frontend_tests": "npm test",
+    "protocol_check": "node next-prompt-protocols/tools/sync-protocols.mjs --check"
+  },
+  "stop_condition": "If the active protocol, manifest, lock, or locked Heart Corpus design disagree on the active task, stop and report."
+}

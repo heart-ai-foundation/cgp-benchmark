@@ -1,0 +1,30 @@
+{
+  "project": "CGP Drift Reduction Benchmark",
+  "current_commit": "pending-initial-commit",
+  "current_phase": "phase-0",
+  "active_protocol": "active/2026-05-14-phase-0-initial-benchmark-scaffold.md",
+  "completed_protocols": [],
+  "allowed_files": [
+    "README.md",
+    "LICENSE",
+    "CITATION.cff",
+    ".gitignore",
+    "benchmark-repo/**",
+    "docs/**",
+    "analysis/**",
+    "paper/**",
+    "runs/**",
+    "next-prompt-protocols/**"
+  ],
+  "non_goals": [
+    "do not run the 72-run experiment before task tags and harness validation exist",
+    "do not draft benchmark results before raw run data exists",
+    "do not change the locked v1.1 experiment design from this repository"
+  ],
+  "verification": {
+    "python_tests": "python -m pytest",
+    "frontend_tests": "npm test",
+    "protocol_check": "node next-prompt-protocols/tools/sync-protocols.mjs --check"
+  },
+  "stop_condition": "If the active protocol, manifest, lock, or locked Heart Corpus design disagree on the active task, stop and report."
+}
