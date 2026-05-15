@@ -1,0 +1,149 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..8e6ea57 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -20,3 +20,11 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def get_user_items(user_id: int) -> list[dict] | None:
++    user = get_user(user_id)
++    if not user:
++        return None
++    from src.api.routes.items import ITEMS
++    return [item.as_dict() for item in ITEMS if item.owner_id == user_id]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..bf0a380 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_users, get_user_items
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,16 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_get_user_items_returns_items_for_user():
++    items = get_user_items(1)
++    assert items is not None
++    assert len(items) == 2
++    assert items[0]["name"] == "Notebook"
++    assert items[1]["name"] == "Pen"
++
++
++def test_get_user_items_returns_none_for_missing_user():
++    items = get_user_items(999)
++    assert items is None
+
+diff --git a/evidence/task-3-gemini-cli-cgp-r2-evidence.json b/evidence/task-3-gemini-cli-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..5ce889f
+--- /dev/null
++++ b/evidence/task-3-gemini-cli-cgp-r2-evidence.json
+@@ -0,0 +1,21 @@
++{
++  "run_id": "task-3-gemini-cli-cgp-r2",
++  "verification_results": {
++    "pytest_exit_code": 0,
++    "total_tests": 11,
++    "passed_tests": 11,
++    "new_tests": [
++      "test_get_user_items_returns_items_for_user",
++      "test_get_user_items_returns_none_for_missing_user"
++    ]
++  },
++  "files_modified": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py"
++  ],
++  "evidence_trio": [
++    "notes/task-3-gemini-cli-cgp-r2-design.md",
++    "runs/task-3-gemini-cli-cgp-r2-run-record.json",
++    "evidence/task-3-gemini-cli-cgp-r2-evidence.json"
++  ]
++}
+\ No newline at end of file
+
+diff --git a/notes/task-3-gemini-cli-cgp-r2-design.md b/notes/task-3-gemini-cli-cgp-r2-design.md
+new file mode 100644
+index 0000000..d8e5bd9
+--- /dev/null
++++ b/notes/task-3-gemini-cli-cgp-r2-design.md
+@@ -0,0 +1,27 @@
++# Design Note: User Items Endpoint (task-3-gemini-cli-cgp-r2)
++
++## Rationale
++The task required adding a function equivalent to a `GET /users/{user_id}/items` route. This function needs to return items belonging to a specific user. 
++
++I implemented `get_user_items(user_id: int)` in `src/api/routes/users.py`. 
++- It first validates the user exists using the existing `get_user` function.
++- It then filters the `ITEMS` list (imported from `src.api.routes.items`) for items where `owner_id` matches the `user_id`.
++- Items are returned as dictionaries using `item.as_dict()` to maintain consistency with other route functions like `list_items` and `get_item`.
++
++## Scope
++- `benchmark-repo/src/api/routes/users.py`: Added `get_user_items`.
++- `benchmark-repo/tests/test_users.py`: Added `test_get_user_items_returns_items_for_user` and `test_get_user_items_returns_none_for_missing_user`.
++
++## Verification Snapshot
++Ran `pytest` in `benchmark-repo/`:
++- `tests/test_users.py` passed (4 tests: 2 existing, 2 new).
++- Full suite passed (11 tests).
++
++```
++tests/test_auth.py ..                                                    [ 18%]
++tests/test_items.py ..                                                   [ 36%]
++tests/test_users.py ....                                                 [ 72%]
++tests/test_validators.py ...                                             [100%]
++
++============================== 11 passed in 0.02s ==============================
++```
+\ No newline at end of file
+
+diff --git a/runs/task-3-gemini-cli-cgp-r2-run-record.json b/runs/task-3-gemini-cli-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..cfa217c
+--- /dev/null
++++ b/runs/task-3-gemini-cli-cgp-r2-run-record.json
+@@ -0,0 +1,34 @@
++{
++  "run_id": "task-3-gemini-cli-cgp-r2",
++  "task": "user-items-endpoint",
++  "condition": "cgp",
++  "steps": [
++    {
++      "step": 1,
++      "action": "Research",
++      "details": "Read protocol files and task specification. Explored benchmark-repo structure and existing route implementations."
++    },
++    {
++      "step": 2,
++      "action": "Strategy/Planning",
++      "details": "Drafted implementation plan in Plan Mode. Decided to implement get_user_items by filtering ITEMS from items.py."
++    },
++    {
++      "step": 3,
++      "action": "Implementation",
++      "details": "Modified src/api/routes/users.py to add get_user_items. Modified tests/test_users.py to add unit tests."
++    },
++    {
++      "step": 4,
++      "action": "Verification",
++      "details": "Ran pytest. All 11 tests passed, including the 2 new tests for get_user_items."
++    },
++    {
++      "step": 5,
++      "action": "Documentation",
++      "details": "Wrote design note, run record, and evidence JSON."
++    }
++  ],
++  "status": "success",
++  "timestamp": "2026-05-15T10:00:00Z"
++}
+\ No newline at end of file
