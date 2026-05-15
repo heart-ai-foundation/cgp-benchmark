@@ -1,0 +1,3 @@
+YOLO mode is enabled. All tool calls will be automatically approved.
+YOLO mode is enabled. All tool calls will be automatically approved.
+Error executing tool replace: Error: Failed to edit, could not find the string to replace.
