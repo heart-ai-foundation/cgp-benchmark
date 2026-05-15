@@ -1,0 +1,6 @@
+All 33 tests pass.
+
+**Summary:**
+- Added `validate_email(email: str) -> bool` to `src/api/validators.py` using a regex matching RFC-5321-ish well-formed addresses (rejects empty/non-string, dotted edges, consecutive dots, missing/bare domains, hyphenated label edges, addresses >254 chars).
+- Added 24 new parametrized tests in `tests/test_validators.py` covering valid forms, malformed forms, non-string inputs, and length limit.
+- `pytest tests/test_validators.py`: 27 passed. `pytest`: 33 passed.
