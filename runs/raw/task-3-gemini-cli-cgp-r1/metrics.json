@@ -1,0 +1,18 @@
+{
+  "changed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "evidence/task-3-gemini-cli-cgp-r1-evidence.json",
+    "notes/task-3-gemini-cli-cgp-r1-design.md",
+    "runs/task-3-gemini-cli-cgp-r1-run-record.json"
+  ],
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "evidence/task-3-gemini-cli-cgp-r1-evidence.json",
+    "notes/task-3-gemini-cli-cgp-r1-design.md",
+    "runs/task-3-gemini-cli-cgp-r1-run-record.json"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": []
+}

@@ -1,0 +1,131 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..ed9db52 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -1,4 +1,5 @@
+ from src.models.user import User
++from src.api.routes.items import ITEMS
+ 
+ 
+ USERS = [
+@@ -20,3 +21,11 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def get_user_items(user_id: int) -> list[dict]:
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if item.owner_id == user_id
++    ]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..f91c066 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_users, get_user_items
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,17 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_get_user_items_returns_items_for_user():
++    # User 1 has items 1 and 2
++    items = get_user_items(1)
++    assert len(items) == 2
++    assert items[0]["name"] == "Notebook"
++    assert items[1]["name"] == "Pen"
++    assert all(item["owner_id"] == 1 for item in items)
++
++
++def test_get_user_items_returns_empty_list_for_nonexistent_user():
++    items = get_user_items(999)
++    assert items == []
+
+diff --git a/evidence/task-3-gemini-cli-cgp-r1-evidence.json b/evidence/task-3-gemini-cli-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..1cc88ab
+--- /dev/null
++++ b/evidence/task-3-gemini-cli-cgp-r1-evidence.json
+@@ -0,0 +1,10 @@
++{
++  "run_id": "task-3-gemini-cli-cgp-r1",
++  "task": "task-3",
++  "condition": "cgp",
++  "evidence": {
++    "design_note_path": "notes/task-3-gemini-cli-cgp-r1-design.md",
++    "run_record_path": "runs/task-3-gemini-cli-cgp-r1-run-record.json",
++    "verification_passed": true
++  }
++}
+
+diff --git a/notes/task-3-gemini-cli-cgp-r1-design.md b/notes/task-3-gemini-cli-cgp-r1-design.md
+new file mode 100644
+index 0000000..8d2025b
+--- /dev/null
++++ b/notes/task-3-gemini-cli-cgp-r1-design.md
+@@ -0,0 +1,22 @@
++# Design Note - Task 3: User Items Endpoint
++
++## Rationale
++The goal is to provide an endpoint equivalent that retrieves all items belonging to a specific user. 
++In this benchmark app, "routes" are represented as callable functions.
++The `User` model has `item_ids`, and the `Item` model has `owner_id`. 
++The existing `ITEMS` list in `src/api/routes/items.py` contains the item data.
++To implement `get_user_items(user_id)`, I will filter the `ITEMS` list for items where `owner_id == user_id`.
++
++## Planned Changes
++
++### `src/api/routes/users.py`
++- Import `ITEMS` from `src.api.routes.items`.
++- Implement `get_user_items(user_id: int) -> list[dict]`.
++
++### `tests/test_users.py`
++- Add a test case `test_get_user_items_returns_items_for_user` to verify that the function returns the correct items for a valid user.
++- Add a test case `test_get_user_items_returns_empty_list_for_nonexistent_user` to verify behavior for a user with no items or a non-existent user.
++
++## Verification Snapshot
++- `pytest tests/test_users.py`
++- `pytest`
+
+diff --git a/runs/task-3-gemini-cli-cgp-r1-run-record.json b/runs/task-3-gemini-cli-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..e5a0ec5
+--- /dev/null
++++ b/runs/task-3-gemini-cli-cgp-r1-run-record.json
+@@ -0,0 +1,28 @@
++{
++  "run_id": "task-3-gemini-cli-cgp-r1",
++  "start_time": "2026-05-15T12:00:00Z",
++  "end_time": "2026-05-15T12:20:00Z",
++  "status": "completed",
++  "steps": [
++    {
++      "step": "research",
++      "status": "completed",
++      "timestamp": "2026-05-15T12:05:00Z"
++    },
++    {
++      "step": "design_note",
++      "status": "completed",
++      "timestamp": "2026-05-15T12:10:00Z"
++    },
++    {
++      "step": "implementation",
++      "status": "completed",
++      "timestamp": "2026-05-15T12:15:00Z"
++    },
++    {
++      "step": "verification",
++      "status": "completed",
++      "timestamp": "2026-05-15T12:18:00Z"
++    }
++  ]
++}
