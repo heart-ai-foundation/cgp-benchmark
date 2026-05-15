@@ -1,0 +1,56 @@
+{
+  "schema": "cgp-benchmark.evidence.v1",
+  "run_id": "task-3-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-3",
+  "task_slug": "user-items-endpoint",
+  "phase": "phase-1",
+  "start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "ef6aa886dfa7070c8ae6cb385d434f7543944da2",
+  "completed_at_utc": "2026-05-15T18:49:29Z",
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-claude-code-cgp-r3-design.md",
+    "runs/task-3-claude-code-cgp-r3-run-record.json",
+    "evidence/task-3-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/src/api/middleware.py"
+  ],
+  "files_changed": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-claude-code-cgp-r3-design.md",
+    "runs/task-3-claude-code-cgp-r3-run-record.json",
+    "evidence/task-3-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface_changed": [],
+  "out_of_scope_changes": [],
+  "scope_adherence": true,
+  "verification": {
+    "check_1": {
+      "command": "cd benchmark-repo && pytest tests/test_users.py",
+      "passed": true,
+      "tests_passed": 5,
+      "tests_failed": 0
+    },
+    "check_2": {
+      "command": "cd benchmark-repo && pytest",
+      "passed": true,
+      "tests_passed": 12,
+      "tests_failed": 0
+    }
+  },
+  "task_outcome": "success",
+  "stop_condition_triggered": false,
+  "evidence_trio": {
+    "design_note": "notes/task-3-claude-code-cgp-r3-design.md",
+    "run_record": "runs/task-3-claude-code-cgp-r3-run-record.json",
+    "evidence_json": "evidence/task-3-claude-code-cgp-r3-evidence.json"
+  },
+  "summary": "Added list_user_items(user_id) callable route in src/api/routes/users.py returning item dicts for the user's id or None when the user is missing. Added three tests in tests/test_users.py. Both verification commands pass; no drift-surface edits."
+}
