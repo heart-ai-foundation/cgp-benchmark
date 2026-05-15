@@ -1,0 +1,12 @@
+{
+  "run_id": "task-5-gemini-cli-cgp-r3",
+  "task": "favorite-items",
+  "condition": "cgp",
+  "evidence": {
+    "design_note_path": "notes/task-5-gemini-cli-cgp-r3-design.md",
+    "run_record_path": "runs/task-5-gemini-cli-cgp-r3-run-record.json",
+    "verification_passed": true,
+    "test_count": 15,
+    "allowed_files_check": "PASS"
+  }
+}
