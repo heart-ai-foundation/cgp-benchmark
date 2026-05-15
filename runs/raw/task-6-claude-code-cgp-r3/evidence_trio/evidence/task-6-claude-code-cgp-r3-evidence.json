@@ -1,0 +1,61 @@
+{
+  "run_id": "task-6-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-6",
+  "task_slug": "login-empty-password",
+  "phase": "phase-1",
+  "metrics_base_commit": "50d329a3fc57ce301cb00e16bba88a5a709e216f",
+  "task_start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "completed_at_utc": "2026-05-15T19:02:47Z",
+  "allowed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js",
+    "notes/task-6-claude-code-cgp-r3-design.md",
+    "runs/task-6-claude-code-cgp-r3-run-record.json",
+    "evidence/task-6-claude-code-cgp-r3-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "files_created": [
+    "notes/task-6-claude-code-cgp-r3-design.md",
+    "runs/task-6-claude-code-cgp-r3-run-record.json",
+    "evidence/task-6-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface_files": [
+    "benchmark-repo/frontend/src/utils/api.js",
+    "benchmark-repo/src/api/routes/auth.py"
+  ],
+  "drift_surface_touched": false,
+  "fix_summary": "Replaced throw with structured return { ok: false, error: \"Password is required\" } for empty/falsy password in submitLogin, matching the email-missing branch convention.",
+  "regression_test": {
+    "file": "benchmark-repo/frontend/tests/components.test.js",
+    "name": "submitLogin rejects empty password without throwing",
+    "asserts": [
+      "result deepEqual { ok: false, error: 'Password is required' }",
+      "authenticate callback not invoked"
+    ]
+  },
+  "verification": {
+    "command": "cd benchmark-repo && npm test",
+    "result": "pass",
+    "tests_total": 4,
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "test_names": [
+      "renderUserList prints names and email addresses",
+      "renderItemList joins item names",
+      "submitLogin delegates valid credentials",
+      "submitLogin rejects empty password without throwing"
+    ]
+  },
+  "acceptance": {
+    "npm_test_passes": true,
+    "scope_limited_to_allowed_files": true,
+    "evidence_trio_written": true,
+    "state_disagreement_detected": false
+  },
+  "stop_condition_triggered": false
+}

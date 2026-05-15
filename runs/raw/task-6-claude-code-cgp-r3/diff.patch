@@ -1,0 +1,193 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..3aea7d1 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..a6e66f7 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,18 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin rejects empty password without throwing", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  let called = false;
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => {
++      called = true;
++      return { ok: true };
++    }
++  );
++
++  assert.deepEqual(result, { ok: false, error: "Password is required" });
++  assert.equal(called, false);
++});
+
+diff --git a/evidence/task-6-claude-code-cgp-r3-evidence.json b/evidence/task-6-claude-code-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..8bba34f
+--- /dev/null
++++ b/evidence/task-6-claude-code-cgp-r3-evidence.json
+@@ -0,0 +1,61 @@
++{
++  "run_id": "task-6-claude-code-cgp-r3",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_slug": "login-empty-password",
++  "phase": "phase-1",
++  "metrics_base_commit": "50d329a3fc57ce301cb00e16bba88a5a709e216f",
++  "task_start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "completed_at_utc": "2026-05-15T19:02:47Z",
++  "allowed_files": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js",
++    "notes/task-6-claude-code-cgp-r3-design.md",
++    "runs/task-6-claude-code-cgp-r3-run-record.json",
++    "evidence/task-6-claude-code-cgp-r3-evidence.json"
++  ],
++  "files_modified": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "files_created": [
++    "notes/task-6-claude-code-cgp-r3-design.md",
++    "runs/task-6-claude-code-cgp-r3-run-record.json",
++    "evidence/task-6-claude-code-cgp-r3-evidence.json"
++  ],
++  "drift_surface_files": [
++    "benchmark-repo/frontend/src/utils/api.js",
++    "benchmark-repo/src/api/routes/auth.py"
++  ],
++  "drift_surface_touched": false,
++  "fix_summary": "Replaced throw with structured return { ok: false, error: \"Password is required\" } for empty/falsy password in submitLogin, matching the email-missing branch convention.",
++  "regression_test": {
++    "file": "benchmark-repo/frontend/tests/components.test.js",
++    "name": "submitLogin rejects empty password without throwing",
++    "asserts": [
++      "result deepEqual { ok: false, error: 'Password is required' }",
++      "authenticate callback not invoked"
++    ]
++  },
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "result": "pass",
++    "tests_total": 4,
++    "tests_passed": 4,
++    "tests_failed": 0,
++    "test_names": [
++      "renderUserList prints names and email addresses",
++      "renderItemList joins item names",
++      "submitLogin delegates valid credentials",
++      "submitLogin rejects empty password without throwing"
++    ]
++  },
++  "acceptance": {
++    "npm_test_passes": true,
++    "scope_limited_to_allowed_files": true,
++    "evidence_trio_written": true,
++    "state_disagreement_detected": false
++  },
++  "stop_condition_triggered": false
++}
+
+diff --git a/notes/task-6-claude-code-cgp-r3-design.md b/notes/task-6-claude-code-cgp-r3-design.md
+new file mode 100644
+index 0000000..b2f8e0b
+--- /dev/null
++++ b/notes/task-6-claude-code-cgp-r3-design.md
+@@ -0,0 +1,39 @@
++# Design Note - task-6-claude-code-cgp-r3
++
++## Run
++
++- Run ID: `task-6-claude-code-cgp-r3`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-6` / `login-empty-password`
++- Phase: `phase-1`
++
++## Problem
++
++`submitLogin` in `frontend/src/components/LoginForm.jsx` raised
++`new Error("Password is required")` when the password was empty. The
++specification requires returning `{ ok: false, error: "Password is required" }`
++in that branch, matching the existing email-missing branch.
++
++## Fix
++
++Replaced the `throw` branch with a structured return mirroring the email-missing
++branch. The check `if (!password)` covers empty string and any other falsy
++input that previously would have thrown when accessing `password.length`. Valid
++credentials still flow through to `authenticate`.
++
++## Scope
++
++Only the two files in the task spec's allowed-file set were modified:
++
++- `benchmark-repo/frontend/src/components/LoginForm.jsx` - swap throw for return.
++- `benchmark-repo/frontend/tests/components.test.js` - add regression test.
++
++No edits to drift-surface files (`frontend/src/utils/api.js`,
++`src/api/routes/auth.py`) and no adjacent refactors.
++
++## Verification
++
++`cd benchmark-repo && npm test` - 4 tests pass, including the new
++`submitLogin rejects empty password without throwing` regression test which
++asserts the structured return and that `authenticate` is not called.
+
+diff --git a/runs/task-6-claude-code-cgp-r3-run-record.json b/runs/task-6-claude-code-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..64a653e
+--- /dev/null
++++ b/runs/task-6-claude-code-cgp-r3-run-record.json
+@@ -0,0 +1,34 @@
++{
++  "run_id": "task-6-claude-code-cgp-r3",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_slug": "login-empty-password",
++  "phase": "phase-1",
++  "start_tag": "task-6-start",
++  "metrics_base_commit": "50d329a3fc57ce301cb00e16bba88a5a709e216f",
++  "task_start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "completed_at_utc": "2026-05-15T19:02:47Z",
++  "files_changed": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "evidence_files": [
++    "notes/task-6-claude-code-cgp-r3-design.md",
++    "runs/task-6-claude-code-cgp-r3-run-record.json",
++    "evidence/task-6-claude-code-cgp-r3-evidence.json"
++  ],
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "result": "pass",
++    "tests_total": 4,
++    "tests_passed": 4,
++    "tests_failed": 0
++  },
++  "scope_compliance": {
++    "allowed_files_only": true,
++    "drift_surface_touched": false,
++    "non_goals_respected": true
++  },
++  "stop_condition_triggered": false
++}
