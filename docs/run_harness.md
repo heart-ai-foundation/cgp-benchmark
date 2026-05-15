@@ -58,6 +58,16 @@ python scripts/run_claude_code_print.py --next --commit --push
 
 The wrapper prepares the run if needed, executes Claude Code with `claude -p`, stores stdout/stderr under the run's raw transcript directory, captures metrics and verification, and optionally commits and pushes the raw artifacts.
 
+Primary Aider runs should use the automated Aider wrapper:
+
+```bash
+python scripts/run_aider.py --next --commit --push
+```
+
+The wrapper prepares the next planned Aider row from `runs/run_plan.csv`, executes Aider in noninteractive `--message-file` mode, stores stdout/stderr plus Aider chat and LLM histories under the run's raw transcript directory, captures metrics and verification, and optionally commits and pushes the raw artifacts.
+
+Use `--model MODEL` to pin the Aider model for a run, or set `AIDER_MODEL` in the environment before execution.
+
 Use `--run-id RUN_ID` instead of `--next` only when replaying or debugging a specific planned cell.
 
 The manual steps below are retained for debugging and non-Claude agents.

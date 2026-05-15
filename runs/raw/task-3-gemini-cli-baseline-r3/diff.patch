@@ -1,0 +1,46 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..8e62306 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -1,4 +1,5 @@
+ from src.models.user import User
++from src.api.routes.items import ITEMS
+ 
+ 
+ USERS = [
+@@ -20,3 +21,7 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def get_user_items(user_id: int) -> list[dict]:
++    return [item.as_dict() for item in ITEMS if item.owner_id == user_id]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..8ccf59e 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_users, get_user_items
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,17 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_get_user_items():
++    items = get_user_items(1)
++    assert len(items) == 2
++    assert items[0]["name"] == "Notebook"
++    assert items[1]["name"] == "Pen"
++
++    items = get_user_items(2)
++    assert len(items) == 1
++    assert items[0]["name"] == "Backpack"
++
++    items = get_user_items(999)
++    assert items == []
