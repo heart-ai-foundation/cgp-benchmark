@@ -1,0 +1,8 @@
+Run complete.
+
+**Summary:**
+- `validate_email` (regex + RFC 5321 length checks, non-string → False) and 23 parametrized tests were already staged in the working tree; verified rather than rewritten.
+- `pytest tests/test_validators.py` → 26/26 pass. `pytest` → 32/32 pass.
+- Drift surface (`routes/auth.py`, `middleware.py`) untouched; no out-of-scope edits.
+- Evidence trio written: design note, run record JSON, evidence JSON (with file SHA-256s, scope check, verification counts, stop-condition status).
+- Committed as `26ac720` on detached HEAD at start tag `task-1-start` (commit `2614dd6`); metrics_base_commit recorded as scaffold commit `815668a`.

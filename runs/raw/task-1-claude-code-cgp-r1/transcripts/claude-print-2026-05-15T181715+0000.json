@@ -1,0 +1,7 @@
+{
+  "command": "claude -p --permission-mode bypassPermissions --dangerously-skip-permissions",
+  "working_directory": "/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-1-claude-code-cgp-r1",
+  "returncode": 0,
+  "stdout": "transcripts/claude-print-2026-05-15T181715+0000.stdout.txt",
+  "stderr": "transcripts/claude-print-2026-05-15T181715+0000.stderr.txt"
+}
