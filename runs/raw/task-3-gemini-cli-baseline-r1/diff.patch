@@ -1,0 +1,43 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..a6bbb4b 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -20,3 +20,12 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def get_user_items(user_id: int) -> list[dict] | None:
++    user = get_user(user_id)
++    if not user:
++        return None
++
++    from src.api.routes.items import ITEMS
++    return [item.as_dict() for item in ITEMS if item.owner_id == user_id]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..b69afd8 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_users, get_user_items
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,15 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_get_user_items_returns_items_for_user():
++    items = get_user_items(1)
++    assert items is not None
++    assert len(items) == 2
++    assert any(item["name"] == "Notebook" for item in items)
++    assert any(item["name"] == "Pen" for item in items)
++
++
++def test_get_user_items_returns_none_for_missing_user():
++    assert get_user_items(999) is None
