@@ -17,8 +17,8 @@ CGP_TEMPLATE = Path("docs/prompt_templates/cgp.md")
 RUN_PLAN = Path("runs/run_plan.csv")
 
 
-def read_run(root: Path, run_id: str) -> dict[str, str]:
-    with (root / RUN_PLAN).open(newline="", encoding="utf-8") as handle:
+def read_run(root: Path, run_plan: Path, run_id: str) -> dict[str, str]:
+    with (root / run_plan).open(newline="", encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
             if row["run_id"] == run_id:
                 return row
@@ -271,6 +271,7 @@ def commit_setup(worktree: Path, row: dict[str, str], spec: str) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
+    parser.add_argument("--run-plan", type=Path, default=RUN_PLAN)
     parser.add_argument("--out-root", type=Path, default=Path("runs/raw"))
     parser.add_argument("--worktree-root", type=Path, default=Path("worktrees"))
     parser.add_argument("--no-worktree", action="store_true")
@@ -278,7 +279,7 @@ def main() -> int:
     args = parser.parse_args()
 
     root = Path.cwd()
-    row = read_run(root, args.run_id)
+    row = read_run(root, args.run_plan, args.run_id)
     prompt = render_prompt(root, row)
     start_commit = git_commit_for_ref(root, row["start_tag"])
 
@@ -294,6 +295,7 @@ def main() -> int:
         "start_commit": start_commit,
         "metrics_base_commit": start_commit,
         "task_spec": row["task_spec"],
+        "run_plan": str(args.run_plan),
         "status": "prepared",
     }
 
