@@ -49,12 +49,6 @@ Before acting, read these files in order:
 
 Execute only the active slice. Stay inside allowed files. Preserve non-goals. Run the named verification commands before declaring completion. If the manifest, lock, active protocol, task spec, or repository state disagree on a load-bearing detail, stop and report rather than improvising.
 
-Before declaring completion, write the evidence trio named in the active protocol:
-
-1. Design note
-2. Run record
-3. Evidence JSON
-
 Task:
 Add a function `validate_email(email: str) -> bool` to `src/api/validators.py` that returns `True` if the email is well-formed and `False` otherwise. Add corresponding tests in `tests/test_validators.py`.
 ```
