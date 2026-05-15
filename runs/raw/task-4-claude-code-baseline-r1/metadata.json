@@ -11,8 +11,16 @@
   "metrics_base_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
   "task_spec": "docs/task_specs/task-4-parse-config-refactor.md",
   "run_plan": "runs/run_plan.csv",
-  "status": "prepared",
+  "status": "completed_valid",
   "worktree": "worktrees/task-4-claude-code-baseline-r1",
   "execution_mode": "claude-code-print",
-  "transcript": "transcripts/claude-print-2026-05-15T191839+0000.json"
+  "transcript": "transcripts/claude-print-2026-05-15T191839+0000.json",
+  "completed_at": "2026-05-15T19:20:19+00:00",
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": null,
+  "run_validity": "valid"
 }

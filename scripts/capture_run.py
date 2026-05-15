@@ -41,6 +41,18 @@ def markdown_list_items(section: str) -> list[str]:
     return items
 
 
+def markdown_command_items(section: str) -> tuple[list[str], list[str]]:
+    commands: list[str] = []
+    manual_checks: list[str] = []
+    for line in section.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("- `") and stripped.endswith("`"):
+            commands.append(stripped[3:-1])
+        elif stripped.startswith("- "):
+            manual_checks.append(stripped[2:].strip())
+    return commands, manual_checks
+
+
 def benchmark_path(path: str) -> str:
     return path if path.startswith("benchmark-repo/") else f"benchmark-repo/{path}"
 
@@ -52,10 +64,17 @@ def task_allowed_files(root: Path, metadata: dict) -> list[str]:
 
 def verification_commands(root: Path, metadata: dict) -> list[dict[str, str]]:
     spec = (root / metadata["task_spec"]).read_text(encoding="utf-8")
+    commands, _manual_checks = markdown_command_items(extract_section(spec, "Verification"))
     return [
         {"working_directory": "benchmark-repo", "command": item}
-        for item in markdown_list_items(extract_section(spec, "Verification"))
+        for item in commands
     ]
+
+
+def manual_verification_checks(root: Path, metadata: dict) -> list[str]:
+    spec = (root / metadata["task_spec"]).read_text(encoding="utf-8")
+    _commands, manual_checks = markdown_command_items(extract_section(spec, "Verification"))
+    return manual_checks
 
 
 def cgp_evidence_files(run_id: str) -> list[str]:
@@ -67,13 +86,14 @@ def cgp_evidence_files(run_id: str) -> list[str]:
 
 
 def changed_files(worktree: Path, base: str) -> list[str]:
-    tracked = run(["git", "diff", "--name-only", base], cwd=worktree).stdout.splitlines()
+    tracked = run(["git", "diff", "--name-only", base, "HEAD"], cwd=worktree).stdout.splitlines()
+    working_tree = run(["git", "diff", "--name-only", base], cwd=worktree).stdout.splitlines()
     untracked = run(["git", "ls-files", "--others", "--exclude-standard"], cwd=worktree).stdout.splitlines()
-    return sorted({item for item in tracked + untracked if item})
+    return sorted({item for item in tracked + working_tree + untracked if item})
 
 
 def diff_patch(worktree: Path, base: str, files: list[str]) -> str:
-    parts = [run(["git", "diff", base], cwd=worktree).stdout]
+    parts = [run(["git", "diff", base, "HEAD"], cwd=worktree).stdout, run(["git", "diff", base], cwd=worktree).stdout]
     tracked = set(run(["git", "ls-files"], cwd=worktree).stdout.splitlines())
     for file in files:
         if file in tracked:
@@ -144,6 +164,7 @@ def main() -> int:
     files = changed_files(worktree, base)
     drift = [file for file in files if file not in set(allowed)]
     verification = run_verification(worktree, verification_commands(root, metadata))
+    manual_checks = manual_verification_checks(root, metadata)
     verification_success = all(item["result"] == "passed" for item in verification)
     work_submitted = len(files) > 0
     evidence_count = copy_evidence_trio(worktree, run_dir, args.run_id) if metadata["condition"] == "cgp" else 0
@@ -163,6 +184,7 @@ def main() -> int:
         "metrics_base_commit": base,
         "verified_at": datetime.now(UTC).replace(microsecond=0).isoformat(),
         "post_run_verification": verification,
+        "manual_verification_checks": manual_checks,
         "changed_files": files,
         "scope_drift_count": len(drift),
         "scope_drift_files": drift,
