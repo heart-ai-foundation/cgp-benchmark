@@ -14,7 +14,17 @@ def changed_files(repo: Path, base: str, head: str | None) -> list[str]:
     if head:
         command.append(head)
     result = subprocess.run(command, cwd=repo, check=True, text=True, capture_output=True)
-    return [line for line in result.stdout.splitlines() if line]
+    files = {line for line in result.stdout.splitlines() if line}
+    if head is None:
+        untracked = subprocess.run(
+            ["git", "ls-files", "--others", "--exclude-standard"],
+            cwd=repo,
+            check=True,
+            text=True,
+            capture_output=True,
+        )
+        files.update(line for line in untracked.stdout.splitlines() if line)
+    return sorted(files)
 
 
 def main() -> None:
