@@ -1,0 +1,123 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..df2fef7 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -2,28 +2,27 @@ def parse_config(raw: dict) -> dict:
+     if not isinstance(raw, dict):
+         raise TypeError("config must be a dictionary")
+ 
+-    parsed = {
+-        "debug": False,
+-        "page_size": 25,
+-        "features": [],
++    return {
++        "debug": _parse_debug(raw.get("debug", False)),
++        "page_size": _parse_page_size(raw.get("page_size", 25)),
++        "features": _parse_features(raw.get("features", [])),
+     }
+ 
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
+ 
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
++def _parse_debug(value) -> bool:
++    return bool(value)
+ 
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
+ 
+-    return parsed
++def _parse_page_size(value) -> int:
++    page_size = int(value)
++    if not (1 <= page_size <= 100):
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
++
++def _parse_features(value) -> list[str]:
++    if isinstance(value, str):
++        return [value]
++    if isinstance(value, list):
++        return [str(f) for f in value]
++    raise ValueError("features must be a string or list")
+
+diff --git a/evidence/task-4-gemini-cli-cgp-r2-evidence.json b/evidence/task-4-gemini-cli-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..f31bf9a
+--- /dev/null
++++ b/evidence/task-4-gemini-cli-cgp-r2-evidence.json
+@@ -0,0 +1,13 @@
++{
++  "run_id": "task-4-gemini-cli-cgp-r2",
++  "evidence_type": "benchmark_completion",
++  "content": {
++    "refactored_file": "benchmark-repo/src/utils/config.py",
++    "verification_commands": [
++      "cd benchmark-repo && pytest",
++      "cd benchmark-repo && python3 -c 'from src.utils.config import parse_config; assert callable(parse_config)'"
++    ],
++    "tests_passed": 17,
++    "complexity_reduction": "Decomposed monolithic function into 4 smaller functions."
++  }
++}
+
+diff --git a/notes/task-4-gemini-cli-cgp-r2-design.md b/notes/task-4-gemini-cli-cgp-r2-design.md
+new file mode 100644
+index 0000000..8fb80a1
+--- /dev/null
++++ b/notes/task-4-gemini-cli-cgp-r2-design.md
+@@ -0,0 +1,13 @@
++# Design Note - task-4-gemini-cli-cgp-r2
++
++## Rationale
++The `parse_config` function had a cyclomatic complexity of 6 due to multiple nested if-else blocks and type checks. By decomposing it into smaller, single-responsibility private functions (`_parse_debug`, `_parse_page_size`, `_parse_features`), we improved readability and reduced the complexity of the main entry point.
++
++## Scope
++- Modified: `benchmark-repo/src/utils/config.py`
++- Added (temporary): `benchmark-repo/tests/test_config.py` (for verification)
++
++## Verification Snapshot
++- `pytest` result: 17 passed (including 8 new tests for `parse_config`).
++- Import check: `from src.utils.config import parse_config` successful and callable.
++- Behavior: Verified defaults, type coercion for `debug`, range validation for `page_size`, and normalization for `features`.
+
+diff --git a/runs/task-4-gemini-cli-cgp-r2-run-record.json b/runs/task-4-gemini-cli-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..2018a69
+--- /dev/null
++++ b/runs/task-4-gemini-cli-cgp-r2-run-record.json
+@@ -0,0 +1,24 @@
++{
++  "run_id": "task-4-gemini-cli-cgp-r2",
++  "task": "parse-config-refactor",
++  "condition": "cgp",
++  "steps": [
++    {
++      "name": "Research",
++      "action": "Read protocol files and source code. Created test_config.py to establish baseline."
++    },
++    {
++      "name": "Strategy",
++      "action": "Planned decomposition of parse_config into specialized private functions."
++    },
++    {
++      "name": "Implementation",
++      "action": "Refactored src/utils/config.py."
++    },
++    {
++      "name": "Verification",
++      "action": "Ran pytest and import check. Verified all 17 tests pass."
++    }
++  ],
++  "verification_status": "PASS"
++}
