@@ -6,19 +6,15 @@ from __future__ import annotations
 import argparse
 import csv
 import json
-import re
 import subprocess
 import sys
 import threading
 from datetime import UTC, datetime
 from pathlib import Path
 
+from scripts.stop_condition_alerts import is_stop_condition_alert
 
 RUN_PLAN = Path("runs/run_plan.csv")
-STOP_CONDITION_RE = re.compile(
-    r"(stop condition|stopping per|protocol conflict|load-bearing disagreement|manifest.*disagree|lock.*disagree|active protocol.*disagree)",
-    re.IGNORECASE,
-)
 
 
 def run(command: list[str], cwd: Path, check: bool = True, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
@@ -134,7 +130,7 @@ def stream_pipe(
                 continue
             if echo_text:
                 print(fragment, end="" if fragment.endswith("\n") else "\n", flush=True)
-            if STOP_CONDITION_RE.search(fragment):
+            if is_stop_condition_alert(fragment):
                 stop_hits.append(fragment.strip())
                 print(
                     f"\n[run_claude_code_print] STOP-CONDITION ALERT from Claude output: {fragment.strip()}\n",
