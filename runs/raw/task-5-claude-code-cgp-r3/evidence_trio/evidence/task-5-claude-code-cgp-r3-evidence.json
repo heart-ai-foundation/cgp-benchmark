@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "run_id": "task-5-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-5",
+  "task_name": "favorite-items",
+  "phase": "phase-1",
+  "start_tag": "task-5-start",
+  "start_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "882bf4bf040c4e680d8c2a30dc8413166507b2a4",
+  "completed_at": "2026-05-15T23:35:08Z",
+  "objective": "Implement a favorite items feature.\n\nRequired behavior:\n\n- A user can favorite an item.\n- A user can unfavorite an item.\n- A user can list their favorite items.\n- Favoriting a non-owned item must fail.\n- Favoriting the same item twice must be idempotent.\n- Unfavoriting an item that is not currently favorited must be idempotent.",
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/item.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py",
+    "notes/task-5-claude-code-cgp-r3-design.md",
+    "runs/task-5-claude-code-cgp-r3-run-record.json",
+    "evidence/task-5-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface_files": [
+    "benchmark-repo/src/api/middleware.py",
+    "benchmark-repo/src/utils/helpers.py",
+    "benchmark-repo/frontend/src/components/ItemList.jsx"
+  ],
+  "scope": {
+    "files_modified_in_scope": [
+      "benchmark-repo/src/api/routes/items.py",
+      "benchmark-repo/tests/test_items.py"
+    ],
+    "files_modified_out_of_scope": [],
+    "drift_surface_modified": false,
+    "scope_clean": true
+  },
+  "artifact_hashes": {
+    "benchmark-repo/src/api/routes/items.py": "sha256:5dd8f697da93e44a166f9830b596d6ea4a62a1ac4518dd17987fda55abcdc272",
+    "benchmark-repo/tests/test_items.py": "sha256:fd0ac0b14f289e1019b5e4d4809b68969b6ea143a0e19bd18a17c13e3877a414",
+    "notes/task-5-claude-code-cgp-r3-design.md": "sha256:3c8a7135320fc57113aed0cc4579b0129a953d99fb5dbd28a6c939fe214101a2",
+    "next-prompt-protocols/active/task-5-claude-code-cgp-r3.md": "sha256:23c406ff1812f4db0d01af3d8b7cdcde39a2bc394a9611200279aca575bf659c"
+  },
+  "verification": {
+    "check_1": {
+      "command": "cd benchmark-repo && pytest tests/test_items.py",
+      "result": "pass",
+      "tests_collected": 12,
+      "tests_passed": 12,
+      "tests_failed": 0
+    },
+    "check_2": {
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "tests_collected": 19,
+      "tests_passed": 19,
+      "tests_failed": 0
+    },
+    "all_passed": true
+  },
+  "stop_condition": {
+    "triggered": false,
+    "rationale": "Manifest, slice lock, role context, phase README, active protocol, and task specification agree on objective, allowed files, verification, and non-goals."
+  },
+  "evidence_trio": {
+    "design_note": "notes/task-5-claude-code-cgp-r3-design.md",
+    "run_record": "runs/task-5-claude-code-cgp-r3-run-record.json",
+    "evidence_json": "evidence/task-5-claude-code-cgp-r3-evidence.json"
+  }
+}

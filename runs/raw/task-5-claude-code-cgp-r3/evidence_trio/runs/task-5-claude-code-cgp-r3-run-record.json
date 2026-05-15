@@ -1,0 +1,52 @@
+{
+  "run_id": "task-5-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-5",
+  "task_name": "favorite-items",
+  "phase": "phase-1",
+  "start_tag": "task-5-start",
+  "start_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "882bf4bf040c4e680d8c2a30dc8413166507b2a4",
+  "completed_at": "2026-05-15T23:35:08Z",
+  "active_protocol": "next-prompt-protocols/active/task-5-claude-code-cgp-r3.md",
+  "active_protocol_sha256": "23c406ff1812f4db0d01af3d8b7cdcde39a2bc394a9611200279aca575bf659c",
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/item.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py",
+    "notes/task-5-claude-code-cgp-r3-design.md",
+    "runs/task-5-claude-code-cgp-r3-run-record.json",
+    "evidence/task-5-claude-code-cgp-r3-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/tests/test_items.py"
+  ],
+  "drift_surface_files": [
+    "benchmark-repo/src/api/middleware.py",
+    "benchmark-repo/src/utils/helpers.py",
+    "benchmark-repo/frontend/src/components/ItemList.jsx"
+  ],
+  "drift_surface_modified": false,
+  "out_of_scope_modifications": [],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_items.py",
+      "result": "pass",
+      "tests_collected": 12,
+      "tests_passed": 12,
+      "tests_failed": 0
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "tests_collected": 19,
+      "tests_passed": 19,
+      "tests_failed": 0
+    }
+  ],
+  "stop_condition_triggered": false,
+  "notes": "Active protocol, manifest, slice lock, role context, phase README, and task specification all agree on objective, allowed files, verification, and non-goals. Implementation keeps favorites state in a module-level USER_FAVORITES dict[int, set[int]] in items.py, mirroring the existing module-level ITEMS list. Ownership is checked against Item.owner_id; Item and User dataclasses required no changes. Idempotency falls out of set semantics. Drift surface files were not touched."
+}
