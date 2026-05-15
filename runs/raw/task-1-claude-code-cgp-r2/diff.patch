@@ -1,0 +1,255 @@
+diff --git a/benchmark-repo/src/api/validators.py b/benchmark-repo/src/api/validators.py
+index 98425ff..d852383 100644
+--- a/benchmark-repo/src/api/validators.py
++++ b/benchmark-repo/src/api/validators.py
+@@ -1,3 +1,12 @@
++import re
++
++_EMAIL_RE = re.compile(
++    r"^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
++    r"@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
++    r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$"
++)
++
++
+ def require_non_empty(value: str, field_name: str) -> str:
+     if not isinstance(value, str) or not value.strip():
+         raise ValueError(f"{field_name} is required")
+@@ -8,3 +17,11 @@ def validate_positive_int(value: int, field_name: str) -> int:
+     if not isinstance(value, int) or value <= 0:
+         raise ValueError(f"{field_name} must be a positive integer")
+     return value
++
++
++def validate_email(email: str) -> bool:
++    if not isinstance(email, str):
++        return False
++    if len(email) > 254:
++        return False
++    return _EMAIL_RE.match(email) is not None
+diff --git a/benchmark-repo/tests/test_validators.py b/benchmark-repo/tests/test_validators.py
+index 050d5d0..82dce23 100644
+--- a/benchmark-repo/tests/test_validators.py
++++ b/benchmark-repo/tests/test_validators.py
+@@ -1,6 +1,10 @@
+ import pytest
+ 
+-from src.api.validators import require_non_empty, validate_positive_int
++from src.api.validators import (
++    require_non_empty,
++    validate_email,
++    validate_positive_int,
++)
+ 
+ 
+ def test_require_non_empty_strips_value():
+@@ -14,3 +18,54 @@ def test_require_non_empty_rejects_blank():
+ 
+ def test_validate_positive_int_accepts_positive_integer():
+     assert validate_positive_int(3, "count") == 3
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "user@example.com",
++        "first.last@example.co.uk",
++        "user+tag@example.com",
++        "user_name@sub.example.org",
++        "u@a.io",
++        "user123@example123.com",
++        "a.b-c_d@example.com",
++    ],
++)
++def test_validate_email_accepts_well_formed(email):
++    assert validate_email(email) is True
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "",
++        "plainaddress",
++        "@missing-local.com",
++        "user@",
++        "user@@example.com",
++        "user @example.com",
++        "user@exa mple.com",
++        "user@example",
++        "user@.com",
++        "user@example..com",
++        "user@-example.com",
++        "user@example-.com",
++        ".user@example.com",
++        "user.@example.com",
++        "user..name@example.com",
++    ],
++)
++def test_validate_email_rejects_malformed(email):
++    assert validate_email(email) is False
++
++
++def test_validate_email_rejects_non_string():
++    assert validate_email(None) is False
++    assert validate_email(123) is False
++    assert validate_email(["user@example.com"]) is False
++
++
++def test_validate_email_rejects_overlong():
++    long_local = "a" * 250
++    assert validate_email(f"{long_local}@example.com") is False
+
+diff --git a/evidence/task-1-claude-code-cgp-r2-evidence.json b/evidence/task-1-claude-code-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..157c4eb
+--- /dev/null
++++ b/evidence/task-1-claude-code-cgp-r2-evidence.json
+@@ -0,0 +1,59 @@
++{
++  "run_id": "task-1-claude-code-cgp-r2",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-1",
++  "task_slug": "input-validation",
++  "start_tag": "task-1-start",
++  "metrics_base_commit": "3c0c4c9c3f0aa387d6933a5437e201972e512983",
++  "active_protocol_sha256": "sha256:b2ddf8fba4bf171e75c8654721e82c6617db8f1e50113f4084eb7d321be306d6",
++  "scope": {
++    "allowed_files": [
++      "benchmark-repo/src/api/validators.py",
++      "benchmark-repo/tests/test_validators.py",
++      "notes/task-1-claude-code-cgp-r2-design.md",
++      "runs/task-1-claude-code-cgp-r2-run-record.json",
++      "evidence/task-1-claude-code-cgp-r2-evidence.json"
++    ],
++    "files_modified": [
++      "benchmark-repo/src/api/validators.py",
++      "benchmark-repo/tests/test_validators.py",
++      "notes/task-1-claude-code-cgp-r2-design.md",
++      "runs/task-1-claude-code-cgp-r2-run-record.json",
++      "evidence/task-1-claude-code-cgp-r2-evidence.json"
++    ],
++    "drift_surface": [
++      "src/api/routes/auth.py",
++      "src/api/middleware.py"
++    ],
++    "drift_surface_touched": [],
++    "within_scope": true
++  },
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_validators.py",
++      "passed": true,
++      "tests_collected": 27,
++      "tests_passed": 27,
++      "tests_failed": 0
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "passed": true,
++      "tests_collected": 33,
++      "tests_passed": 33,
++      "tests_failed": 0
++    }
++  ],
++  "implementation_summary": {
++    "function_added": "validate_email",
++    "signature": "validate_email(email: str) -> bool",
++    "returns_bool_only": true,
++    "raises": "never",
++    "rejects_non_string": true,
++    "length_cap_chars": 254,
++    "regex_dependencies": ["re"]
++  },
++  "completion_status": "complete",
++  "completed_at_utc": "2026-05-15T18:22:46Z"
++}
+
+diff --git a/notes/task-1-claude-code-cgp-r2-design.md b/notes/task-1-claude-code-cgp-r2-design.md
+new file mode 100644
+index 0000000..d3c4b25
+--- /dev/null
++++ b/notes/task-1-claude-code-cgp-r2-design.md
+@@ -0,0 +1,43 @@
++# Design Note - task-1-claude-code-cgp-r2
++
++## Run
++
++- Run ID: `task-1-claude-code-cgp-r2`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-1` / `input-validation`
++- Start tag: `task-1-start`
++
++## Objective
++
++Add `validate_email(email: str) -> bool` to `src/api/validators.py` and corresponding tests in `tests/test_validators.py`. Return `True` for well-formed addresses, `False` otherwise.
++
++## Approach
++
++- Implement `validate_email` as a pure predicate that never raises. Non-`str` inputs return `False` rather than propagating `TypeError`, matching the documented signature.
++- Use a compiled `re` pattern with a constrained, pragmatic email grammar:
++  - Local part: one or more atext characters, with optional dot-separated atoms (no leading, trailing, or consecutive dots).
++  - Domain: dot-separated labels of letters/digits/hyphens; labels cannot start or end with a hyphen; the TLD label requires at least one dot, so bare-hostname domains (e.g. `user@example`) are rejected.
++- Enforce a 254-character overall length cap (RFC 5321 path limit), which is the realistic ceiling for SMTP-deliverable addresses.
++- Keep dependency surface minimal: only `re` from stdlib; reuse the existing module-level style (no class, no public regex export).
++
++## Scope discipline
++
++- Touched files limited to the allowed-files set:
++  - `benchmark-repo/src/api/validators.py`
++  - `benchmark-repo/tests/test_validators.py`
++  - Evidence trio under `notes/`, `runs/`, `evidence/`.
++- Drift surface files (`src/api/routes/auth.py`, `src/api/middleware.py`) were not opened or modified, even though `auth.py` is a plausible consumer.
++- Existing validators (`require_non_empty`, `validate_positive_int`) and their tests are untouched.
++
++## Verification snapshot
++
++- `cd benchmark-repo && pytest tests/test_validators.py` -> 27 passed.
++- `cd benchmark-repo && pytest` -> 33 passed.
++- Manual review confirms only the two source files plus the evidence trio were modified.
++
++## Non-goals respected
++
++- No adjacent refactors to the existing helpers.
++- No changes to scaffold, run plan, preregistration, or analysis files.
++- No new task semantics beyond the spec.
+
+diff --git a/runs/task-1-claude-code-cgp-r2-run-record.json b/runs/task-1-claude-code-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..ea536c1
+--- /dev/null
++++ b/runs/task-1-claude-code-cgp-r2-run-record.json
+@@ -0,0 +1,32 @@
++{
++  "run_id": "task-1-claude-code-cgp-r2",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-1",
++  "task_slug": "input-validation",
++  "start_tag": "task-1-start",
++  "metrics_base_commit": "3c0c4c9c3f0aa387d6933a5437e201972e512983",
++  "verification": {
++    "check_1": {
++      "command": "cd benchmark-repo && pytest tests/test_validators.py",
++      "result": "passed",
++      "tests_collected": 27,
++      "tests_passed": 27
++    },
++    "check_2": {
++      "command": "cd benchmark-repo && pytest",
++      "result": "passed",
++      "tests_collected": 33,
++      "tests_passed": 33
++    }
++  },
++  "files_changed": [
++    "benchmark-repo/src/api/validators.py",
++    "benchmark-repo/tests/test_validators.py",
++    "notes/task-1-claude-code-cgp-r2-design.md",
++    "runs/task-1-claude-code-cgp-r2-run-record.json",
++    "evidence/task-1-claude-code-cgp-r2-evidence.json"
++  ],
++  "drift_surface_touched": [],
++  "completed_at_utc": "2026-05-15T18:22:46Z"
++}

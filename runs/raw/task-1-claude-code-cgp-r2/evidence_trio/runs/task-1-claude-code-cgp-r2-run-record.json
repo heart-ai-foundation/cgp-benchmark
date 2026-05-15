@@ -1,0 +1,32 @@
+{
+  "run_id": "task-1-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-1",
+  "task_slug": "input-validation",
+  "start_tag": "task-1-start",
+  "metrics_base_commit": "3c0c4c9c3f0aa387d6933a5437e201972e512983",
+  "verification": {
+    "check_1": {
+      "command": "cd benchmark-repo && pytest tests/test_validators.py",
+      "result": "passed",
+      "tests_collected": 27,
+      "tests_passed": 27
+    },
+    "check_2": {
+      "command": "cd benchmark-repo && pytest",
+      "result": "passed",
+      "tests_collected": 33,
+      "tests_passed": 33
+    }
+  },
+  "files_changed": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py",
+    "notes/task-1-claude-code-cgp-r2-design.md",
+    "runs/task-1-claude-code-cgp-r2-run-record.json",
+    "evidence/task-1-claude-code-cgp-r2-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "completed_at_utc": "2026-05-15T18:22:46Z"
+}
