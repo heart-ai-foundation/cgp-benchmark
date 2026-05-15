@@ -19,5 +19,8 @@
   "evidence_trio_completeness": 3,
   "run_validity": "valid",
   "setup_commit": "9e6b4e34ed22240eef03cd9a55b34c88afcb681d",
-  "worktree": "worktrees/task-1-claude-code-cgp-r1"
+  "worktree": "worktrees/task-1-claude-code-cgp-r1",
+  "archive_status": "archived_pilot",
+  "archive_reason": "interactive Claude Code pilot/debug observation collected before production print-mode automation",
+  "execution_mode": "claude-code-interactive"
 }

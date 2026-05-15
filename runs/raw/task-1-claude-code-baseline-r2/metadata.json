@@ -19,5 +19,8 @@
   "verification_command_compliance": true,
   "task_verification_success": true,
   "evidence_trio_completeness": null,
-  "run_validity": "valid"
+  "run_validity": "valid",
+  "archive_status": "archived_pilot",
+  "archive_reason": "interactive Claude Code pilot/debug observation collected before production print-mode automation",
+  "execution_mode": "claude-code-interactive"
 }

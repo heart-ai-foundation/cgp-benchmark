@@ -50,6 +50,16 @@ Processed metrics belong under `runs/processed/`.
 
 ## Preparing One Run
 
+Production Claude Code runs should use the automated print-mode wrapper:
+
+```bash
+python scripts/run_claude_code_print.py --run-id task-3-claude-code-cgp-r1 --commit --push
+```
+
+The wrapper prepares the run if needed, executes Claude Code with `claude -p`, stores stdout/stderr under the run's raw transcript directory, captures metrics and verification, and optionally commits and pushes the raw artifacts.
+
+The manual steps below are retained for debugging and non-Claude agents.
+
 To preview a planned run prompt without creating run artifacts:
 
 ```bash
