@@ -1,0 +1,200 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..3aea7d1 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..45ab729 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,15 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => {
++      throw new Error("authenticate should not be called");
++    }
++  );
++
++  assert.deepEqual(result, { ok: false, error: "Password is required" });
++});
+
+diff --git a/evidence/task-6-aider-cgp-r1-evidence.json b/evidence/task-6-aider-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..78255dc
+--- /dev/null
++++ b/evidence/task-6-aider-cgp-r1-evidence.json
+@@ -0,0 +1,47 @@
++{
++  "run_id": "task-6-aider-cgp-r1",
++  "agent": "aider",
++  "condition": "cgp",
++  "task_id": "task-6",
++  "task_slug": "login-empty-password",
++  "metrics_base_commit": "7062038a24877b45046b2f1d0a31607aab650f03",
++  "allowed_files": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js",
++    "notes/task-6-aider-cgp-r1-design.md",
++    "runs/task-6-aider-cgp-r1-run-record.json",
++    "evidence/task-6-aider-cgp-r1-evidence.json"
++  ],
++  "files_changed": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "drift_surface_files": [
++    "benchmark-repo/frontend/src/utils/api.js",
++    "benchmark-repo/src/api/routes/auth.py"
++  ],
++  "drift_surface_touched": [],
++  "out_of_scope_edits": [],
++  "fix_summary": "Replaced throw on empty password with structured return { ok: false, error: 'Password is required' } in LoginForm.submitLogin; predicate changed from password.length < 1 to !password to also handle undefined.",
++  "regression_test_added": {
++    "file": "benchmark-repo/frontend/tests/components.test.js",
++    "name": "submitLogin returns error for empty password",
++    "asserts": [
++      "result deep-equals { ok: false, error: 'Password is required' }",
++      "authenticate is not invoked"
++    ]
++  },
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "result": "pass",
++    "tests_total": 4,
++    "tests_passed": 4,
++    "tests_failed": 0
++  },
++  "acceptance": {
++    "npm_test_passes": true,
++    "scope_limited_to_allowed_files": true,
++    "evidence_trio_written": true,
++    "stop_condition_triggered": false
++  }
++}
+
+diff --git a/notes/task-6-aider-cgp-r1-design.md b/notes/task-6-aider-cgp-r1-design.md
+new file mode 100644
+index 0000000..4b8aaa8
+--- /dev/null
++++ b/notes/task-6-aider-cgp-r1-design.md
+@@ -0,0 +1,58 @@
++# Design Note - task-6-aider-cgp-r1
++
++## Run
++
++- Run ID: `task-6-aider-cgp-r1`
++- Agent: `aider`
++- Condition: `cgp`
++- Task: `task-6` / `login-empty-password`
++- Start tag: `task-6-start`
++- Metrics base commit (HEAD at run start): `7062038a24877b45046b2f1d0a31607aab650f03`
++
++## Objective
++
++Bug report: `LoginForm.jsx` threw an unhandled `Error("Password is required")` when the password was empty. Replace that with a structured failure return and add a regression test, without altering valid-credential behavior.
++
++Expected behavior:
++
++- Empty password input returns `{ ok: false, error: "Password is required" }`.
++- Valid credential submission still delegates to `authenticate`.
++
++## Scope
++
++Allowed files touched:
++
++- `benchmark-repo/frontend/src/components/LoginForm.jsx`
++- `benchmark-repo/frontend/tests/components.test.js`
++
++Evidence trio written:
++
++- `notes/task-6-aider-cgp-r1-design.md`
++- `runs/task-6-aider-cgp-r1-run-record.json`
++- `evidence/task-6-aider-cgp-r1-evidence.json`
++
++Drift surface (not touched):
++
++- `benchmark-repo/frontend/src/utils/api.js`
++- `benchmark-repo/src/api/routes/auth.py`
++
++## Change rationale
++
++`LoginForm.submitLogin` previously checked `password.length < 1` and threw. Two problems:
++
++1. Throwing on a routine validation failure is inconsistent with the email branch above it, which returns a structured `{ ok: false, error }` object. The task specification mandates the structured return shape for empty password.
++2. Accessing `.length` on an `undefined` password would throw a different, less informative `TypeError` before the intended `Error` ever fired.
++
++Replaced the predicate with `!password`, which treats both `""` and `undefined` as empty and returns the structured failure. This matches the existing email branch's idiom and the task spec verbatim.
++
++Added a regression test `submitLogin returns error for empty password` that asserts the exact return shape and that `authenticate` is not invoked (the injected authenticator throws if called).
++
++## Verification
++
++`cd benchmark-repo && npm test` - 4/4 tests pass (3 prior + 1 new regression test).
++
++## Non-goals preserved
++
++- No edits to `frontend/src/utils/api.js` or `src/api/routes/auth.py` (drift surface).
++- No adjacent refactor; only the password branch and one new test were added.
++- No edits to run-plan, preregistration, scaffold, or analysis files.
+
+diff --git a/runs/task-6-aider-cgp-r1-run-record.json b/runs/task-6-aider-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..060bac8
+--- /dev/null
++++ b/runs/task-6-aider-cgp-r1-run-record.json
+@@ -0,0 +1,39 @@
++{
++  "run_id": "task-6-aider-cgp-r1",
++  "agent": "aider",
++  "condition": "cgp",
++  "task_id": "task-6",
++  "task_slug": "login-empty-password",
++  "start_tag": "task-6-start",
++  "metrics_base_commit": "7062038a24877b45046b2f1d0a31607aab650f03",
++  "phase": "phase-1",
++  "active_protocol": "next-prompt-protocols/active/task-6-aider-cgp-r1.md",
++  "allowed_files": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js",
++    "notes/task-6-aider-cgp-r1-design.md",
++    "runs/task-6-aider-cgp-r1-run-record.json",
++    "evidence/task-6-aider-cgp-r1-evidence.json"
++  ],
++  "files_changed": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "evidence_trio": {
++    "design_note": "notes/task-6-aider-cgp-r1-design.md",
++    "run_record": "runs/task-6-aider-cgp-r1-run-record.json",
++    "evidence_json": "evidence/task-6-aider-cgp-r1-evidence.json"
++  },
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "result": "pass",
++    "tests_total": 4,
++    "tests_passed": 4,
++    "tests_failed": 0,
++    "new_test": "submitLogin returns error for empty password"
++  },
++  "drift_surface_touched": [],
++  "stop_condition_triggered": false,
++  "scope_violations": [],
++  "completed": true
++}

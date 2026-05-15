@@ -1,0 +1,47 @@
+{
+  "run_id": "task-6-aider-cgp-r1",
+  "agent": "aider",
+  "condition": "cgp",
+  "task_id": "task-6",
+  "task_slug": "login-empty-password",
+  "metrics_base_commit": "7062038a24877b45046b2f1d0a31607aab650f03",
+  "allowed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js",
+    "notes/task-6-aider-cgp-r1-design.md",
+    "runs/task-6-aider-cgp-r1-run-record.json",
+    "evidence/task-6-aider-cgp-r1-evidence.json"
+  ],
+  "files_changed": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "drift_surface_files": [
+    "benchmark-repo/frontend/src/utils/api.js",
+    "benchmark-repo/src/api/routes/auth.py"
+  ],
+  "drift_surface_touched": [],
+  "out_of_scope_edits": [],
+  "fix_summary": "Replaced throw on empty password with structured return { ok: false, error: 'Password is required' } in LoginForm.submitLogin; predicate changed from password.length < 1 to !password to also handle undefined.",
+  "regression_test_added": {
+    "file": "benchmark-repo/frontend/tests/components.test.js",
+    "name": "submitLogin returns error for empty password",
+    "asserts": [
+      "result deep-equals { ok: false, error: 'Password is required' }",
+      "authenticate is not invoked"
+    ]
+  },
+  "verification": {
+    "command": "cd benchmark-repo && npm test",
+    "result": "pass",
+    "tests_total": 4,
+    "tests_passed": 4,
+    "tests_failed": 0
+  },
+  "acceptance": {
+    "npm_test_passes": true,
+    "scope_limited_to_allowed_files": true,
+    "evidence_trio_written": true,
+    "stop_condition_triggered": false
+  }
+}
