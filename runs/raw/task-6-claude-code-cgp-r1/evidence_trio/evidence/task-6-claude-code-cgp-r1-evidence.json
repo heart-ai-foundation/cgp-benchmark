@@ -1,0 +1,53 @@
+{
+  "schema": "cgp-benchmark.evidence.v1",
+  "run_id": "task-6-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-6",
+  "task_slug": "login-empty-password",
+  "phase": "phase-1",
+  "start_tag": "task-6-start",
+  "metrics_base_commit": "7f75a360f508fb3f485cb8c4b5e79873d1648ecd",
+  "completed_at_utc": "2026-05-15T18:54:27Z",
+  "scope": {
+    "allowed_files": [
+      "benchmark-repo/frontend/src/components/LoginForm.jsx",
+      "benchmark-repo/frontend/tests/components.test.js",
+      "notes/task-6-claude-code-cgp-r1-design.md",
+      "runs/task-6-claude-code-cgp-r1-run-record.json",
+      "evidence/task-6-claude-code-cgp-r1-evidence.json"
+    ],
+    "files_modified": [
+      "benchmark-repo/frontend/src/components/LoginForm.jsx",
+      "benchmark-repo/frontend/tests/components.test.js"
+    ],
+    "files_created": [
+      "notes/task-6-claude-code-cgp-r1-design.md",
+      "runs/task-6-claude-code-cgp-r1-run-record.json",
+      "evidence/task-6-claude-code-cgp-r1-evidence.json"
+    ],
+    "out_of_scope_edits": [],
+    "drift_surface_touched": []
+  },
+  "change_summary": {
+    "fix": "Replaced the throwing empty-password branch in submitLogin with a returned { ok: false, error: 'Password is required' } object, using a falsy guard so undefined/null password values do not raise a TypeError on .length.",
+    "regression_test": "Added 'submitLogin returns error for empty password' which calls submitLogin with password '' and an authenticate stub that throws if invoked; asserts deepEqual to { ok: false, error: 'Password is required' }."
+  },
+  "verification": {
+    "command": "cd benchmark-repo && npm test",
+    "result": "pass",
+    "tests_total": 4,
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "tests_added": [
+      "submitLogin returns error for empty password"
+    ],
+    "tests_preserved": [
+      "renderUserList prints names and email addresses",
+      "renderItemList joins item names",
+      "submitLogin delegates valid credentials"
+    ]
+  },
+  "stop_condition_triggered": false,
+  "non_goals_respected": true
+}

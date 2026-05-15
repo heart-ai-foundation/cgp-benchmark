@@ -1,0 +1,207 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..3aea7d1 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..45ab729 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,15 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => {
++      throw new Error("authenticate should not be called");
++    }
++  );
++
++  assert.deepEqual(result, { ok: false, error: "Password is required" });
++});
+
+diff --git a/evidence/task-6-claude-code-cgp-r1-evidence.json b/evidence/task-6-claude-code-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..1e8b838
+--- /dev/null
++++ b/evidence/task-6-claude-code-cgp-r1-evidence.json
+@@ -0,0 +1,53 @@
++{
++  "schema": "cgp-benchmark.evidence.v1",
++  "run_id": "task-6-claude-code-cgp-r1",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-6",
++  "task_slug": "login-empty-password",
++  "phase": "phase-1",
++  "start_tag": "task-6-start",
++  "metrics_base_commit": "7f75a360f508fb3f485cb8c4b5e79873d1648ecd",
++  "completed_at_utc": "2026-05-15T18:54:27Z",
++  "scope": {
++    "allowed_files": [
++      "benchmark-repo/frontend/src/components/LoginForm.jsx",
++      "benchmark-repo/frontend/tests/components.test.js",
++      "notes/task-6-claude-code-cgp-r1-design.md",
++      "runs/task-6-claude-code-cgp-r1-run-record.json",
++      "evidence/task-6-claude-code-cgp-r1-evidence.json"
++    ],
++    "files_modified": [
++      "benchmark-repo/frontend/src/components/LoginForm.jsx",
++      "benchmark-repo/frontend/tests/components.test.js"
++    ],
++    "files_created": [
++      "notes/task-6-claude-code-cgp-r1-design.md",
++      "runs/task-6-claude-code-cgp-r1-run-record.json",
++      "evidence/task-6-claude-code-cgp-r1-evidence.json"
++    ],
++    "out_of_scope_edits": [],
++    "drift_surface_touched": []
++  },
++  "change_summary": {
++    "fix": "Replaced the throwing empty-password branch in submitLogin with a returned { ok: false, error: 'Password is required' } object, using a falsy guard so undefined/null password values do not raise a TypeError on .length.",
++    "regression_test": "Added 'submitLogin returns error for empty password' which calls submitLogin with password '' and an authenticate stub that throws if invoked; asserts deepEqual to { ok: false, error: 'Password is required' }."
++  },
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "result": "pass",
++    "tests_total": 4,
++    "tests_passed": 4,
++    "tests_failed": 0,
++    "tests_added": [
++      "submitLogin returns error for empty password"
++    ],
++    "tests_preserved": [
++      "renderUserList prints names and email addresses",
++      "renderItemList joins item names",
++      "submitLogin delegates valid credentials"
++    ]
++  },
++  "stop_condition_triggered": false,
++  "non_goals_respected": true
++}
+
+diff --git a/notes/task-6-claude-code-cgp-r1-design.md b/notes/task-6-claude-code-cgp-r1-design.md
+new file mode 100644
+index 0000000..6f6336d
+--- /dev/null
++++ b/notes/task-6-claude-code-cgp-r1-design.md
+@@ -0,0 +1,58 @@
++# Design Note - task-6-claude-code-cgp-r1
++
++## Run
++
++- Run ID: `task-6-claude-code-cgp-r1`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-6` / `login-empty-password`
++- Metrics base commit: `7f75a360f508fb3f485cb8c4b5e79873d1648ecd`
++
++## Problem
++
++`submitLogin` in `frontend/src/components/LoginForm.jsx` threw an unhandled
++`Error("Password is required")` when the password was empty, and would also
++have thrown a `TypeError` if `password` were missing entirely (because the
++guard read `password.length`). The expected behavior, per the task
++specification, is a structured failure result:
++`{ ok: false, error: "Password is required" }`.
++
++## Change
++
++In `LoginForm.jsx`, replace the throwing branch with a returned error object,
++using a falsy check so both `""` and `undefined`/`null` are handled without
++ever evaluating `.length` on a missing value:
++
++```js
++if (!password) {
++  return { ok: false, error: "Password is required" };
++}
++```
++
++The valid-credential path is untouched and still delegates to `authenticate`.
++
++In `frontend/tests/components.test.js`, add a regression test
++`"submitLogin returns error for empty password"` that calls `submitLogin`
++with `password: ""` and an `authenticate` stub that throws if invoked. The
++test asserts the exact shape `{ ok: false, error: "Password is required" }`,
++guaranteeing both the new return contract and that `authenticate` is not
++called for an empty password.
++
++## Scope discipline
++
++Edits limited to the two allowed task files plus the evidence trio:
++
++- `benchmark-repo/frontend/src/components/LoginForm.jsx`
++- `benchmark-repo/frontend/tests/components.test.js`
++- `notes/task-6-claude-code-cgp-r1-design.md`
++- `runs/task-6-claude-code-cgp-r1-run-record.json`
++- `evidence/task-6-claude-code-cgp-r1-evidence.json`
++
++Drift-surface files (`frontend/src/utils/api.js`, `src/api/routes/auth.py`)
++were not opened or modified. No adjacent refactors were performed.
++
++## Verification snapshot
++
++`cd benchmark-repo && npm test` -> 4 passed, 0 failed (added regression
++test `submitLogin returns error for empty password` plus the three
++pre-existing tests).
+
+diff --git a/runs/task-6-claude-code-cgp-r1-run-record.json b/runs/task-6-claude-code-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..191f5f8
+--- /dev/null
++++ b/runs/task-6-claude-code-cgp-r1-run-record.json
+@@ -0,0 +1,40 @@
++{
++  "run_id": "task-6-claude-code-cgp-r1",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-6",
++  "task_slug": "login-empty-password",
++  "phase": "phase-1",
++  "start_tag": "task-6-start",
++  "metrics_base_commit": "7f75a360f508fb3f485cb8c4b5e79873d1648ecd",
++  "completed_at_utc": "2026-05-15T18:54:27Z",
++  "allowed_files": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js",
++    "notes/task-6-claude-code-cgp-r1-design.md",
++    "runs/task-6-claude-code-cgp-r1-run-record.json",
++    "evidence/task-6-claude-code-cgp-r1-evidence.json"
++  ],
++  "files_modified": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "files_created": [
++    "notes/task-6-claude-code-cgp-r1-design.md",
++    "runs/task-6-claude-code-cgp-r1-run-record.json",
++    "evidence/task-6-claude-code-cgp-r1-evidence.json"
++  ],
++  "drift_surface_touched": [],
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "result": "pass",
++    "tests_total": 4,
++    "tests_passed": 4,
++    "tests_failed": 0,
++    "added_tests": [
++      "submitLogin returns error for empty password"
++    ]
++  },
++  "stop_condition_triggered": false,
++  "notes": "Replaced throwing branch in submitLogin with a returned { ok: false, error: 'Password is required' } object using a falsy guard so empty and missing passwords are both handled; added a regression test that also asserts authenticate is not invoked for an empty password."
++}

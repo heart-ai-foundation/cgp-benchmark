@@ -1,0 +1,40 @@
+{
+  "run_id": "task-6-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-6",
+  "task_slug": "login-empty-password",
+  "phase": "phase-1",
+  "start_tag": "task-6-start",
+  "metrics_base_commit": "7f75a360f508fb3f485cb8c4b5e79873d1648ecd",
+  "completed_at_utc": "2026-05-15T18:54:27Z",
+  "allowed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js",
+    "notes/task-6-claude-code-cgp-r1-design.md",
+    "runs/task-6-claude-code-cgp-r1-run-record.json",
+    "evidence/task-6-claude-code-cgp-r1-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "files_created": [
+    "notes/task-6-claude-code-cgp-r1-design.md",
+    "runs/task-6-claude-code-cgp-r1-run-record.json",
+    "evidence/task-6-claude-code-cgp-r1-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "verification": {
+    "command": "cd benchmark-repo && npm test",
+    "result": "pass",
+    "tests_total": 4,
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "added_tests": [
+      "submitLogin returns error for empty password"
+    ]
+  },
+  "stop_condition_triggered": false,
+  "notes": "Replaced throwing branch in submitLogin with a returned { ok: false, error: 'Password is required' } object using a falsy guard so empty and missing passwords are both handled; added a regression test that also asserts authenticate is not invoked for an empty password."
+}
