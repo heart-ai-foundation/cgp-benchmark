@@ -1,0 +1,52 @@
+{
+  "run_id": "task-5-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-5",
+  "task_name": "favorite-items",
+  "phase": "phase-1",
+  "start_tag": "task-5-start",
+  "task_start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "134139d89c33ca1a455af06ec19b29d7b425ec29",
+  "active_protocol": "next-prompt-protocols/active/task-5-claude-code-cgp-r2.md",
+  "active_protocol_sha256": "sha256:dc0f1f399a1bf0f69da0d6f921d98b4887dad999b450e376d8efb2b72a611341",
+  "allowed_files_declared": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/item.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py",
+    "notes/task-5-claude-code-cgp-r2-design.md",
+    "runs/task-5-claude-code-cgp-r2-run-record.json",
+    "evidence/task-5-claude-code-cgp-r2-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py"
+  ],
+  "files_created": [
+    "notes/task-5-claude-code-cgp-r2-design.md",
+    "runs/task-5-claude-code-cgp-r2-run-record.json",
+    "evidence/task-5-claude-code-cgp-r2-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "out_of_scope_edits": [],
+  "verification": {
+    "check_1": {
+      "command": "cd benchmark-repo && pytest tests/test_items.py",
+      "result": "pass",
+      "tests_collected": 8,
+      "tests_passed": 8,
+      "tests_failed": 0
+    },
+    "check_2": {
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "tests_collected": 15,
+      "tests_passed": 15,
+      "tests_failed": 0
+    }
+  },
+  "stop_condition_triggered": false,
+  "completion_status": "complete"
+}

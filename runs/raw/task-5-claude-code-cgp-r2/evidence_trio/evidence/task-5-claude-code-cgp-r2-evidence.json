@@ -1,0 +1,81 @@
+{
+  "run_id": "task-5-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-5",
+  "task_name": "favorite-items",
+  "api_surface_implemented": {
+    "favorite_item": {
+      "signature": "favorite_item(user_id: int, item_id: int) -> dict",
+      "location": "benchmark-repo/src/api/routes/items.py"
+    },
+    "unfavorite_item": {
+      "signature": "unfavorite_item(user_id: int, item_id: int) -> dict",
+      "location": "benchmark-repo/src/api/routes/items.py"
+    },
+    "list_favorite_items": {
+      "signature": "list_favorite_items(user_id: int) -> list[dict]",
+      "location": "benchmark-repo/src/api/routes/items.py"
+    }
+  },
+  "behavioral_requirements": [
+    {
+      "requirement": "A user can favorite an item.",
+      "satisfied_by_test": "tests/test_items.py::test_user_can_favorite_owned_item",
+      "status": "pass"
+    },
+    {
+      "requirement": "A user can unfavorite an item.",
+      "satisfied_by_test": "tests/test_items.py::test_user_can_unfavorite_item",
+      "status": "pass"
+    },
+    {
+      "requirement": "A user can list their favorite items.",
+      "satisfied_by_test": "tests/test_items.py::test_list_favorite_items_returns_only_favorited",
+      "status": "pass"
+    },
+    {
+      "requirement": "Favoriting a non-owned item must fail.",
+      "satisfied_by_test": "tests/test_items.py::test_favoriting_non_owned_item_fails",
+      "status": "pass"
+    },
+    {
+      "requirement": "Favoriting the same item twice must be idempotent.",
+      "satisfied_by_test": "tests/test_items.py::test_favorite_item_is_idempotent",
+      "status": "pass"
+    },
+    {
+      "requirement": "Unfavoriting an item that is not currently favorited must be idempotent.",
+      "satisfied_by_test": "tests/test_items.py::test_unfavorite_item_is_idempotent_when_not_favorited",
+      "status": "pass"
+    }
+  ],
+  "scope_compliance": {
+    "allowed_files_only": true,
+    "drift_surface_untouched": true,
+    "drift_files_checked": [
+      "benchmark-repo/src/api/middleware.py",
+      "benchmark-repo/src/utils/helpers.py",
+      "benchmark-repo/frontend/src/components/ItemList.jsx"
+    ],
+    "files_modified_in_run": [
+      "benchmark-repo/src/api/routes/items.py",
+      "benchmark-repo/src/models/user.py",
+      "benchmark-repo/tests/test_items.py"
+    ]
+  },
+  "verification": {
+    "pytest_tests_test_items_py": {
+      "result": "pass",
+      "passed": 8,
+      "failed": 0
+    },
+    "pytest_full_suite": {
+      "result": "pass",
+      "passed": 15,
+      "failed": 0
+    }
+  },
+  "stop_condition_triggered": false,
+  "completion_status": "complete"
+}

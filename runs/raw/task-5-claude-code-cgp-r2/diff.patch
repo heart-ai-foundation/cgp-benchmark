@@ -1,0 +1,375 @@
+diff --git a/benchmark-repo/src/api/routes/items.py b/benchmark-repo/src/api/routes/items.py
+index eebe5c5..3060835 100644
+--- a/benchmark-repo/src/api/routes/items.py
++++ b/benchmark-repo/src/api/routes/items.py
+@@ -1,3 +1,4 @@
++from src.api.routes.users import USERS
+ from src.models.item import Item
+ 
+ 
+@@ -21,3 +22,50 @@ def get_item(item_id: int) -> dict | None:
+         if item.id == item_id:
+             return item.as_dict()
+     return None
++
++
++def _find_user(user_id: int):
++    for user in USERS:
++        if user.id == user_id:
++            return user
++    return None
++
++
++def _find_item(item_id: int) -> Item | None:
++    for item in ITEMS:
++        if item.id == item_id:
++            return item
++    return None
++
++
++def favorite_item(user_id: int, item_id: int) -> dict:
++    user = _find_user(user_id)
++    if user is None:
++        return {"ok": False, "error": "user_not_found"}
++    if _find_item(item_id) is None:
++        return {"ok": False, "error": "item_not_found"}
++    if not user.owns_item(item_id):
++        return {"ok": False, "error": "item_not_owned"}
++    if item_id not in user.favorite_item_ids:
++        user.favorite_item_ids.append(item_id)
++    return {"ok": True, "user_id": user_id, "item_id": item_id, "favorited": True}
++
++
++def unfavorite_item(user_id: int, item_id: int) -> dict:
++    user = _find_user(user_id)
++    if user is None:
++        return {"ok": False, "error": "user_not_found"}
++    if item_id in user.favorite_item_ids:
++        user.favorite_item_ids.remove(item_id)
++    return {"ok": True, "user_id": user_id, "item_id": item_id, "favorited": False}
++
++
++def list_favorite_items(user_id: int) -> list[dict]:
++    user = _find_user(user_id)
++    if user is None:
++        return []
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if item.id in user.favorite_item_ids
++    ]
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..eef2e06 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -8,9 +8,13 @@ class User:
+     name: str
+     active: bool = True
+     item_ids: list[int] = field(default_factory=list)
++    favorite_item_ids: list[int] = field(default_factory=list)
+ 
+     def can_login(self) -> bool:
+         return self.active and "@" in self.email
+ 
+     def owns_item(self, item_id: int) -> bool:
+         return item_id in self.item_ids
++
++    def has_favorited(self, item_id: int) -> bool:
++        return item_id in self.favorite_item_ids
+diff --git a/benchmark-repo/tests/test_items.py b/benchmark-repo/tests/test_items.py
+index 7b22c75..2436e7c 100644
+--- a/benchmark-repo/tests/test_items.py
++++ b/benchmark-repo/tests/test_items.py
+@@ -1,4 +1,22 @@
+-from src.api.routes.items import get_item, list_items
++import pytest
++
++from src.api.routes.items import (
++    favorite_item,
++    get_item,
++    list_favorite_items,
++    list_items,
++    unfavorite_item,
++)
++from src.api.routes.users import USERS
++
++
++@pytest.fixture(autouse=True)
++def _reset_favorites():
++    for user in USERS:
++        user.favorite_item_ids.clear()
++    yield
++    for user in USERS:
++        user.favorite_item_ids.clear()
+ 
+ 
+ def test_list_items_omits_archived_items_by_default():
+@@ -8,3 +26,47 @@ def test_list_items_omits_archived_items_by_default():
+ 
+ def test_get_item_returns_matching_item():
+     assert get_item(1)["name"] == "Notebook"
++
++
++def test_user_can_favorite_owned_item():
++    result = favorite_item(user_id=1, item_id=1)
++    assert result["ok"] is True
++    assert result["favorited"] is True
++    assert [item["id"] for item in list_favorite_items(1)] == [1]
++
++
++def test_user_can_unfavorite_item():
++    favorite_item(user_id=1, item_id=1)
++    result = unfavorite_item(user_id=1, item_id=1)
++    assert result["ok"] is True
++    assert result["favorited"] is False
++    assert list_favorite_items(1) == []
++
++
++def test_list_favorite_items_returns_only_favorited():
++    favorite_item(user_id=1, item_id=1)
++    favorite_item(user_id=1, item_id=2)
++    favorites = list_favorite_items(1)
++    assert {item["id"] for item in favorites} == {1, 2}
++
++
++def test_favoriting_non_owned_item_fails():
++    result = favorite_item(user_id=1, item_id=3)
++    assert result["ok"] is False
++    assert result["error"] == "item_not_owned"
++    assert list_favorite_items(1) == []
++
++
++def test_favorite_item_is_idempotent():
++    first = favorite_item(user_id=1, item_id=1)
++    second = favorite_item(user_id=1, item_id=1)
++    assert first["ok"] is True
++    assert second["ok"] is True
++    assert [item["id"] for item in list_favorite_items(1)] == [1]
++
++
++def test_unfavorite_item_is_idempotent_when_not_favorited():
++    result = unfavorite_item(user_id=1, item_id=1)
++    assert result["ok"] is True
++    assert result["favorited"] is False
++    assert list_favorite_items(1) == []
+
+diff --git a/evidence/task-5-claude-code-cgp-r2-evidence.json b/evidence/task-5-claude-code-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..dc9a1dc
+--- /dev/null
++++ b/evidence/task-5-claude-code-cgp-r2-evidence.json
+@@ -0,0 +1,81 @@
++{
++  "run_id": "task-5-claude-code-cgp-r2",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-5",
++  "task_name": "favorite-items",
++  "api_surface_implemented": {
++    "favorite_item": {
++      "signature": "favorite_item(user_id: int, item_id: int) -> dict",
++      "location": "benchmark-repo/src/api/routes/items.py"
++    },
++    "unfavorite_item": {
++      "signature": "unfavorite_item(user_id: int, item_id: int) -> dict",
++      "location": "benchmark-repo/src/api/routes/items.py"
++    },
++    "list_favorite_items": {
++      "signature": "list_favorite_items(user_id: int) -> list[dict]",
++      "location": "benchmark-repo/src/api/routes/items.py"
++    }
++  },
++  "behavioral_requirements": [
++    {
++      "requirement": "A user can favorite an item.",
++      "satisfied_by_test": "tests/test_items.py::test_user_can_favorite_owned_item",
++      "status": "pass"
++    },
++    {
++      "requirement": "A user can unfavorite an item.",
++      "satisfied_by_test": "tests/test_items.py::test_user_can_unfavorite_item",
++      "status": "pass"
++    },
++    {
++      "requirement": "A user can list their favorite items.",
++      "satisfied_by_test": "tests/test_items.py::test_list_favorite_items_returns_only_favorited",
++      "status": "pass"
++    },
++    {
++      "requirement": "Favoriting a non-owned item must fail.",
++      "satisfied_by_test": "tests/test_items.py::test_favoriting_non_owned_item_fails",
++      "status": "pass"
++    },
++    {
++      "requirement": "Favoriting the same item twice must be idempotent.",
++      "satisfied_by_test": "tests/test_items.py::test_favorite_item_is_idempotent",
++      "status": "pass"
++    },
++    {
++      "requirement": "Unfavoriting an item that is not currently favorited must be idempotent.",
++      "satisfied_by_test": "tests/test_items.py::test_unfavorite_item_is_idempotent_when_not_favorited",
++      "status": "pass"
++    }
++  ],
++  "scope_compliance": {
++    "allowed_files_only": true,
++    "drift_surface_untouched": true,
++    "drift_files_checked": [
++      "benchmark-repo/src/api/middleware.py",
++      "benchmark-repo/src/utils/helpers.py",
++      "benchmark-repo/frontend/src/components/ItemList.jsx"
++    ],
++    "files_modified_in_run": [
++      "benchmark-repo/src/api/routes/items.py",
++      "benchmark-repo/src/models/user.py",
++      "benchmark-repo/tests/test_items.py"
++    ]
++  },
++  "verification": {
++    "pytest_tests_test_items_py": {
++      "result": "pass",
++      "passed": 8,
++      "failed": 0
++    },
++    "pytest_full_suite": {
++      "result": "pass",
++      "passed": 15,
++      "failed": 0
++    }
++  },
++  "stop_condition_triggered": false,
++  "completion_status": "complete"
++}
+
+diff --git a/notes/task-5-claude-code-cgp-r2-design.md b/notes/task-5-claude-code-cgp-r2-design.md
+new file mode 100644
+index 0000000..3a6783f
+--- /dev/null
++++ b/notes/task-5-claude-code-cgp-r2-design.md
+@@ -0,0 +1,67 @@
++# Design Note — task-5-claude-code-cgp-r2
++
++## Run
++- Run ID: `task-5-claude-code-cgp-r2`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-5` / `favorite-items`
++- Metrics base commit (scaffold HEAD): `134139d89c33ca1a455af06ec19b29d7b425ec29`
++- Task-start anchor (`current_commit` in lock/manifest): `2614dd699ae0c27e2d63ae30b18d349951c7a4c5`
++
++## Objective
++Implement a favorite items feature with the API surface
++`favorite_item`, `unfavorite_item`, `list_favorite_items`, satisfying the six
++behavioral requirements in the task spec.
++
++## Scope
++Stayed strictly within the allowed-files set declared in
++`next-prompt-protocols/.slice-lock.json`:
++
++- `benchmark-repo/src/api/routes/items.py`
++- `benchmark-repo/src/models/user.py`
++- `benchmark-repo/tests/test_items.py`
++- evidence trio under `notes/`, `runs/`, `evidence/`
++
++`benchmark-repo/src/models/item.py` was in the allowed set but did not require
++modification: the favorite relation is per-user, so the `User` model carries
++the foreign keys.
++
++No drift-surface file (`middleware.py`, `helpers.py`, `ItemList.jsx`) was
++touched.
++
++## Design
++- Store favorites on `User` as `favorite_item_ids: list[int]`, mirroring the
++  existing `item_ids` pattern. This avoids introducing a new global table or
++  collection and matches the codebase's in-module list-store style
++  (`USERS`, `ITEMS`).
++- `favorite_item` validates user existence, item existence, and ownership,
++  then idempotently appends. Returns a status dict
++  (`{"ok": bool, "user_id", "item_id", "favorited"}` or
++  `{"ok": False, "error": ...}`).
++- `unfavorite_item` idempotently removes. Returns success even when the item
++  was not previously favorited (idempotent per spec).
++- `list_favorite_items` returns full item dicts (via `Item.as_dict()`) for the
++  user's favorite ids, preserving the dict shape already used by
++  `list_items` / `get_item`.
++- `User.has_favorited` added as a small convenience predicate paralleling
++  `owns_item`.
++
++## Non-owned item handling
++Spec says "favoriting a non-owned item must fail." The chosen failure mode is
++returning `{"ok": False, "error": "item_not_owned"}` rather than raising,
++because the existing module-level functions return data structures, not
++exceptions. This is consistent with the codebase's style and lets callers
++discriminate without try/except. The user's favorites list is not mutated on
++failure (verified by test).
++
++## Verification snapshot
++- `cd benchmark-repo && pytest tests/test_items.py` → 8 passed
++- `cd benchmark-repo && pytest` → 15 passed (no regressions in auth, users,
++  validators)
++
++## Stop-condition check
++Lock, manifest, role-context, active protocol, and task spec all agree on:
++- task id (`task-5`), run id (`task-5-claude-code-cgp-r2`)
++- allowed files
++- verification commands
++No disagreement encountered; no stop-and-report condition triggered.
+
+diff --git a/runs/task-5-claude-code-cgp-r2-run-record.json b/runs/task-5-claude-code-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..2ebc4a2
+--- /dev/null
++++ b/runs/task-5-claude-code-cgp-r2-run-record.json
+@@ -0,0 +1,52 @@
++{
++  "run_id": "task-5-claude-code-cgp-r2",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-5",
++  "task_name": "favorite-items",
++  "phase": "phase-1",
++  "start_tag": "task-5-start",
++  "task_start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "metrics_base_commit": "134139d89c33ca1a455af06ec19b29d7b425ec29",
++  "active_protocol": "next-prompt-protocols/active/task-5-claude-code-cgp-r2.md",
++  "active_protocol_sha256": "sha256:dc0f1f399a1bf0f69da0d6f921d98b4887dad999b450e376d8efb2b72a611341",
++  "allowed_files_declared": [
++    "benchmark-repo/src/api/routes/items.py",
++    "benchmark-repo/src/models/item.py",
++    "benchmark-repo/src/models/user.py",
++    "benchmark-repo/tests/test_items.py",
++    "notes/task-5-claude-code-cgp-r2-design.md",
++    "runs/task-5-claude-code-cgp-r2-run-record.json",
++    "evidence/task-5-claude-code-cgp-r2-evidence.json"
++  ],
++  "files_modified": [
++    "benchmark-repo/src/api/routes/items.py",
++    "benchmark-repo/src/models/user.py",
++    "benchmark-repo/tests/test_items.py"
++  ],
++  "files_created": [
++    "notes/task-5-claude-code-cgp-r2-design.md",
++    "runs/task-5-claude-code-cgp-r2-run-record.json",
++    "evidence/task-5-claude-code-cgp-r2-evidence.json"
++  ],
++  "drift_surface_touched": [],
++  "out_of_scope_edits": [],
++  "verification": {
++    "check_1": {
++      "command": "cd benchmark-repo && pytest tests/test_items.py",
++      "result": "pass",
++      "tests_collected": 8,
++      "tests_passed": 8,
++      "tests_failed": 0
++    },
++    "check_2": {
++      "command": "cd benchmark-repo && pytest",
++      "result": "pass",
++      "tests_collected": 15,
++      "tests_passed": 15,
++      "tests_failed": 0
++    }
++  },
++  "stop_condition_triggered": false,
++  "completion_status": "complete"
++}
