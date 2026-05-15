@@ -1,0 +1,74 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..b00f8d8 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,41 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """Represents a registered user of the application.
++
++    A ``User`` holds identity and account state, along with the set of items
++    the user owns. It exposes small helpers for the two predicates the rest
++    of the codebase needs: whether the user is allowed to log in, and
++    whether the user owns a particular item.
++
++    Attributes:
++        id: Unique integer identifier for the user.
++        email: The user's email address. Used both as a contact handle and,
++            via :meth:`can_login`, as a minimal sanity check for login
++            eligibility.
++        name: Human-readable display name for the user.
++        active: Whether the account is currently enabled. Inactive users
++            cannot log in regardless of their email.
++        item_ids: List of item IDs owned by the user. Defaults to an empty
++            list for newly created users.
++
++    Methods:
++        can_login: Return ``True`` when the account is active and the email
++            looks superficially valid.
++        owns_item: Return ``True`` when the given item ID is in
++            ``item_ids``.
++
++    Example:
++        >>> user = User(id=1, email="ada@example.com", name="Ada")
++        >>> user.can_login()
++        True
++        >>> user.item_ids.append(42)
++        >>> user.owns_item(42)
++        True
++        >>> user.owns_item(7)
++        False
++    """
++
+     id: int
+     email: str
+     name: str
+@@ -10,7 +45,27 @@ class User:
+     item_ids: list[int] = field(default_factory=list)
+ 
+     def can_login(self) -> bool:
++        """Return whether this user is permitted to log in.
++
++        A user can log in when their account is ``active`` and their
++        ``email`` contains an ``@`` character. The email check is
++        intentionally minimal; stricter validation lives in the
++        validators module.
++
++        Returns:
++            ``True`` if the user is active and their email contains
++            ``"@"``; otherwise ``False``.
++        """
+         return self.active and "@" in self.email
+ 
+     def owns_item(self, item_id: int) -> bool:
++        """Return whether this user owns the given item.
++
++        Args:
++            item_id: The integer ID of the item to check.
++
++        Returns:
++            ``True`` if ``item_id`` appears in :attr:`item_ids`;
++            otherwise ``False``.
++        """
+         return item_id in self.item_ids
