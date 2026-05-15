@@ -1,0 +1,11 @@
+{
+  "command": "claude -p --permission-mode bypassPermissions --dangerously-skip-permissions --verbose --output-format stream-json --include-partial-messages",
+  "working_directory": "/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-2-claude-code-baseline-r1",
+  "returncode": 0,
+  "stdout": "transcripts/claude-print-2026-05-15T193813+0000.stream.jsonl",
+  "stderr": "transcripts/claude-print-2026-05-15T193813+0000.stderr.txt",
+  "stop_condition_alerted": true,
+  "stop_condition_matches": [
+    "task-1-start\ntask-2-start\ntask-3-start\ntask-4-start\ntask-5-start\ntask-6-start\n# Next-Prompt Protocol Scaffold\n\nProject: CGP Drift Reduction Benchmark\n\nCurrent phase: `phase-0`\n\nActive protocol:\n\n`active/2026-05-15-phase-0-run-plan-and-task-tags.md`\n\nRun `node next-prompt-protocols/tools/sync-protocols.mjs --check` before executing or handing off a slice.\n# Role Context - CGP Benchmark\n\n## Read in this order\n\n1. `.slice-lock.json`\n2. `manifest.json`\n3. `role-context.md`\n4. `phases/<current-phase>/README.md`\n5. `active/<current-protocol>.md`\n6. Completed protocols only as background\n\n## Source of truth\n\nThe source of truth is the locked Heart Corpus design document:\n\n`CGP_Drift_Reduction_Benchmarking_Experiment_Design_v1_1.md`\n\nRepository-local summaries in `docs/` are orientation surfaces only.\n\n## Scope discipline\n\nStay inside `allowed_files`. Treat `non_goals` as closed unless Dylan explicitly changes the experiment design or repository objective.\n\n## Verification rules\n\nRun the exact verification commands named by the active protocol and manifest before declaring completion.\n\n## Stop conditions\n\nStop when the manifest, slice lock, active protocol, code, or locked experiment design disagree on a load-bearing detail."
+  ]
+}

@@ -1,0 +1,44 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..1ab884a 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,29 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """Represents an application user and their owned items.
++
++    Attributes:
++        id: Unique integer identifier for the user.
++        email: User's email address. Must contain ``@`` for login to succeed.
++        name: Display name for the user.
++        active: Whether the user account is enabled. Inactive users cannot log in.
++        item_ids: Identifiers of items owned by this user.
++
++    Methods:
++        can_login: Return whether the user is permitted to log in.
++        owns_item: Return whether the user owns the item with the given id.
++
++    Example:
++        >>> user = User(id=1, email="ada@example.com", name="Ada", item_ids=[10])
++        >>> user.can_login()
++        True
++        >>> user.owns_item(10)
++        True
++        >>> user.owns_item(99)
++        False
++    """
++
+     id: int
+     email: str
+     name: str
+@@ -10,7 +33,9 @@ class User:
+     item_ids: list[int] = field(default_factory=list)
+ 
+     def can_login(self) -> bool:
++        """Return True if the user is active and has an email containing ``@``."""
+         return self.active and "@" in self.email
+ 
+     def owns_item(self, item_id: int) -> bool:
++        """Return True if ``item_id`` is in this user's ``item_ids``."""
+         return item_id in self.item_ids
