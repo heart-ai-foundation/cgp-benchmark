@@ -1,0 +1,10 @@
+All changes are within `allowed_files`. Run complete.
+
+**Summary**
+- Added `validate_email(email: str) -> bool` to `benchmark-repo/src/api/validators.py:14-32` — regex-based check with length and structural guards; total function, never raises.
+- Added 30 parametrized test cases (6 positive, 19 negative-string, 5 non-string) in `benchmark-repo/tests/test_validators.py`.
+- Verification: `pytest tests/test_validators.py` → 33 passed; `pytest` → 39 passed (baseline was 9).
+- Drift surface (`routes/auth.py`, `middleware.py`) untouched.
+- Evidence trio written: `notes/`, `runs/`, `evidence/` JSON files per active protocol.
+
+Per global preference, changes are uncommitted — let me know if you want me to commit.

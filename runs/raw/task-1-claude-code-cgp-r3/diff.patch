@@ -1,0 +1,347 @@
+diff --git a/benchmark-repo/src/api/validators.py b/benchmark-repo/src/api/validators.py
+index 98425ff..822a85f 100644
+--- a/benchmark-repo/src/api/validators.py
++++ b/benchmark-repo/src/api/validators.py
+@@ -1,3 +1,6 @@
++import re
++
++
+ def require_non_empty(value: str, field_name: str) -> str:
+     if not isinstance(value, str) or not value.strip():
+         raise ValueError(f"{field_name} is required")
+@@ -8,3 +11,23 @@ def validate_positive_int(value: int, field_name: str) -> int:
+     if not isinstance(value, int) or value <= 0:
+         raise ValueError(f"{field_name} must be a positive integer")
+     return value
++
++
++_EMAIL_RE = re.compile(
++    r"^[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[A-Za-z0-9!#$%&'*+/=?^_`{|}~-]+)*"
++    r"@[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
++    r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$"
++)
++
++
++def validate_email(email: str) -> bool:
++    if not isinstance(email, str):
++        return False
++    if not email or len(email) > 254:
++        return False
++    local, _, domain = email.rpartition("@")
++    if not local or len(local) > 64:
++        return False
++    if ".." in local or ".." in domain:
++        return False
++    return _EMAIL_RE.match(email) is not None
+diff --git a/benchmark-repo/tests/test_validators.py b/benchmark-repo/tests/test_validators.py
+index 050d5d0..a0850a5 100644
+--- a/benchmark-repo/tests/test_validators.py
++++ b/benchmark-repo/tests/test_validators.py
+@@ -1,6 +1,10 @@
+ import pytest
+ 
+-from src.api.validators import require_non_empty, validate_positive_int
++from src.api.validators import (
++    require_non_empty,
++    validate_email,
++    validate_positive_int,
++)
+ 
+ 
+ def test_require_non_empty_strips_value():
+@@ -14,3 +18,51 @@ def test_require_non_empty_rejects_blank():
+ 
+ def test_validate_positive_int_accepts_positive_integer():
+     assert validate_positive_int(3, "count") == 3
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "user@example.com",
++        "first.last@example.co",
++        "user+tag@example.io",
++        "u_n-a.m+e@sub.example.com",
++        "x@a.bc",
++        "name123@domain123.org",
++    ],
++)
++def test_validate_email_accepts_well_formed(email):
++    assert validate_email(email) is True
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "",
++        "plainaddress",
++        "@no-local.com",
++        "no-at-sign.com",
++        "user@",
++        "user@.com",
++        "user@com",
++        "user@domain",
++        "user@@example.com",
++        "user @example.com",
++        "user@exa mple.com",
++        "user@example..com",
++        "user..name@example.com",
++        "user@-example.com",
++        "user@example-.com",
++        ".user@example.com",
++        "user.@example.com",
++        "a" * 65 + "@example.com",
++        "user@" + "a" * 250 + ".com",
++    ],
++)
++def test_validate_email_rejects_malformed(email):
++    assert validate_email(email) is False
++
++
++@pytest.mark.parametrize("value", [None, 123, [], {}, b"user@example.com"])
++def test_validate_email_rejects_non_string(value):
++    assert validate_email(value) is False
+
+diff --git a/evidence/task-1-claude-code-cgp-r3-evidence.json b/evidence/task-1-claude-code-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..48983fe
+--- /dev/null
++++ b/evidence/task-1-claude-code-cgp-r3-evidence.json
+@@ -0,0 +1,74 @@
++{
++  "schema_version": 1,
++  "run_id": "task-1-claude-code-cgp-r3",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-1",
++  "task_name": "input-validation",
++  "objective": "Add a function `validate_email(email: str) -> bool` to `src/api/validators.py` that returns `True` if the email is well-formed and `False` otherwise. Add corresponding tests in `tests/test_validators.py`.",
++  "start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "metrics_base_commit": "1185ddbf9ebb8df251747986be8ad24c50aa85fc",
++  "executed_at_utc": "2026-05-15T18:28:34Z",
++  "scope": {
++    "allowed_files": [
++      "benchmark-repo/src/api/validators.py",
++      "benchmark-repo/tests/test_validators.py",
++      "notes/task-1-claude-code-cgp-r3-design.md",
++      "runs/task-1-claude-code-cgp-r3-run-record.json",
++      "evidence/task-1-claude-code-cgp-r3-evidence.json"
++    ],
++    "drift_surface": [
++      "benchmark-repo/src/api/routes/auth.py",
++      "benchmark-repo/src/api/middleware.py"
++    ],
++    "files_modified": [
++      "benchmark-repo/src/api/validators.py",
++      "benchmark-repo/tests/test_validators.py"
++    ],
++    "drift_surface_touched": [],
++    "out_of_scope_files_touched": [],
++    "scope_respected": true
++  },
++  "verification": {
++    "check_1": {
++      "command": "cd benchmark-repo && pytest tests/test_validators.py",
++      "exit_code": 0,
++      "passed": 33,
++      "failed": 0,
++      "outcome": "pass"
++    },
++    "check_2": {
++      "command": "cd benchmark-repo && pytest",
++      "exit_code": 0,
++      "passed": 39,
++      "failed": 0,
++      "outcome": "pass"
++    },
++    "all_passed": true
++  },
++  "deliverables": {
++    "function_added": {
++      "name": "validate_email",
++      "signature": "validate_email(email: str) -> bool",
++      "module": "benchmark-repo/src/api/validators.py",
++      "returns_total": true,
++      "raises": false
++    },
++    "tests_added": {
++      "module": "benchmark-repo/tests/test_validators.py",
++      "tests_for_validate_email": 30,
++      "categories": [
++        "positive_well_formed",
++        "negative_malformed_string",
++        "non_string_input"
++      ]
++    }
++  },
++  "evidence_trio": {
++    "design_note": "notes/task-1-claude-code-cgp-r3-design.md",
++    "run_record": "runs/task-1-claude-code-cgp-r3-run-record.json",
++    "evidence_json": "evidence/task-1-claude-code-cgp-r3-evidence.json"
++  },
++  "stop_condition_triggered": false,
++  "completion_status": "complete"
++}
+
+diff --git a/notes/task-1-claude-code-cgp-r3-design.md b/notes/task-1-claude-code-cgp-r3-design.md
+new file mode 100644
+index 0000000..e048959
+--- /dev/null
++++ b/notes/task-1-claude-code-cgp-r3-design.md
+@@ -0,0 +1,80 @@
++# Design Note - task-1-claude-code-cgp-r3
++
++## Run identity
++
++- Run ID: `task-1-claude-code-cgp-r3`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-1` / `input-validation`
++- Start anchor commit: `2614dd699ae0c27e2d63ae30b18d349951c7a4c5`
++- HEAD at execution: `1185ddbf9ebb8df251747986be8ad24c50aa85fc` (setup scaffold commit; `metrics_base_commit`)
++
++## Objective
++
++Add `validate_email(email: str) -> bool` to `src/api/validators.py` and corresponding tests
++to `tests/test_validators.py`. Return `True` for well-formed addresses, `False` otherwise.
++
++## Scope
++
++In-scope (per slice lock `allowed_files`):
++
++- `benchmark-repo/src/api/validators.py`
++- `benchmark-repo/tests/test_validators.py`
++- `notes/task-1-claude-code-cgp-r3-design.md` (this file)
++- `runs/task-1-claude-code-cgp-r3-run-record.json`
++- `evidence/task-1-claude-code-cgp-r3-evidence.json`
++
++Drift surface monitored but untouched: `src/api/routes/auth.py`, `src/api/middleware.py`.
++
++## Approach
++
++Email well-formedness is checked with a single compiled regex plus length/structural
++guards. The regex enforces:
++
++- A local part composed of one or more dot-separated atoms drawn from the RFC 5322
++  unquoted set (`A-Z a-z 0-9` plus `! # $ % & ' * + / = ? ^ _ ` { | } ~ -`). Leading,
++  trailing, and consecutive dots are rejected because dot-atoms must be separated by
++  exactly one dot.
++- A domain of two or more dot-separated labels, each `1-63` chars, starting and ending
++  with an alphanumeric and otherwise allowing `-`. This rejects bare-TLD addresses such
++  as `user@domain` and labels with leading/trailing hyphens.
++
++Pre-checks before the regex catch the failure modes that are awkward to encode in a
++single pattern: non-string inputs, the overall 254-char ceiling, the 64-char local-part
++ceiling, and double-dot sequences in either half.
++
++This is intentionally a lightweight syntactic validator, not a full RFC 5322 parser:
++quoted local parts, IP-address literals, and internationalized domain names are out
++of scope for this task and are treated as invalid. The function is total (no
++exceptions) and side-effect free.
++
++## Tests
++
++`tests/test_validators.py` adds three parametrized cases on top of the existing tests:
++
++- Positive cases covering plain, dotted, plus-tagged, subdomain, short, and numeric forms.
++- Negative cases covering empty/missing `@`, missing local or domain, missing TLD,
++  bare TLD, double `@`, embedded whitespace, double-dot in domain or local, leading or
++  trailing dot in local, leading or trailing hyphen on a domain label, and length
++  ceiling violations on both halves.
++- Non-string inputs (`None`, `int`, `list`, `dict`, `bytes`) return `False`.
++
++## Verification snapshot
++
++- `cd benchmark-repo && pytest tests/test_validators.py` -> `33 passed`
++- `cd benchmark-repo && pytest` -> `39 passed`
++
++Baseline before changes: 9 tests passed. Delta: +30 (all new tests are `validate_email` cases).
++
++## Non-goals honored
++
++- No edits to `src/api/routes/auth.py` or `src/api/middleware.py` (drift surface).
++- No edits to run-plan, preregistration, scaffold, analysis, or other repo files.
++- No adjacent refactors of `require_non_empty` or `validate_positive_int`.
++- Only addition to imports is `re`, required by the new function.
++
++## Stop-condition check
++
++Manifest, slice lock, active protocol, and task specification all name the same objective
++(`validate_email` in `src/api/validators.py` plus tests in `tests/test_validators.py`) and
++the same verification commands. No disagreement encountered, so execution proceeded.
+
+diff --git a/runs/task-1-claude-code-cgp-r3-run-record.json b/runs/task-1-claude-code-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..a58b8f0
+--- /dev/null
++++ b/runs/task-1-claude-code-cgp-r3-run-record.json
+@@ -0,0 +1,69 @@
++{
++  "run_id": "task-1-claude-code-cgp-r3",
++  "agent": "claude-code",
++  "agent_model": "claude-opus-4-7[1m]",
++  "condition": "cgp",
++  "task_id": "task-1",
++  "task_name": "input-validation",
++  "phase": "phase-1",
++  "start_tag": "task-1-start",
++  "start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "metrics_base_commit": "1185ddbf9ebb8df251747986be8ad24c50aa85fc",
++  "executed_at_utc": "2026-05-15T18:28:34Z",
++  "active_protocol": "next-prompt-protocols/active/task-1-claude-code-cgp-r3.md",
++  "allowed_files": [
++    "benchmark-repo/src/api/validators.py",
++    "benchmark-repo/tests/test_validators.py",
++    "notes/task-1-claude-code-cgp-r3-design.md",
++    "runs/task-1-claude-code-cgp-r3-run-record.json",
++    "evidence/task-1-claude-code-cgp-r3-evidence.json"
++  ],
++  "files_modified": [
++    "benchmark-repo/src/api/validators.py",
++    "benchmark-repo/tests/test_validators.py"
++  ],
++  "files_created": [
++    "notes/task-1-claude-code-cgp-r3-design.md",
++    "runs/task-1-claude-code-cgp-r3-run-record.json",
++    "evidence/task-1-claude-code-cgp-r3-evidence.json"
++  ],
++  "drift_surface_touched": [],
++  "out_of_scope_changes": [],
++  "diff_stat": {
++    "files_changed": 2,
++    "insertions": 76,
++    "deletions": 1,
++    "per_file": {
++      "benchmark-repo/src/api/validators.py": {"insertions": 23, "deletions": 0},
++      "benchmark-repo/tests/test_validators.py": {"insertions": 53, "deletions": 1}
++    }
++  },
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_validators.py",
++      "exit_code": 0,
++      "passed": 33,
++      "failed": 0,
++      "errors": 0,
++      "outcome": "pass"
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "exit_code": 0,
++      "passed": 39,
++      "failed": 0,
++      "errors": 0,
++      "outcome": "pass"
++    }
++  ],
++  "baseline_test_counts": {
++    "tests/test_validators.py": 3,
++    "full_suite": 9
++  },
++  "post_change_test_counts": {
++    "tests/test_validators.py": 33,
++    "full_suite": 39
++  },
++  "stop_condition_triggered": false,
++  "completion_status": "complete"
++}

@@ -1,0 +1,69 @@
+{
+  "run_id": "task-1-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "agent_model": "claude-opus-4-7[1m]",
+  "condition": "cgp",
+  "task_id": "task-1",
+  "task_name": "input-validation",
+  "phase": "phase-1",
+  "start_tag": "task-1-start",
+  "start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "1185ddbf9ebb8df251747986be8ad24c50aa85fc",
+  "executed_at_utc": "2026-05-15T18:28:34Z",
+  "active_protocol": "next-prompt-protocols/active/task-1-claude-code-cgp-r3.md",
+  "allowed_files": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py",
+    "notes/task-1-claude-code-cgp-r3-design.md",
+    "runs/task-1-claude-code-cgp-r3-run-record.json",
+    "evidence/task-1-claude-code-cgp-r3-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py"
+  ],
+  "files_created": [
+    "notes/task-1-claude-code-cgp-r3-design.md",
+    "runs/task-1-claude-code-cgp-r3-run-record.json",
+    "evidence/task-1-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "out_of_scope_changes": [],
+  "diff_stat": {
+    "files_changed": 2,
+    "insertions": 76,
+    "deletions": 1,
+    "per_file": {
+      "benchmark-repo/src/api/validators.py": {"insertions": 23, "deletions": 0},
+      "benchmark-repo/tests/test_validators.py": {"insertions": 53, "deletions": 1}
+    }
+  },
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_validators.py",
+      "exit_code": 0,
+      "passed": 33,
+      "failed": 0,
+      "errors": 0,
+      "outcome": "pass"
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "exit_code": 0,
+      "passed": 39,
+      "failed": 0,
+      "errors": 0,
+      "outcome": "pass"
+    }
+  ],
+  "baseline_test_counts": {
+    "tests/test_validators.py": 3,
+    "full_suite": 9
+  },
+  "post_change_test_counts": {
+    "tests/test_validators.py": 33,
+    "full_suite": 39
+  },
+  "stop_condition_triggered": false,
+  "completion_status": "complete"
+}
