@@ -68,4 +68,6 @@ To also create an isolated git worktree at the task start tag:
 python scripts/prepare_run.py --run-id task-1-claude-code-cgp-r1 --worktree-root worktrees
 ```
 
+For CGP runs, `prepare_run.py --worktree-root` also replaces the repository-level scaffold with a run-specific scaffold and commits that setup inside the isolated worktree. The run-specific scaffold records the task start tag as its commit anchor; the run metadata records `metrics_base_commit` after scaffold setup. Drift metrics should compare final agent output against `metrics_base_commit`, not against the raw task start tag. This prevents scaffold installation from contaminating scope-drift measurement.
+
 Running `prepare_run.py` creates setup artifacts only. The benchmark observation begins when the assigned agent receives the generated prompt.

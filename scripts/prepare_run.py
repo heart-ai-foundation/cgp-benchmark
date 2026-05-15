@@ -8,6 +8,7 @@ import csv
 import json
 import re
 import subprocess
+from hashlib import sha256
 from pathlib import Path
 
 
@@ -39,9 +40,19 @@ def extract_section(markdown: str, heading: str) -> str:
     return match.group(1).strip() if match else ""
 
 
-def active_protocol(root: Path) -> str:
-    manifest = json.loads((root / "next-prompt-protocols" / "manifest.json").read_text(encoding="utf-8"))
-    return manifest["active_protocol"]
+def markdown_list_items(section: str) -> list[str]:
+    items: list[str] = []
+    for line in section.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("- `") and stripped.endswith("`"):
+            items.append(stripped[3:-1])
+        elif stripped.startswith("- "):
+            items.append(stripped[2:].strip())
+    return items
+
+
+def benchmark_path(path: str) -> str:
+    return path if path.startswith("benchmark-repo/") else f"benchmark-repo/{path}"
 
 
 def render_prompt(root: Path, row: dict[str, str]) -> str:
@@ -53,8 +64,8 @@ def render_prompt(root: Path, row: dict[str, str]) -> str:
         "{allowed_files}": extract_section(spec, "Allowed Files"),
         "{verification_commands}": extract_section(spec, "Verification"),
         "{task_spec}": row["task_spec"],
-        "{phase}": "phase-0",
-        "{active_protocol}": active_protocol(root),
+        "{phase}": "phase-1" if row["condition"] == "cgp" else "phase-0",
+        "{active_protocol}": f"active/{row['run_id']}.md" if row["condition"] == "cgp" else "",
     }
     for placeholder, value in replacements.items():
         template = template.replace(placeholder, value)
@@ -88,6 +99,17 @@ def git_commit_for_ref(root: Path, ref: str) -> str:
     return result.stdout.strip()
 
 
+def git(root: Path, *args: str) -> str:
+    result = subprocess.run(
+        ["git", *args],
+        cwd=root,
+        check=True,
+        text=True,
+        capture_output=True,
+    )
+    return result.stdout.strip()
+
+
 def create_worktree(root: Path, run_id: str, start_tag: str, worktree_root: Path) -> Path:
     worktree_path = worktree_root / run_id
     if worktree_path.exists():
@@ -98,6 +120,140 @@ def create_worktree(root: Path, run_id: str, start_tag: str, worktree_root: Path
         check=True,
     )
     return worktree_path
+
+
+def write_run_scaffold(worktree: Path, row: dict[str, str], spec: str, current_commit: str) -> None:
+    protocol_root = worktree / "next-prompt-protocols"
+    active_dir = protocol_root / "active"
+    completed_dir = protocol_root / "completed"
+    phase_dir = protocol_root / "phases" / "phase-1"
+    active_dir.mkdir(parents=True, exist_ok=True)
+    completed_dir.mkdir(parents=True, exist_ok=True)
+    phase_dir.mkdir(parents=True, exist_ok=True)
+
+    for old_active in active_dir.glob("*.md"):
+        old_active.unlink()
+
+    allowed_files = [benchmark_path(item) for item in markdown_list_items(extract_section(spec, "Allowed Files"))]
+    verification = [
+        f"cd benchmark-repo && {item}"
+        for item in markdown_list_items(extract_section(spec, "Verification"))
+    ]
+    active_rel = f"active/{row['run_id']}.md"
+    active_path = protocol_root / active_rel
+    objective = extract_section(spec, "Description")
+    active_text = f"""# Benchmark Run {row['run_id']}
+
+## Why this exists
+
+This active protocol governs one preregistered CGP benchmark cell. The OSF preregistration is complete, and this run is authorized by `runs/run_plan.csv`.
+
+## Next objective
+
+{objective}
+
+## Files in play
+
+{chr(10).join(f"- `{path}`" for path in allowed_files)}
+
+## Non-goals
+
+- Do not edit files outside the allowed-files set.
+- Do not perform adjacent refactors.
+- Do not alter run-plan, preregistration, scaffold, or analysis files.
+- Do not change task requirements beyond the task specification.
+
+## Acceptance
+
+{chr(10).join(f"- `{command}` passes." for command in verification)}
+- Scope remains limited to allowed files.
+- If the task specification, manifest, lock, or repository state disagree, stop and report.
+"""
+    active_path.write_text(active_text, encoding="utf-8")
+    active_hash = "sha256:" + sha256(active_text.encode("utf-8")).hexdigest()
+
+    manifest = {
+        "project": "CGP Drift Reduction Benchmark",
+        "current_commit": current_commit,
+        "current_commit_role": "task start anchor before run-specific scaffold setup; final setup commit is recorded in run metadata as metrics_base_commit",
+        "current_phase": "phase-1",
+        "active_protocol": active_rel,
+        "completed_protocols": [],
+        "allowed_files": allowed_files,
+        "non_goals": [
+            "do not edit files outside the allowed-files set",
+            "do not perform adjacent refactors",
+            "do not alter run-plan, preregistration, scaffold, or analysis files",
+            "do not change task requirements beyond the task specification",
+        ],
+        "verification": {f"check_{index + 1}": command for index, command in enumerate(verification)},
+        "stop_condition": "If the active protocol, manifest, lock, task specification, or repository state disagree on the active task, stop and report.",
+    }
+    (protocol_root / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    lock = {
+        "lock_version": 1,
+        "project": manifest["project"],
+        "current_commit": manifest["current_commit"],
+        "current_commit_role": manifest["current_commit_role"],
+        "current_phase": manifest["current_phase"],
+        "active_protocol": active_rel,
+        "active_protocol_sha256": active_hash,
+        "active_objective": objective,
+        "allowed_files": allowed_files,
+        "verification": manifest["verification"],
+        "stop_condition": manifest["stop_condition"],
+    }
+    (protocol_root / ".slice-lock.json").write_text(json.dumps(lock, indent=2) + "\n", encoding="utf-8")
+    (protocol_root / "README.md").write_text(
+        f"""# Next-Prompt Protocol Scaffold
+
+Project: CGP Drift Reduction Benchmark
+
+Current phase: `phase-1`
+
+Active protocol:
+
+`{active_rel}`
+
+This scaffold is run-specific and governs `{row['run_id']}`. The manifest `current_commit` is the task-start anchor before scaffold setup. The run metadata records the setup commit used as the metrics base.
+""",
+        encoding="utf-8",
+    )
+    (phase_dir / "README.md").write_text(
+        f"""# Phase 1 - Benchmark Run Execution
+
+Current run: `{row['run_id']}`
+
+Condition: `{row['condition']}`
+
+Task: `{row['task_id']}` / `{row['task_slug']}`
+""",
+        encoding="utf-8",
+    )
+    (protocol_root / "role-context.md").write_text(
+        """# Role Context - CGP Benchmark Run
+
+Read in this order:
+
+1. `.slice-lock.json`
+2. `manifest.json`
+3. `role-context.md`
+4. `phases/phase-1/README.md`
+5. The active protocol
+6. The assigned task specification
+
+Stay inside `allowed_files`. Preserve non-goals. Run the named verification commands before declaring completion. Stop and report if protocol state and task state disagree.
+
+Commit anchor note: `current_commit` is the task-start anchor before run-specific scaffold setup. The setup commit is recorded externally in run metadata as `metrics_base_commit`; do not reject the run solely because HEAD includes the setup scaffold commit.
+""",
+        encoding="utf-8",
+    )
+
+def commit_setup(worktree: Path, row: dict[str, str], spec: str) -> str:
+    write_run_scaffold(worktree, row, spec, git(worktree, "rev-parse", "HEAD"))
+    git(worktree, "add", "next-prompt-protocols")
+    git(worktree, "commit", "-m", f"Prepare scaffold for {row['run_id']}")
+    return git(worktree, "rev-parse", "HEAD")
 
 
 def main() -> int:
@@ -123,6 +279,7 @@ def main() -> int:
         "run_order": int(row["run_order"]),
         "start_tag": row["start_tag"],
         "start_commit": start_commit,
+        "metrics_base_commit": start_commit,
         "task_spec": row["task_spec"],
         "status": "prepared",
     }
@@ -139,6 +296,9 @@ def main() -> int:
 
     if args.worktree_root:
         worktree_path = create_worktree(root, row["run_id"], row["start_tag"], args.worktree_root)
+        if row["condition"] == "cgp":
+            metadata["setup_commit"] = commit_setup(worktree_path, row, task_spec_text(root, row))
+            metadata["metrics_base_commit"] = metadata["setup_commit"]
         metadata["worktree"] = str(worktree_path)
         (run_dir / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 
