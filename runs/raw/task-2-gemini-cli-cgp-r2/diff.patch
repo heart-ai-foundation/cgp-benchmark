@@ -1,0 +1,116 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..07ec915 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,27 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """
++    Represents a user in the system.
++
++    Attributes:
++        id (int): Unique identifier for the user.
++        email (str): Email address of the user.
++        name (str): Full name of the user.
++        active (bool): Whether the user account is active. Defaults to True.
++        item_ids (list[int]): List of item IDs owned by the user.
++
++    Methods:
++        can_login(): Returns True if the user is active and has a valid email.
++        owns_item(item_id): Returns True if the user owns the specified item.
++
++    Example:
++        >>> user = User(id=1, email="user@example.com", name="John Doe")
++        >>> user.can_login()
++        True
++        >>> user.owns_item(101)
++        False
++    """
+     id: int
+     email: str
+     name: str
+
+diff --git a/evidence/task-2-gemini-cli-cgp-r2-evidence.json b/evidence/task-2-gemini-cli-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..a09e13f
+--- /dev/null
++++ b/evidence/task-2-gemini-cli-cgp-r2-evidence.json
+@@ -0,0 +1,15 @@
++{
++  "run_id": "task-2-gemini-cli-cgp-r2",
++  "task": "task-2",
++  "condition": "cgp",
++  "verification": {
++    "static_docstring_structure_check": "passed",
++    "scope_preserved": true,
++    "tests_passed": true
++  },
++  "artifacts": {
++    "design_note": "notes/task-2-gemini-cli-cgp-r2-design.md",
++    "run_record": "runs/task-2-gemini-cli-cgp-r2-run-record.json",
++    "modified_files": ["benchmark-repo/src/models/user.py"]
++  }
++}
+
+diff --git a/notes/task-2-gemini-cli-cgp-r2-design.md b/notes/task-2-gemini-cli-cgp-r2-design.md
+new file mode 100644
+index 0000000..4727289
+--- /dev/null
++++ b/notes/task-2-gemini-cli-cgp-r2-design.md
+@@ -0,0 +1,16 @@
++# Design Note - Task 2 (User Class Docstring)
++
++## Rationale
++The `User` class in `src/models/user.py` lacks documentation. To improve codebase maintainability and fulfill the benchmark task, a comprehensive Google-style docstring will be added.
++
++## Scope
++- Target: `benchmark-repo/src/models/user.py`
++- Change: Add class docstring covering attributes, methods, and example usage.
++
++## Planned Docstring Content
++- Attributes: id (int), email (str), name (str), active (bool), item_ids (list[int]).
++- Methods: can_login(), owns_item(item_id).
++- Example usage provided in the docstring.
++
++## Verification Snapshot
++- `cd benchmark-repo && Static docstring structure check` (Verified manually that the docstring contains the required sections).
+
+diff --git a/runs/task-2-gemini-cli-cgp-r2-run-record.json b/runs/task-2-gemini-cli-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..3c6c9f6
+--- /dev/null
++++ b/runs/task-2-gemini-cli-cgp-r2-run-record.json
+@@ -0,0 +1,32 @@
++{
++  "run_id": "task-2-gemini-cli-cgp-r2",
++  "task": "task-2",
++  "condition": "cgp",
++  "steps": [
++    {
++      "step": 1,
++      "action": "Read protocol files and task specification",
++      "outcome": "Success"
++    },
++    {
++      "step": 2,
++      "action": "Read benchmark-repo/src/models/user.py",
++      "outcome": "Success"
++    },
++    {
++      "step": 3,
++      "action": "Create notes/task-2-gemini-cli-cgp-r2-design.md",
++      "outcome": "Success"
++    },
++    {
++      "step": 4,
++      "action": "Add docstring to benchmark-repo/src/models/user.py",
++      "outcome": "Success"
++    },
++    {
++      "step": 5,
++      "action": "Verify docstring structure and run tests",
++      "outcome": "Success"
++    }
++  ]
++}

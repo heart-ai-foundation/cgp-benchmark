@@ -1,0 +1,15 @@
+{
+  "run_id": "task-2-gemini-cli-cgp-r2",
+  "task": "task-2",
+  "condition": "cgp",
+  "verification": {
+    "static_docstring_structure_check": "passed",
+    "scope_preserved": true,
+    "tests_passed": true
+  },
+  "artifacts": {
+    "design_note": "notes/task-2-gemini-cli-cgp-r2-design.md",
+    "run_record": "runs/task-2-gemini-cli-cgp-r2-run-record.json",
+    "modified_files": ["benchmark-repo/src/models/user.py"]
+  }
+}
