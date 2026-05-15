@@ -1,0 +1,52 @@
+{
+  "run_id": "task-3-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-3",
+  "task_slug": "user-items-endpoint",
+  "phase": "phase-1",
+  "active_protocol_sha256": "sha256:91370b0923c7804f2703c0713e4f712dab0fa38ab308620b3c5c8b7930b03c1f",
+  "head_commit": "5cc57f5825c25c34f4c48d562ad55018aeae137d",
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-claude-code-cgp-r2-design.md",
+    "runs/task-3-claude-code-cgp-r2-run-record.json",
+    "evidence/task-3-claude-code-cgp-r2-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py"
+  ],
+  "drift_surface": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/src/api/middleware.py"
+  ],
+  "drift_surface_modified": [],
+  "scope_violation": false,
+  "verification": {
+    "check_1": {
+      "command": "cd benchmark-repo && pytest tests/test_users.py",
+      "result": "pass",
+      "tests_collected": 5,
+      "tests_passed": 5,
+      "tests_failed": 0
+    },
+    "check_2": {
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "tests_collected": 12,
+      "tests_passed": 12,
+      "tests_failed": 0
+    }
+  },
+  "acceptance": {
+    "test_users_pytest_passes": true,
+    "full_pytest_passes": true,
+    "scope_limited_to_allowed_files": true,
+    "evidence_trio_written": true
+  },
+  "stop_condition_triggered": false,
+  "completed": true
+}

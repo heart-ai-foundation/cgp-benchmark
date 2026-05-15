@@ -1,0 +1,42 @@
+{
+  "run_id": "task-3-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-3",
+  "task_slug": "user-items-endpoint",
+  "start_tag": "task-3-start",
+  "metrics_base_commit_head": "5cc57f5825c25c34f4c48d562ad55018aeae137d",
+  "phase": "phase-1",
+  "active_protocol": "next-prompt-protocols/active/task-3-claude-code-cgp-r2.md",
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-claude-code-cgp-r2-design.md",
+    "runs/task-3-claude-code-cgp-r2-run-record.json",
+    "evidence/task-3-claude-code-cgp-r2-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py"
+  ],
+  "files_created": [
+    "notes/task-3-claude-code-cgp-r2-design.md",
+    "runs/task-3-claude-code-cgp-r2-run-record.json",
+    "evidence/task-3-claude-code-cgp-r2-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_users.py",
+      "result": "pass",
+      "summary": "5 passed in 0.01s"
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "summary": "12 passed in 0.02s"
+    }
+  ],
+  "stop_condition_triggered": false,
+  "notes": "Added get_user_items(user_id, include_archived=False) returning list[dict] | None. Filters benchmark-repo ITEMS by owner_id; returns None for unknown user, mirroring get_user/get_item conventions. No drift-surface edits."
+}
