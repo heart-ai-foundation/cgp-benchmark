@@ -1,0 +1,55 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..cd08e19 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -2,28 +2,30 @@ def parse_config(raw: dict) -> dict:
+     if not isinstance(raw, dict):
+         raise TypeError("config must be a dictionary")
+ 
+-    parsed = {
+-        "debug": False,
+-        "page_size": 25,
+-        "features": [],
++    return {
++        "debug": _parse_debug(raw.get("debug", False)),
++        "page_size": _parse_page_size(raw.get("page_size", 25)),
++        "features": _parse_features(raw.get("features", [])),
+     }
+ 
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
+ 
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
++def _parse_debug(value) -> bool:
++    """Parses and returns the debug flag as a boolean."""
++    return bool(value)
+ 
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
+ 
+-    return parsed
++def _parse_page_size(value) -> int:
++    """Parses and validates the page size, ensuring it's between 1 and 100."""
++    page_size = int(value)
++    if page_size < 1 or page_size > 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
++
++def _parse_features(value) -> list[str]:
++    """Parses features into a list of strings, accepting either a single string or a list."""
++    if isinstance(value, str):
++        return [value]
++    if isinstance(value, list):
++        return [str(feature) for feature in value]
++    raise ValueError("features must be a string or list")

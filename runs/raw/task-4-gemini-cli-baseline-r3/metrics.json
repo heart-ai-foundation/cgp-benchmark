@@ -1,0 +1,10 @@
+{
+  "changed_files": [
+    "benchmark-repo/src/utils/config.py"
+  ],
+  "allowed_files": [
+    "benchmark-repo/src/utils/config.py"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": []
+}
