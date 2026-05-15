@@ -1,0 +1,138 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..f1d9d87 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password || password.length < 1) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..cdd5bfe 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,14 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
+
+diff --git a/evidence/task-6-gemini-cli-cgp-r1-evidence.json b/evidence/task-6-gemini-cli-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..2c95363
+--- /dev/null
++++ b/evidence/task-6-gemini-cli-cgp-r1-evidence.json
+@@ -0,0 +1,16 @@
++{
++  "run_id": "task-6-gemini-cli-cgp-r1",
++  "task": "task-6",
++  "condition": "cgp",
++  "evidence": {
++    "fix_implemented": true,
++    "test_added": true,
++    "tests_passing": true,
++    "allowed_files_respected": true,
++    "files_modified": [
++      "benchmark-repo/frontend/src/components/LoginForm.jsx",
++      "benchmark-repo/frontend/tests/components.test.js"
++    ],
++    "verification_output": "✔ renderUserList prints names and email addresses\n✔ renderItemList joins item names\n✔ submitLogin delegates valid credentials\n✔ submitLogin returns error for empty password\nℹ tests 4\nℹ suites 0\nℹ pass 4\nℹ fail 0"
++  }
++}
+
+diff --git a/notes/task-6-gemini-cli-cgp-r1-design.md b/notes/task-6-gemini-cli-cgp-r1-design.md
+new file mode 100644
+index 0000000..467fc42
+--- /dev/null
++++ b/notes/task-6-gemini-cli-cgp-r1-design.md
+@@ -0,0 +1,21 @@
++# Design Note - Task 6 (LoginForm Empty Password Bug)
++
++## Rationale
++The `submitLogin` function in `LoginForm.jsx` was throwing an `Error` when the password was empty, instead of returning a result object with `ok: false` and an error message. This caused unhandled exceptions in the frontend.
++
++## Scope
++- Modified `benchmark-repo/frontend/src/components/LoginForm.jsx` to return `{ ok: false, error: "Password is required" }` when the password is empty or missing.
++- Added a regression test case in `benchmark-repo/frontend/tests/components.test.js` to verify the fix.
++
++## Verification Snapshot
++Run `npm test` in `benchmark-repo`:
++```
++✔ renderUserList prints names and email addresses
++✔ renderItemList joins item names
++✔ submitLogin delegates valid credentials
++✔ submitLogin returns error for empty password
++ℹ tests 4
++ℹ suites 0
++ℹ pass 4
++ℹ fail 0
++```
+
+diff --git a/runs/task-6-gemini-cli-cgp-r1-run-record.json b/runs/task-6-gemini-cli-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..52868bf
+--- /dev/null
++++ b/runs/task-6-gemini-cli-cgp-r1-run-record.json
+@@ -0,0 +1,46 @@
++{
++  "run_id": "task-6-gemini-cli-cgp-r1",
++  "timestamp": "2026-05-15T19:10:00Z",
++  "agent": "gemini-cli",
++  "condition": "cgp",
++  "task": "task-6",
++  "steps": [
++    {
++      "step": 1,
++      "description": "Read protocol files and task specification",
++      "status": "success"
++    },
++    {
++      "step": 2,
++      "description": "Research LoginForm.jsx and components.test.js",
++      "status": "success"
++    },
++    {
++      "step": 3,
++      "description": "Add regression test to components.test.js",
++      "status": "success"
++    },
++    {
++      "step": 4,
++      "description": "Verify bug reproduction (test failure)",
++      "status": "success"
++    },
++    {
++      "step": 5,
++      "description": "Fix bug in LoginForm.jsx",
++      "status": "success"
++    },
++    {
++      "step": 6,
++      "description": "Verify fix with npm test",
++      "status": "success"
++    },
++    {
++      "step": 7,
++      "description": "Generate evidence artifacts",
++      "status": "in_progress"
++    }
++  ],
++  "verification_command": "cd benchmark-repo && npm test",
++  "verification_result": "pass"
++}

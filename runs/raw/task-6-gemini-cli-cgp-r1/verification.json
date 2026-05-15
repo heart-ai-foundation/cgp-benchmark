@@ -1,0 +1,29 @@
+{
+  "run_id": "task-6-gemini-cli-cgp-r1",
+  "metrics_base_commit": "6a40e2c4aa63d682ba05a431e32ca8aa2052d6b3",
+  "verified_at": "2026-05-15T19:10:12+00:00",
+  "post_run_verification": [
+    {
+      "working_directory": "benchmark-repo",
+      "command": "npm test",
+      "result": "passed",
+      "returncode": 0,
+      "stdout_tail": "\n> cgp-benchmark-frontend@0.1.0 test\n> node --test frontend/tests/*.test.js\n\nTAP version 13\n# Subtest: renderUserList prints names and email addresses\nok 1 - renderUserList prints names and email addresses\n  ---\n  duration_ms: 7.926618\n  type: 'test'\n  ...\n# Subtest: renderItemList joins item names\nok 2 - renderItemList joins item names\n  ---\n  duration_ms: 2.395163\n  type: 'test'\n  ...\n# Subtest: submitLogin delegates valid credentials\nok 3 - submitLogin delegates valid credentials\n  ---\n  duration_ms: 2.289844\n  type: 'test'\n  ...\n# Subtest: submitLogin returns error for empty password\nok 4 - submitLogin returns error for empty password\n  ---\n  duration_ms: 1.331459\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 169.333387\n",
+      "stderr_tail": ""
+    }
+  ],
+  "changed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js",
+    "evidence/task-6-gemini-cli-cgp-r1-evidence.json",
+    "notes/task-6-gemini-cli-cgp-r1-design.md",
+    "runs/task-6-gemini-cli-cgp-r1-run-record.json"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": 3,
+  "run_validity": "valid"
+}
