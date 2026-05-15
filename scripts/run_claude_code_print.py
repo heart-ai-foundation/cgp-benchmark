@@ -18,6 +18,10 @@ def run(command: list[str], cwd: Path, check: bool = True, stdin: str | None = N
     return subprocess.run(command, cwd=cwd, check=check, input=stdin, text=True, capture_output=True)
 
 
+def status(message: str) -> None:
+    print(f"[run_claude_code_print] {message}", flush=True)
+
+
 def read_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
@@ -48,11 +52,15 @@ def next_run_id(root: Path) -> str:
 def ensure_prepared(root: Path, run_id: str) -> Path:
     run_dir = root / "runs" / "raw" / run_id
     if not run_dir.exists():
+        status(f"preparing {run_id}")
         run(["python", "scripts/prepare_run.py", "--run-id", run_id], cwd=root)
+    else:
+        status(f"using existing prepared run {run_id}")
     metadata = read_json(run_dir / "metadata.json")
     worktree = root / metadata["worktree"]
     if not worktree.exists():
         raise SystemExit(f"missing worktree after preparation: {worktree}")
+    status(f"worktree ready: {worktree}")
     return run_dir
 
 
@@ -73,18 +81,27 @@ def execute_claude(run_dir: Path, worktree: Path, permission_mode: str) -> int:
     stderr_path = transcripts / f"claude-print-{timestamp}.stderr.txt"
     result_path = transcripts / f"claude-print-{timestamp}.json"
 
+    command = [
+        "claude",
+        "-p",
+        "--permission-mode",
+        permission_mode,
+        "--dangerously-skip-permissions",
+    ]
+    status(f"waiting for Claude Code print-mode execution in {worktree}")
     result = run(
-        ["claude", "-p", "--permission-mode", permission_mode],
+        command,
         cwd=worktree,
         check=False,
         stdin=prompt,
     )
+    status(f"Claude Code finished with return code {result.returncode}")
     stdout_path.write_text(result.stdout, encoding="utf-8")
     stderr_path.write_text(result.stderr, encoding="utf-8")
     write_json(
         result_path,
         {
-            "command": f"claude -p --permission-mode {permission_mode}",
+            "command": " ".join(command),
             "working_directory": str(worktree),
             "returncode": result.returncode,
             "stdout": str(stdout_path.relative_to(run_dir)),
@@ -96,22 +113,28 @@ def execute_claude(run_dir: Path, worktree: Path, permission_mode: str) -> int:
 
 
 def capture(root: Path, run_id: str) -> int:
+    status(f"capturing {run_id}")
     result = run(["python", "scripts/capture_run.py", "--run-id", run_id], cwd=root, check=False)
     print(result.stdout, end="")
     if result.stderr:
         print(result.stderr, end="")
+    status(f"capture finished with return code {result.returncode}")
     return result.returncode
 
 
 def commit_and_push(root: Path, run_id: str, push: bool) -> None:
+    status(f"staging raw artifacts for {run_id}")
     run(["git", "add", f"runs/raw/{run_id}"], cwd=root)
-    status = run(["git", "status", "--short"], cwd=root).stdout.strip()
-    if not status:
+    working_tree_status = run(["git", "status", "--short"], cwd=root).stdout.strip()
+    if not working_tree_status:
         print("no changes to commit")
         return
+    status(f"committing {run_id}")
     run(["git", "commit", "-m", f"Capture {run_id}"], cwd=root)
     if push:
+        status("pushing main")
         run(["git", "push", "origin", "main"], cwd=root)
+        status("push finished")
 
 
 def main() -> int:
@@ -119,14 +142,14 @@ def main() -> int:
     run_selector = parser.add_mutually_exclusive_group(required=True)
     run_selector.add_argument("--run-id")
     run_selector.add_argument("--next", action="store_true")
-    parser.add_argument("--permission-mode", default="auto")
+    parser.add_argument("--permission-mode", default="bypassPermissions")
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--push", action="store_true")
     args = parser.parse_args()
 
     root = Path.cwd()
     run_id = next_run_id(root) if args.next else args.run_id
-    print(f"selected run: {run_id}")
+    status(f"selected run: {run_id}")
     run_dir = ensure_prepared(root, run_id)
     metadata = read_json(run_dir / "metadata.json")
     worktree = root / metadata["worktree"]
