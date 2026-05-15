@@ -23,6 +23,7 @@ Initial scaffold. The experiment design is locked in the Heart Corpus as `CGP_Dr
 - `docs/run_harness.md` - post-preregistration execution procedure
 - `docs/prompt_templates/` - Baseline and CGP condition prompt templates
 - `runs/run_plan.csv` - deterministic randomized run order generated after OSF preregistration
+- `scripts/prepare_run.py` - prepares a single run prompt and optional isolated worktree
 
 ## License
 

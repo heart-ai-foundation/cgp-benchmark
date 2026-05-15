@@ -47,3 +47,25 @@ Each run should leave raw material under `runs/raw/`, including:
 - evidence trio for CGP runs
 
 Processed metrics belong under `runs/processed/`.
+
+## Preparing One Run
+
+To preview a planned run prompt without creating run artifacts:
+
+```bash
+python scripts/prepare_run.py --run-id task-1-claude-code-cgp-r1 --dry-run
+```
+
+To prepare a run directory:
+
+```bash
+python scripts/prepare_run.py --run-id task-1-claude-code-cgp-r1
+```
+
+To also create an isolated git worktree at the task start tag:
+
+```bash
+python scripts/prepare_run.py --run-id task-1-claude-code-cgp-r1 --worktree-root worktrees
+```
+
+Running `prepare_run.py` creates setup artifacts only. The benchmark observation begins when the assigned agent receives the generated prompt.
