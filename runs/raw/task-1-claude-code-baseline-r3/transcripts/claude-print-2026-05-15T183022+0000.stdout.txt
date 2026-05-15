@@ -1,0 +1,6 @@
+All 33 tests pass (27 validator + 6 other).
+
+**Summary:**
+- Added `validate_email(email: str) -> bool` to `src/api/validators.py` with regex-based local/domain validation, length caps (RFC 5321: 64 local / 254 total), and guards against consecutive dots and leading/trailing hyphens in domain labels.
+- Added parametrized tests in `tests/test_validators.py` covering well-formed addresses, malformed cases (no `@`, empty local/domain, spaces, leading/trailing/consecutive dots, length overruns, hyphen edges), and non-string inputs.
+- `pytest tests/test_validators.py` → 27 passed; full `pytest` → 33 passed, no drift in `auth.py`/`middleware.py`.
