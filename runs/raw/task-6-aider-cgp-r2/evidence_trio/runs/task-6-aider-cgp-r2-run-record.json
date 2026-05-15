@@ -1,0 +1,38 @@
+{
+  "run_id": "task-6-aider-cgp-r2",
+  "agent": "aider",
+  "condition": "cgp",
+  "task_id": "task-6",
+  "task_slug": "login-empty-password",
+  "start_tag": "task-6-start",
+  "head_commit_at_start": "e65d5e1307277ce8b3073200eacbce5a072f5054",
+  "active_protocol": "next-prompt-protocols/active/task-6-aider-cgp-r2.md",
+  "allowed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js",
+    "notes/task-6-aider-cgp-r2-design.md",
+    "runs/task-6-aider-cgp-r2-run-record.json",
+    "evidence/task-6-aider-cgp-r2-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "files_created": [
+    "notes/task-6-aider-cgp-r2-design.md",
+    "runs/task-6-aider-cgp-r2-run-record.json",
+    "evidence/task-6-aider-cgp-r2-evidence.json"
+  ],
+  "drift_surface_touched": false,
+  "verification": [
+    {
+      "command": "cd benchmark-repo && npm test",
+      "result": "pass",
+      "tests_run": 4,
+      "tests_passed": 4,
+      "tests_failed": 0
+    }
+  ],
+  "stop_condition_triggered": false,
+  "status": "complete"
+}
