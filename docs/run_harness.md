@@ -62,13 +62,15 @@ To prepare a run directory:
 python scripts/prepare_run.py --run-id task-1-claude-code-cgp-r1
 ```
 
-To also create an isolated git worktree at the task start tag:
+By default, `prepare_run.py` also creates an isolated git worktree under `worktrees/` at the task start tag:
 
 ```bash
-python scripts/prepare_run.py --run-id task-1-claude-code-cgp-r1 --worktree-root worktrees
+worktrees/task-1-claude-code-cgp-r1
 ```
 
-For CGP runs, `prepare_run.py --worktree-root` also replaces the repository-level scaffold with a run-specific scaffold and commits that setup inside the isolated worktree. The run-specific scaffold records the task start tag as its commit anchor; the run metadata records `metrics_base_commit` after scaffold setup. Drift metrics should compare final agent output against `metrics_base_commit`, not against the raw task start tag. This prevents scaffold installation from contaminating scope-drift measurement.
+Use `--worktree-root PATH` only when the worktree should be created somewhere other than `worktrees/`. Use `--no-worktree` only for prompt/metadata generation without an execution workspace.
+
+For CGP runs, `prepare_run.py` also replaces the repository-level scaffold with a run-specific scaffold and commits that setup inside the isolated worktree. The run-specific scaffold records the task start tag as its commit anchor; the run metadata records `metrics_base_commit` after scaffold setup. Drift metrics should compare final agent output against `metrics_base_commit`, not against the raw task start tag. This prevents scaffold installation from contaminating scope-drift measurement.
 
 CGP run scaffolds include evidence trio paths in `notes/`, `runs/`, and `evidence/`. These paths are part of the CGP allowed-files set for M4 scaffold-adherence measurement. Scope-drift scoring for CGP runs should treat the evidence trio as allowed operational evidence, while task-code drift remains visible through changed-file categories.
 

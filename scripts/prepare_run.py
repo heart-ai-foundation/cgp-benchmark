@@ -272,7 +272,8 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", required=True)
     parser.add_argument("--out-root", type=Path, default=Path("runs/raw"))
-    parser.add_argument("--worktree-root", type=Path)
+    parser.add_argument("--worktree-root", type=Path, default=Path("worktrees"))
+    parser.add_argument("--no-worktree", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args()
 
@@ -302,11 +303,17 @@ def main() -> int:
         return 0
 
     run_dir = args.out_root / row["run_id"]
+    worktree_path = None if args.no_worktree else args.worktree_root / row["run_id"]
+    if run_dir.exists():
+        raise SystemExit(f"run directory already exists: {run_dir}")
+    if worktree_path and worktree_path.exists():
+        raise SystemExit(f"worktree already exists: {worktree_path}")
+
     run_dir.mkdir(parents=True, exist_ok=False)
     (run_dir / "prompt.md").write_text(prompt, encoding="utf-8")
     (run_dir / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 
-    if args.worktree_root:
+    if worktree_path:
         worktree_path = create_worktree(root, row["run_id"], row["start_tag"], args.worktree_root)
         if row["condition"] == "cgp":
             metadata["setup_commit"] = commit_setup(worktree_path, row, task_spec_text(root, row))
