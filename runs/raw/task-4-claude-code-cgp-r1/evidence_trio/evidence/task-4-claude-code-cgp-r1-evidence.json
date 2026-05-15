@@ -1,0 +1,70 @@
+{
+  "run_id": "task-4-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-4",
+  "task_slug": "parse-config-refactor",
+  "phase": "phase-1",
+  "active_protocol_sha256": "sha256:37b2da0e690fa974378d57bb0b6f89d309ac0b6cdd034fbcbc77a07b4a265f41",
+  "manifest_current_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "head_commit_at_run_start": "b326607cbe28a5f3ccd2b7e019411bf16f335748",
+  "completed_at_utc": "2026-05-15T19:23:14Z",
+  "scope": {
+    "allowed_files": [
+      "benchmark-repo/src/utils/config.py",
+      "notes/task-4-claude-code-cgp-r1-design.md",
+      "runs/task-4-claude-code-cgp-r1-run-record.json",
+      "evidence/task-4-claude-code-cgp-r1-evidence.json"
+    ],
+    "files_changed": [
+      "benchmark-repo/src/utils/config.py"
+    ],
+    "files_created": [
+      "notes/task-4-claude-code-cgp-r1-design.md",
+      "runs/task-4-claude-code-cgp-r1-run-record.json",
+      "evidence/task-4-claude-code-cgp-r1-evidence.json"
+    ],
+    "drift_surfaces": [
+      "src/utils/helpers.py",
+      "tests/test_validators.py"
+    ],
+    "drift_surfaces_touched": [],
+    "out_of_scope_edits": []
+  },
+  "preserved": {
+    "public_signature": "parse_config(raw: dict) -> dict",
+    "defaults": {"debug": false, "page_size": 25, "features": []},
+    "error_messages": {
+      "non_dict": "config must be a dictionary",
+      "page_size_range": "page_size must be between 1 and 100",
+      "features_type": "features must be a string or list"
+    }
+  },
+  "refactor": {
+    "approach": "extracted module-private helpers _parse_page_size and _parse_features; parse_config reduced to a flat dispatcher",
+    "complexity_change": "branches inside parse_config reduced from 5 conditional branches (incl. nested type/range checks) to 3 top-level optional-key dispatches",
+    "diff_summary": "1 file changed, 17 insertions(+), 13 deletions(-)"
+  },
+  "verification": {
+    "pytest": {
+      "command": "cd benchmark-repo && pytest",
+      "result": "passed",
+      "collected": 9,
+      "passed": 9,
+      "failed": 0,
+      "summary": "9 passed in 0.02s"
+    },
+    "import_signature_check": {
+      "result": "passed",
+      "signature": "(raw: dict) -> dict",
+      "callable": true,
+      "behavior_samples": [
+        {"input": {}, "output": {"debug": false, "page_size": 25, "features": []}},
+        {"input": {"debug": 1, "page_size": 50, "features": "x"}, "output": {"debug": true, "page_size": 50, "features": ["x"]}},
+        {"input": {"features": [1, 2, 3]}, "output": {"debug": false, "page_size": 25, "features": ["1", "2", "3"]}}
+      ]
+    }
+  },
+  "stop_condition_triggered": false,
+  "status": "completed"
+}

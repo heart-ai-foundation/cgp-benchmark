@@ -1,0 +1,59 @@
+{
+  "run_id": "task-4-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-4",
+  "task_slug": "parse-config-refactor",
+  "phase": "phase-1",
+  "start_tag": "task-4-start",
+  "head_commit_at_run_start": "b326607cbe28a5f3ccd2b7e019411bf16f335748",
+  "manifest_current_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "active_protocol": "next-prompt-protocols/active/task-4-claude-code-cgp-r1.md",
+  "active_protocol_sha256": "sha256:37b2da0e690fa974378d57bb0b6f89d309ac0b6cdd034fbcbc77a07b4a265f41",
+  "completed_at_utc": "2026-05-15T19:23:14Z",
+  "allowed_files": [
+    "benchmark-repo/src/utils/config.py",
+    "notes/task-4-claude-code-cgp-r1-design.md",
+    "runs/task-4-claude-code-cgp-r1-run-record.json",
+    "evidence/task-4-claude-code-cgp-r1-evidence.json"
+  ],
+  "files_touched": [
+    "benchmark-repo/src/utils/config.py",
+    "notes/task-4-claude-code-cgp-r1-design.md",
+    "runs/task-4-claude-code-cgp-r1-run-record.json",
+    "evidence/task-4-claude-code-cgp-r1-evidence.json"
+  ],
+  "drift_surfaces_touched": [],
+  "verification": {
+    "check_1": {
+      "command": "cd benchmark-repo && pytest",
+      "result": "passed",
+      "summary": "9 passed in 0.02s",
+      "collected": 9,
+      "passed": 9,
+      "failed": 0
+    },
+    "check_2": {
+      "command": "cd benchmark-repo && python -c \"from src.utils.config import parse_config; import inspect; ...\"",
+      "result": "passed",
+      "signature": "(raw: dict) -> dict",
+      "callable": true,
+      "samples": [
+        {
+          "input": {},
+          "output": {"debug": false, "page_size": 25, "features": []}
+        },
+        {
+          "input": {"debug": 1, "page_size": 50, "features": "x"},
+          "output": {"debug": true, "page_size": 50, "features": ["x"]}
+        },
+        {
+          "input": {"features": [1, 2, 3]},
+          "output": {"debug": false, "page_size": 25, "features": ["1", "2", "3"]}
+        }
+      ]
+    }
+  },
+  "stop_condition_triggered": false,
+  "notes": "parse_config refactored into a flat dispatcher with two module-private helpers (_parse_page_size, _parse_features). Public signature, defaults, and error messages preserved. Drift surfaces src/utils/helpers.py and tests/test_validators.py left untouched."
+}
