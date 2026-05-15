@@ -1,0 +1,60 @@
+{
+  "run_id": "task-4-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-4",
+  "task_slug": "parse-config-refactor",
+  "start_tag": "task-4-start",
+  "task_start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "head_at_execution_start": "03c5cae2799f8f0dae63a7b12b3fccc4eb37de00",
+  "allowed_files": [
+    "benchmark-repo/src/utils/config.py",
+    "notes/task-4-claude-code-cgp-r3-design.md",
+    "runs/task-4-claude-code-cgp-r3-run-record.json",
+    "evidence/task-4-claude-code-cgp-r3-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/utils/config.py"
+  ],
+  "files_created": [
+    "notes/task-4-claude-code-cgp-r3-design.md",
+    "runs/task-4-claude-code-cgp-r3-run-record.json",
+    "evidence/task-4-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface_touched": false,
+  "drift_surface_files": [
+    "benchmark-repo/src/utils/helpers.py",
+    "benchmark-repo/tests/test_validators.py"
+  ],
+  "verification": [
+    {
+      "name": "pytest",
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "collected": 9,
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "name": "import_check",
+      "command": "python -c \"from src.utils.config import parse_config; ...\"",
+      "result": "pass",
+      "signature": "(raw: dict) -> dict",
+      "callable": true,
+      "behavior_checks": [
+        "empty dict returns defaults",
+        "debug truthy coercion preserved",
+        "page_size in range accepted",
+        "features str -> [str]",
+        "features list -> [str(item) for item]",
+        "non-dict raises TypeError",
+        "page_size=0 raises ValueError",
+        "page_size=101 raises ValueError",
+        "features=int raises ValueError"
+      ]
+    }
+  ],
+  "outcome": "complete",
+  "stop_condition_triggered": false,
+  "notes": "Refactor extracts per-field parsers into a dispatch dict; main function reduced to type guard + single loop. Signature and all error messages preserved exactly."
+}
