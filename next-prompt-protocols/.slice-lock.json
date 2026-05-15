@@ -1,11 +1,11 @@
 {
   "lock_version": 1,
   "project": "CGP Drift Reduction Benchmark",
-  "current_commit": "ced1f2939ecedf16c65bf7b6398397c6f3d0a265",
+  "current_commit": "2202231",
   "current_phase": "phase-0",
-  "active_protocol": "active/2026-05-15-phase-0-run-plan-and-task-tags.md",
-  "active_protocol_sha256": "sha256:07a59abb343350aababf50941e20506e47aceec0e6c50f8a314274220aafa4fa",
-  "active_objective": "Add deterministic run-plan generation, validate the 72-run plan, document the run harness and prompt templates, and create/push the six task start tags after the run-plan commit.",
+  "active_protocol": "active/2026-05-15-phase-0-cgp-evidence-trio-correction.md",
+  "active_protocol_sha256": "sha256:58dc0a3eb567f9ab90d483f1b110f2d3126a29b44bc1e5d20f31a51b6a55ccf5",
+  "active_objective": "Update the run preparation harness so CGP runs include explicit evidence trio requirements, stable evidence artifact paths, and prompt text that instructs the agent to write those artifacts before completion. Mark the first attempted run as invalid due to harness defect without rerunning any benchmark cells in this slice.",
   "allowed_files": [
     "README.md",
     "LICENSE",

@@ -21,6 +21,8 @@
   ],
   "scope_drift_count": 0,
   "task_verification_success": true,
+  "run_validity": "invalid_harness_defect",
+  "invalid_reason": "CGP active protocol did not require evidence trio artifacts for this attempt.",
   "verification_command_compliance": null,
   "verification_command_compliance_note": "Pending Claude Code transcript or final answer review; post-run experimenter verification passed.",
   "evidence_trio_completeness": 0,

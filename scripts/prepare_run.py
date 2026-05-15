@@ -139,6 +139,11 @@ def write_run_scaffold(worktree: Path, row: dict[str, str], spec: str, current_c
         f"cd benchmark-repo && {item}"
         for item in markdown_list_items(extract_section(spec, "Verification"))
     ]
+    design_note = f"notes/{row['run_id']}-design.md"
+    run_record = f"runs/{row['run_id']}-run-record.json"
+    evidence_json = f"evidence/{row['run_id']}-evidence.json"
+    evidence_files = [design_note, run_record, evidence_json]
+    allowed_files_with_evidence = allowed_files + evidence_files
     active_rel = f"active/{row['run_id']}.md"
     active_path = protocol_root / active_rel
     objective = extract_section(spec, "Description")
@@ -155,6 +160,9 @@ This active protocol governs one preregistered CGP benchmark cell. The OSF prere
 ## Files in play
 
 {chr(10).join(f"- `{path}`" for path in allowed_files)}
+- `{design_note}` - design note for rationale, scope, and verification snapshot.
+- `{run_record}` - operational run record.
+- `{evidence_json}` - machine-readable evidence artifact.
 
 ## Non-goals
 
@@ -167,6 +175,10 @@ This active protocol governs one preregistered CGP benchmark cell. The OSF prere
 
 {chr(10).join(f"- `{command}` passes." for command in verification)}
 - Scope remains limited to allowed files.
+- Evidence trio is written:
+  - `{design_note}`
+  - `{run_record}`
+  - `{evidence_json}`
 - If the task specification, manifest, lock, or repository state disagree, stop and report.
 """
     active_path.write_text(active_text, encoding="utf-8")
@@ -179,11 +191,11 @@ This active protocol governs one preregistered CGP benchmark cell. The OSF prere
         "current_phase": "phase-1",
         "active_protocol": active_rel,
         "completed_protocols": [],
-        "allowed_files": allowed_files,
+        "allowed_files": allowed_files_with_evidence,
         "non_goals": [
             "do not edit files outside the allowed-files set",
             "do not perform adjacent refactors",
-            "do not alter run-plan, preregistration, scaffold, or analysis files",
+            "do not alter run-plan, preregistration, scaffold, or analysis files except the assigned evidence trio paths",
             "do not change task requirements beyond the task specification",
         ],
         "verification": {f"check_{index + 1}": command for index, command in enumerate(verification)},
@@ -199,7 +211,7 @@ This active protocol governs one preregistered CGP benchmark cell. The OSF prere
         "active_protocol": active_rel,
         "active_protocol_sha256": active_hash,
         "active_objective": objective,
-        "allowed_files": allowed_files,
+        "allowed_files": allowed_files_with_evidence,
         "verification": manifest["verification"],
         "stop_condition": manifest["stop_condition"],
     }

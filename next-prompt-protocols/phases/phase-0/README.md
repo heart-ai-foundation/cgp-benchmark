@@ -4,4 +4,4 @@ Phase objective: create a clean, executable benchmark repository that matches th
 
 Current active protocol:
 
-`active/2026-05-15-phase-0-run-plan-and-task-tags.md`
+`active/2026-05-15-phase-0-cgp-evidence-trio-correction.md`

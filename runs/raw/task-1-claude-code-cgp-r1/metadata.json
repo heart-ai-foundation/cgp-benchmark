@@ -10,7 +10,9 @@
   "start_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
   "metrics_base_commit": "500e5a43421db4df3f2aaa8ce2286a53f15286ed",
   "task_spec": "docs/task_specs/task-1-input-validation.md",
-  "status": "completed_post_run_verified",
+  "status": "invalid_harness_defect",
   "setup_commit": "500e5a43421db4df3f2aaa8ce2286a53f15286ed",
-  "worktree": "worktrees/task-1-claude-code-cgp-r1"
+  "worktree": "worktrees/task-1-claude-code-cgp-r1",
+  "invalid_reason": "Run-specific CGP scaffold did not require evidence trio artifacts, making M4 scaffold-adherence failure attributable to harness implementation rather than agent behavior.",
+  "disposition": "Preserved as invalid harness-validation attempt; rerun required after evidence-trio scaffold correction."
 }

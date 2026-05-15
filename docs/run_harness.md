@@ -70,4 +70,10 @@ python scripts/prepare_run.py --run-id task-1-claude-code-cgp-r1 --worktree-root
 
 For CGP runs, `prepare_run.py --worktree-root` also replaces the repository-level scaffold with a run-specific scaffold and commits that setup inside the isolated worktree. The run-specific scaffold records the task start tag as its commit anchor; the run metadata records `metrics_base_commit` after scaffold setup. Drift metrics should compare final agent output against `metrics_base_commit`, not against the raw task start tag. This prevents scaffold installation from contaminating scope-drift measurement.
 
+CGP run scaffolds include evidence trio paths in `notes/`, `runs/`, and `evidence/`. These paths are part of the CGP allowed-files set for M4 scaffold-adherence measurement. Scope-drift scoring for CGP runs should treat the evidence trio as allowed operational evidence, while task-code drift remains visible through changed-file categories.
+
 Running `prepare_run.py` creates setup artifacts only. The benchmark observation begins when the assigned agent receives the generated prompt.
+
+## Invalid Run Handling
+
+If a run exposes a harness defect before or during execution, preserve its raw artifacts and mark it invalid. Do not reinterpret it as a valid benchmark observation. The corrected run should use the original planned `run_id` after the harness is fixed, with the invalid attempt retained separately or marked in metadata.
