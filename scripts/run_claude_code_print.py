@@ -47,10 +47,25 @@ def is_completed_production_run(run_dir: Path) -> bool:
     return metadata.get("status") == "completed_valid" and metadata.get("run_validity") == "valid"
 
 
+def is_blocking_invalid_run(run_dir: Path) -> bool:
+    metadata_path = run_dir / "metadata.json"
+    if not metadata_path.exists():
+        return False
+    metadata = read_json(metadata_path)
+    if metadata.get("archive_status"):
+        return False
+    return metadata.get("run_validity") == "invalid" or metadata.get("status") == "completed_invalid"
+
+
 def next_run_id(root: Path) -> str:
     with (root / RUN_PLAN).open(newline="", encoding="utf-8") as handle:
         for row in csv.DictReader(handle):
             run_dir = root / "runs" / "raw" / row["run_id"]
+            if is_blocking_invalid_run(run_dir):
+                raise SystemExit(
+                    f"blocking invalid run exists: {row['run_id']}. "
+                    "Inspect/archive it before continuing with --next."
+                )
             if not is_completed_production_run(run_dir):
                 return row["run_id"]
     raise SystemExit("all planned runs are completed")
@@ -158,6 +173,7 @@ def execute_claude(run_dir: Path, worktree: Path, permission_mode: str) -> int:
         "--permission-mode",
         permission_mode,
         "--dangerously-skip-permissions",
+        "--verbose",
         "--output-format",
         "stream-json",
         "--include-partial-messages",

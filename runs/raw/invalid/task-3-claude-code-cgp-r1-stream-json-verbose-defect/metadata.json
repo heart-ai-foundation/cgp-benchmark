@@ -22,5 +22,7 @@
   "verification_command_compliance": true,
   "task_verification_success": true,
   "evidence_trio_completeness": 0,
-  "run_validity": "invalid"
+  "run_validity": "invalid",
+  "archive_status": "archived_invalid_harness_defect",
+  "archive_reason": "Claude Code CLI stream-json invocation omitted --verbose, so Claude exited before executing the benchmark task."
 }
