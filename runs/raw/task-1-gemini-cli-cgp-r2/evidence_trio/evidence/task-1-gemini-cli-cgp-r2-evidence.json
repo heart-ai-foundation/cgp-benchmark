@@ -1,0 +1,14 @@
+{
+  "run_id": "task-1-gemini-cli-cgp-r2",
+  "evidence_trio": {
+    "design_note": "notes/task-1-gemini-cli-cgp-r2-design.md",
+    "run_record": "runs/task-1-gemini-cli-cgp-r2-run-record.json",
+    "evidence_json": "evidence/task-1-gemini-cli-cgp-r2-evidence.json"
+  },
+  "verification_results": {
+    "check_1": "passed",
+    "check_2": "passed"
+  },
+  "allowed_files_check": "passed",
+  "non_goals_preserved": true
+}
