@@ -56,6 +56,14 @@ def next_run_id(root: Path) -> str:
     raise SystemExit("all Aider primary runs are completed")
 
 
+def run_agent(root: Path, run_id: str) -> str:
+    with (root / RUN_PLAN).open(newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            if row["run_id"] == run_id:
+                return row["agent"]
+    raise SystemExit(f"unknown run_id: {run_id}")
+
+
 def ensure_prepared(root: Path, run_id: str) -> Path:
     run_dir = root / "runs" / "raw" / run_id
     if not run_dir.exists():
@@ -204,6 +212,9 @@ def main() -> int:
 
     root = Path.cwd()
     run_id = next_run_id(root) if args.next else args.run_id
+    agent = run_agent(root, run_id)
+    if agent != "aider":
+        raise SystemExit(f"refusing to run {run_id} with Aider runner because planned agent is {agent}")
     status(f"selected run: {run_id}")
     run_dir = ensure_prepared(root, run_id)
     metadata = read_json(run_dir / "metadata.json")
