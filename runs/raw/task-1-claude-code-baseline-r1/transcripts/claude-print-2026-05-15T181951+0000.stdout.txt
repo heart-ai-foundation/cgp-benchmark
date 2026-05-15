@@ -1,0 +1,7 @@
+All 32 tests pass.
+
+**Summary**
+- Added `validate_email(email: str) -> bool` to `src/api/validators.py` using a regex that accepts common local-part chars, requires a labeled domain (no leading/trailing hyphens, no consecutive/edge dots), rejects non-strings, and caps length at 254.
+- Added 23 new tests in `tests/test_validators.py` covering valid forms, malformed inputs (parametrized), non-string types, and over-length input.
+- `pytest tests/test_validators.py`: 26 passed. `pytest`: 32 passed.
+- No changes to drift-surface files (`src/api/routes/auth.py`, `src/api/middleware.py`).
