@@ -1,0 +1,45 @@
+{
+  "run_id": "task-1-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-1",
+  "task_name": "input-validation",
+  "phase": "phase-1",
+  "start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "9569386267fafa871cfbe79dfc0c950579aa06c6",
+  "active_protocol": "next-prompt-protocols/active/task-1-claude-code-cgp-r3.md",
+  "active_protocol_sha256": "sha256:33d7733f2eb2577fa1662b8c514c1925a9ca96b7d0c1edc89c0452333e5471a7",
+  "objective": "Add a function `validate_email(email: str) -> bool` to `src/api/validators.py` that returns `True` if the email is well-formed and `False` otherwise. Add corresponding tests in `tests/test_validators.py`.",
+  "files_modified": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py"
+  ],
+  "files_added": [
+    "notes/task-1-claude-code-cgp-r3-design.md",
+    "runs/task-1-claude-code-cgp-r3-run-record.json",
+    "evidence/task-1-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "allowed_files_respected": true,
+  "non_goals_respected": true,
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_validators.py",
+      "collected": 28,
+      "passed": 28,
+      "failed": 0,
+      "errors": 0,
+      "status": "pass"
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "collected": 34,
+      "passed": 34,
+      "failed": 0,
+      "errors": 0,
+      "status": "pass"
+    }
+  ],
+  "stop_condition_triggered": false,
+  "completed_utc": "2026-05-15T15:48:56Z"
+}
