@@ -1,0 +1,14 @@
+{
+  "run_id": "task-6-gemini-cli-cgp-r2",
+  "task": "task-6-login-empty-password",
+  "evidence_trio": {
+    "design_note": "notes/task-6-gemini-cli-cgp-r2-design.md",
+    "run_record": "runs/task-6-gemini-cli-cgp-r2-run-record.json",
+    "evidence_json": "evidence/task-6-gemini-cli-cgp-r2-evidence.json"
+  },
+  "modifications": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "verification_status": "passed"
+}
