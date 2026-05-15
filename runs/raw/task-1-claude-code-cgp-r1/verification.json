@@ -1,0 +1,28 @@
+{
+  "run_id": "task-1-claude-code-cgp-r1",
+  "metrics_base_commit": "500e5a43421db4df3f2aaa8ce2286a53f15286ed",
+  "post_run_verification": [
+    {
+      "command": "python -m pytest tests/test_validators.py",
+      "workdir": "worktrees/task-1-claude-code-cgp-r1/benchmark-repo",
+      "exit_code": 0,
+      "summary": "25 passed"
+    },
+    {
+      "command": "python -m pytest",
+      "workdir": "worktrees/task-1-claude-code-cgp-r1/benchmark-repo",
+      "exit_code": 0,
+      "summary": "31 passed"
+    }
+  ],
+  "changed_files": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py"
+  ],
+  "scope_drift_count": 0,
+  "task_verification_success": true,
+  "verification_command_compliance": null,
+  "verification_command_compliance_note": "Pending Claude Code transcript or final answer review; post-run experimenter verification passed.",
+  "evidence_trio_completeness": 0,
+  "evidence_trio_completeness_note": "No design note, run record, or evidence JSON artifacts were found in the worktree after the run."
+}

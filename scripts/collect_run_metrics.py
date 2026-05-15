@@ -9,14 +9,11 @@ import subprocess
 from pathlib import Path
 
 
-def changed_files(repo: Path, base: str, head: str) -> list[str]:
-    result = subprocess.run(
-        ["git", "diff", "--name-only", base, head],
-        cwd=repo,
-        check=True,
-        text=True,
-        capture_output=True,
-    )
+def changed_files(repo: Path, base: str, head: str | None) -> list[str]:
+    command = ["git", "diff", "--name-only", base]
+    if head:
+        command.append(head)
+    result = subprocess.run(command, cwd=repo, check=True, text=True, capture_output=True)
     return [line for line in result.stdout.splitlines() if line]
 
 
@@ -24,7 +21,7 @@ def main() -> None:
     parser = argparse.ArgumentParser()
     parser.add_argument("--repo", type=Path, required=True)
     parser.add_argument("--base", required=True)
-    parser.add_argument("--head", default="HEAD")
+    parser.add_argument("--head", default=None, help="Optional head ref. Omit to compare base against the working tree.")
     parser.add_argument("--allowed-file", action="append", default=[])
     parser.add_argument("--out", type=Path)
     args = parser.parse_args()
