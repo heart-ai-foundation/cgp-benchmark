@@ -1,0 +1,28 @@
+{
+  "run_id": "task-3-gemini-cli-cgp-r3",
+  "task": "task-3-user-items-endpoint",
+  "status": "completed",
+  "verification": {
+    "test_users_pass": true,
+    "total_tests_pass": true,
+    "checks": [
+      {
+        "command": "cd benchmark-repo && pytest tests/test_users.py",
+        "passed": true
+      },
+      {
+        "command": "cd benchmark-repo && pytest",
+        "passed": true
+      }
+    ]
+  },
+  "files_modified": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py"
+  ],
+  "evidence_trio": [
+    "notes/task-3-gemini-cli-cgp-r3-design.md",
+    "runs/task-3-gemini-cli-cgp-r3-run-record.json",
+    "evidence/task-3-gemini-cli-cgp-r3-evidence.json"
+  ]
+}
