@@ -4,10 +4,14 @@
 from __future__ import annotations
 
 import argparse
+import csv
 import json
 import subprocess
 from datetime import UTC, datetime
 from pathlib import Path
+
+
+RUN_PLAN = Path("runs/run_plan.csv")
 
 
 def run(command: list[str], cwd: Path, check: bool = True, stdin: str | None = None) -> subprocess.CompletedProcess[str]:
@@ -20,6 +24,25 @@ def read_json(path: Path) -> dict:
 
 def write_json(path: Path, payload: dict) -> None:
     path.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
+
+
+def is_completed_production_run(run_dir: Path) -> bool:
+    metadata_path = run_dir / "metadata.json"
+    if not metadata_path.exists():
+        return False
+    metadata = read_json(metadata_path)
+    if metadata.get("archive_status"):
+        return False
+    return metadata.get("status") == "completed_valid" and metadata.get("run_validity") == "valid"
+
+
+def next_run_id(root: Path) -> str:
+    with (root / RUN_PLAN).open(newline="", encoding="utf-8") as handle:
+        for row in csv.DictReader(handle):
+            run_dir = root / "runs" / "raw" / row["run_id"]
+            if not is_completed_production_run(run_dir):
+                return row["run_id"]
+    raise SystemExit("all planned runs are completed")
 
 
 def ensure_prepared(root: Path, run_id: str) -> Path:
@@ -93,21 +116,25 @@ def commit_and_push(root: Path, run_id: str, push: bool) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--run-id", required=True)
+    run_selector = parser.add_mutually_exclusive_group(required=True)
+    run_selector.add_argument("--run-id")
+    run_selector.add_argument("--next", action="store_true")
     parser.add_argument("--permission-mode", default="auto")
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--push", action="store_true")
     args = parser.parse_args()
 
     root = Path.cwd()
-    run_dir = ensure_prepared(root, args.run_id)
+    run_id = next_run_id(root) if args.next else args.run_id
+    print(f"selected run: {run_id}")
+    run_dir = ensure_prepared(root, run_id)
     metadata = read_json(run_dir / "metadata.json")
     worktree = root / metadata["worktree"]
 
     claude_returncode = execute_claude(run_dir, worktree, args.permission_mode)
-    capture_returncode = capture(root, args.run_id)
+    capture_returncode = capture(root, run_id)
     if args.commit:
-        commit_and_push(root, args.run_id, args.push)
+        commit_and_push(root, run_id, args.push)
 
     if claude_returncode != 0:
         print(f"claude exited nonzero: {claude_returncode}")

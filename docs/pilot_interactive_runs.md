@@ -9,7 +9,7 @@ The following observations were collected with interactive Claude Code operation
 - `task-1-claude-code-cgp-r3`
 - `task-1-claude-code-baseline-r3`
 
-These records remain under `runs/raw/` for auditability and harness-debug provenance, but they are archived as pilot/debug observations and should not be pooled with production observations unless the analysis plan explicitly models execution mode.
+These records remain under `runs/raw/_pilot_interactive/` for auditability and harness-debug provenance, but they are archived as pilot/debug observations and should not be pooled with production observations unless the analysis plan explicitly models execution mode.
 
 Production data collection should use one consistent execution mode. Beginning after this archive note, Claude Code production runs should use the automated print-mode wrapper:
 
