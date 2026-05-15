@@ -1,0 +1,15 @@
+{
+  "run_id": "task-1-gemini-cli-cgp-r3",
+  "objective": "Add a function `validate_email(email: str) -> bool` to `src/api/validators.py` that returns `True` if the email is well-formed and `False` otherwise. Add corresponding tests in `tests/test_validators.py`.",
+  "evidence": {
+    "files_modified": [
+      "benchmark-repo/src/api/validators.py",
+      "benchmark-repo/tests/test_validators.py"
+    ],
+    "verification_command_1": "cd benchmark-repo && pytest tests/test_validators.py",
+    "verification_result_1": "success",
+    "verification_command_2": "cd benchmark-repo && pytest",
+    "verification_result_2": "success"
+  },
+  "compliance": "The implementation stayed within allowed files and adhered to the CGP protocol scaffold."
+}
