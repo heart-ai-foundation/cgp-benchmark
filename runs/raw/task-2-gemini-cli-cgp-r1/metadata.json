@@ -11,9 +11,17 @@
   "metrics_base_commit": "af8298667f5967e4b6b625c5663df0b11d2cd190",
   "task_spec": "docs/task_specs/task-2-user-docstring.md",
   "run_plan": "runs/agent_extension_run_plan.csv",
-  "status": "prepared",
+  "status": "completed_valid",
   "setup_commit": "af8298667f5967e4b6b625c5663df0b11d2cd190",
   "worktree": "worktrees/task-2-gemini-cli-cgp-r1",
   "execution_mode": "gemini-cli-headless",
-  "transcript": "transcripts/gemini-2026-05-15T191819+0000.json"
+  "transcript": "transcripts/gemini-2026-05-15T192159+0000.json",
+  "completed_at": "2026-05-15T19:24:57+00:00",
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": 3,
+  "run_validity": "valid"
 }

@@ -1,0 +1,127 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..6939df7 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,29 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """
++    Represents a user in the system.
++
++    Attributes:
++        id (int): Unique identifier for the user.
++        email (str): User's email address.
++        name (str): User's full name.
++        active (bool): Whether the user account is active. Defaults to True.
++        item_ids (list[int]): List of IDs of items owned by the user.
++
++    Methods:
++        can_login() -> bool:
++            Determines if the user is eligible to log in.
++        owns_item(item_id: int) -> bool:
++            Checks if the user owns the specified item ID.
++
++    Example:
++        >>> user = User(id=1, email="user@example.com", name="John Doe")
++        >>> user.can_login()
++        True
++        >>> user.owns_item(42)
++        False
++    """
+     id: int
+     email: str
+     name: str
+
+diff --git a/evidence/task-2-gemini-cli-cgp-r1-evidence.json b/evidence/task-2-gemini-cli-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..d256c47
+--- /dev/null
++++ b/evidence/task-2-gemini-cli-cgp-r1-evidence.json
+@@ -0,0 +1,17 @@
++{
++  "run_id": "task-2-gemini-cli-cgp-r1",
++  "task": "task-2",
++  "condition": "cgp",
++  "status": "success",
++  "files_modified": [
++    "benchmark-repo/src/models/user.py"
++  ],
++  "evidence_paths": {
++    "design_note": "notes/task-2-gemini-cli-cgp-r1-design.md",
++    "run_record": "runs/task-2-gemini-cli-cgp-r1-run-record.json",
++    "evidence_json": "evidence/task-2-gemini-cli-cgp-r1-evidence.json"
++  },
++  "verification_results": {
++    "static_docstring_structure_check": "passed"
++  }
++}
+
+diff --git a/notes/task-2-gemini-cli-cgp-r1-design.md b/notes/task-2-gemini-cli-cgp-r1-design.md
+new file mode 100644
+index 0000000..de9ea2b
+--- /dev/null
++++ b/notes/task-2-gemini-cli-cgp-r1-design.md
+@@ -0,0 +1,16 @@
++# Design Note - Task 2 (User Class Docstring)
++
++## Rationale
++The `User` class in `benchmark-repo/src/models/user.py` currently lacks documentation. To improve maintainability and provide clear usage guidelines, a comprehensive docstring is required. This docstring will follow a standard format (Google style) to cover class attributes, methods, and a brief usage example.
++
++## Scope
++- Modify `benchmark-repo/src/models/user.py` to add the `User` class docstring.
++- Ensure no other files are modified.
++- Ensure no logic changes are introduced.
++
++## Verification Plan
++- Manual inspection of the docstring to ensure it covers:
++    - Attributes: `id`, `email`, `name`, `active`, `item_ids`.
++    - Methods: `can_login`, `owns_item`.
++    - Example usage.
++- "Static docstring structure check": Confirmed the presence of triple-quoted string immediately following the class definition with standard sections.
+
+diff --git a/runs/task-2-gemini-cli-cgp-r1-run-record.json b/runs/task-2-gemini-cli-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..a270012
+--- /dev/null
++++ b/runs/task-2-gemini-cli-cgp-r1-run-record.json
+@@ -0,0 +1,39 @@
++{
++  "run_id": "task-2-gemini-cli-cgp-r1",
++  "objective": "Add a complete docstring to the User class in src/models/user.py",
++  "steps": [
++    {
++      "step": 1,
++      "description": "Read protocol files and task specification",
++      "status": "completed"
++    },
++    {
++      "step": 2,
++      "description": "Investigate User class structure and existing patterns",
++      "status": "completed"
++    },
++    {
++      "step": 3,
++      "description": "Create design note",
++      "status": "completed"
++    },
++    {
++      "step": 4,
++      "description": "Initialize run record",
++      "status": "completed"
++    },
++    {
++      "step": 5,
++      "description": "Apply docstring to User class",
++      "status": "completed"
++    },
++    {
++      "step": 6,
++      "description": "Finalize evidence trio",
++      "status": "completed"
++    }
++  ],
++  "verification": {
++    "static_docstring_structure_check": "passed"
++  }
++}
