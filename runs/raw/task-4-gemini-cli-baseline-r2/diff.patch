@@ -1,0 +1,96 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..020d0c2 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -9,21 +9,32 @@ def parse_config(raw: dict) -> dict:
+     }
+ 
+     if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
++        parsed["debug"] = _parse_debug(raw["debug"])
+ 
+     if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
++        parsed["page_size"] = _parse_page_size(raw["page_size"])
+ 
+     if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
++        parsed["features"] = _parse_features(raw["features"])
+ 
+     return parsed
++
++
++def _parse_debug(value) -> bool:
++    return bool(value)
++
++
++def _parse_page_size(value) -> int:
++    page_size = int(value)
++    if page_size < 1 or page_size > 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
++
++def _parse_features(value) -> list[str]:
++    if isinstance(value, str):
++        return [value]
++    elif isinstance(value, list):
++        return [str(feature) for feature in value]
++    else:
++        raise ValueError("features must be a string or list")
+
+diff --git a/benchmark-repo/tests/test_config.py b/benchmark-repo/tests/test_config.py
+new file mode 100644
+index 0000000..b67080e
+--- /dev/null
++++ b/benchmark-repo/tests/test_config.py
+@@ -0,0 +1,40 @@
++import pytest
++from src.utils.config import parse_config
++
++def test_parse_config_defaults():
++    assert parse_config({}) == {
++        "debug": False,
++        "page_size": 25,
++        "features": [],
++    }
++
++def test_parse_config_debug():
++    assert parse_config({"debug": True})["debug"] is True
++    assert parse_config({"debug": 1})["debug"] is True
++    assert parse_config({"debug": 0})["debug"] is False
++
++def test_parse_config_page_size():
++    assert parse_config({"page_size": 10})["page_size"] == 10
++    assert parse_config({"page_size": "50"})["page_size"] == 50
++    
++    with pytest.raises(ValueError, match="page_size must be between 1 and 100"):
++        parse_config({"page_size": 0})
++    with pytest.raises(ValueError, match="page_size must be between 1 and 100"):
++        parse_config({"page_size": 101})
++
++def test_parse_config_features_string():
++    assert parse_config({"features": "auth"})["features"] == ["auth"]
++
++def test_parse_config_features_list():
++    assert parse_config({"features": ["auth", "items"]})["features"] == ["auth", "items"]
++    assert parse_config({"features": [1, 2]})["features"] == ["1", "2"]
++
++def test_parse_config_invalid_features():
++    with pytest.raises(ValueError, match="features must be a string or list"):
++        parse_config({"features": 123})
++
++def test_parse_config_invalid_input():
++    with pytest.raises(TypeError, match="config must be a dictionary"):
++        parse_config(None)
++    with pytest.raises(TypeError, match="config must be a dictionary"):
++        parse_config([1, 2, 3])

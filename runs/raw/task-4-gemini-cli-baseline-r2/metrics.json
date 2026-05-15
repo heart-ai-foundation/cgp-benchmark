@@ -1,0 +1,13 @@
+{
+  "changed_files": [
+    "benchmark-repo/src/utils/config.py",
+    "benchmark-repo/tests/test_config.py"
+  ],
+  "allowed_files": [
+    "benchmark-repo/src/utils/config.py"
+  ],
+  "scope_drift_count": 1,
+  "scope_drift_files": [
+    "benchmark-repo/tests/test_config.py"
+  ]
+}
