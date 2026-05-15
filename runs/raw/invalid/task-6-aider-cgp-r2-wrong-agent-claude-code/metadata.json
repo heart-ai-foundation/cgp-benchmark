@@ -11,7 +11,7 @@
   "metrics_base_commit": "e65d5e1307277ce8b3073200eacbce5a072f5054",
   "task_spec": "docs/task_specs/task-6-login-empty-password.md",
   "run_plan": "runs/run_plan.csv",
-  "status": "completed_valid",
+  "status": "completed_invalid",
   "setup_commit": "e65d5e1307277ce8b3073200eacbce5a072f5054",
   "worktree": "worktrees/task-6-aider-cgp-r2",
   "execution_mode": "claude-code-print",
@@ -23,5 +23,9 @@
   "verification_command_compliance": true,
   "task_verification_success": true,
   "evidence_trio_completeness": 3,
-  "run_validity": "valid"
+  "run_validity": "invalid",
+  "archive_status": "invalid_wrong_agent",
+  "invalid_reason": "planned agent was aider but execution_mode shows claude-code-print; preserving as cross-agent harness error, not benchmark evidence",
+  "archived_at": "2026-05-15T23:56:04+00:00",
+  "replacement_required": "task-6-aider-cgp-r2"
 }
