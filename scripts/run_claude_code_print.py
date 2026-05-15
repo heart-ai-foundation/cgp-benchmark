@@ -12,7 +12,7 @@ import threading
 from datetime import UTC, datetime
 from pathlib import Path
 
-from scripts.stop_condition_alerts import is_stop_condition_alert
+from stop_condition_alerts import is_stop_condition_alert
 
 RUN_PLAN = Path("runs/run_plan.csv")
 
