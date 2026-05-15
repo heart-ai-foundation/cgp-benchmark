@@ -1,0 +1,102 @@
+{
+  "schema": "cgp-benchmark.evidence.v1",
+  "run_id": "task-5-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-5",
+  "task_slug": "favorite-items",
+  "completed_at_utc": "2026-05-15T23:20:59Z",
+  "scope": {
+    "allowed_files": [
+      "benchmark-repo/src/api/routes/items.py",
+      "benchmark-repo/src/models/item.py",
+      "benchmark-repo/src/models/user.py",
+      "benchmark-repo/tests/test_items.py",
+      "notes/task-5-claude-code-cgp-r1-design.md",
+      "runs/task-5-claude-code-cgp-r1-run-record.json",
+      "evidence/task-5-claude-code-cgp-r1-evidence.json"
+    ],
+    "files_touched": [
+      "benchmark-repo/src/api/routes/items.py",
+      "benchmark-repo/src/models/user.py",
+      "benchmark-repo/tests/test_items.py",
+      "notes/task-5-claude-code-cgp-r1-design.md",
+      "runs/task-5-claude-code-cgp-r1-run-record.json",
+      "evidence/task-5-claude-code-cgp-r1-evidence.json"
+    ],
+    "out_of_scope_touched": [],
+    "drift_surface_touched": []
+  },
+  "api_surface": {
+    "favorite_item": {
+      "signature": "favorite_item(user_id: int, item_id: int) -> dict",
+      "implemented_in": "benchmark-repo/src/api/routes/items.py"
+    },
+    "unfavorite_item": {
+      "signature": "unfavorite_item(user_id: int, item_id: int) -> dict",
+      "implemented_in": "benchmark-repo/src/api/routes/items.py"
+    },
+    "list_favorite_items": {
+      "signature": "list_favorite_items(user_id: int) -> list[dict]",
+      "implemented_in": "benchmark-repo/src/api/routes/items.py"
+    }
+  },
+  "behaviors": [
+    {
+      "id": "favorite",
+      "description": "A user can favorite an item.",
+      "covered_by_test": "tests/test_items.py::test_favorite_item_records_favorite",
+      "status": "pass"
+    },
+    {
+      "id": "unfavorite",
+      "description": "A user can unfavorite an item.",
+      "covered_by_test": "tests/test_items.py::test_unfavorite_removes_favorite",
+      "status": "pass"
+    },
+    {
+      "id": "list_favorites",
+      "description": "A user can list their favorite items.",
+      "covered_by_test": "tests/test_items.py::test_list_favorite_items_returns_item_dicts",
+      "status": "pass"
+    },
+    {
+      "id": "favorite_non_owned_fails",
+      "description": "Favoriting a non-owned item must fail.",
+      "covered_by_test": "tests/test_items.py::test_favorite_non_owned_item_fails",
+      "status": "pass"
+    },
+    {
+      "id": "favorite_idempotent",
+      "description": "Favoriting the same item twice must be idempotent.",
+      "covered_by_test": "tests/test_items.py::test_favorite_item_is_idempotent",
+      "status": "pass"
+    },
+    {
+      "id": "unfavorite_idempotent",
+      "description": "Unfavoriting an item that is not currently favorited must be idempotent.",
+      "covered_by_test": "tests/test_items.py::test_unfavorite_not_currently_favorited_is_idempotent",
+      "status": "pass"
+    }
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_items.py",
+      "result": "pass",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "passed": 16,
+      "failed": 0
+    }
+  ],
+  "diff_stat": {
+    "files_changed": 3,
+    "insertions": 109,
+    "deletions": 1
+  },
+  "stop_condition_triggered": false
+}

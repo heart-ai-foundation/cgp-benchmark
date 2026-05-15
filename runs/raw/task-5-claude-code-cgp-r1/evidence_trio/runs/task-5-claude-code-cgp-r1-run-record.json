@@ -1,0 +1,45 @@
+{
+  "run_id": "task-5-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-5",
+  "task_slug": "favorite-items",
+  "start_tag": "task-5-start",
+  "phase": "phase-1",
+  "active_protocol": "next-prompt-protocols/active/task-5-claude-code-cgp-r1.md",
+  "manifest_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "head_at_start": "bf8ce7b10f57a35b08e34c47d5e2f6336ab4622f",
+  "completed_at_utc": "2026-05-15T23:20:59Z",
+  "allowed_files_touched": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py",
+    "notes/task-5-claude-code-cgp-r1-design.md",
+    "runs/task-5-claude-code-cgp-r1-run-record.json",
+    "evidence/task-5-claude-code-cgp-r1-evidence.json"
+  ],
+  "allowed_files_not_touched": [
+    "benchmark-repo/src/models/item.py"
+  ],
+  "drift_surface_touched": [],
+  "out_of_scope_touched": [],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_items.py",
+      "result": "pass",
+      "passed": 9,
+      "failed": 0
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "passed": 16,
+      "failed": 0
+    }
+  ],
+  "diff_stat": {
+    "files_changed": 3,
+    "insertions": 109,
+    "deletions": 1
+  }
+}
