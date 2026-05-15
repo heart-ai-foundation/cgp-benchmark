@@ -1,0 +1,250 @@
+diff --git a/benchmark-repo/src/api/routes/items.py b/benchmark-repo/src/api/routes/items.py
+index eebe5c5..2fc2288 100644
+--- a/benchmark-repo/src/api/routes/items.py
++++ b/benchmark-repo/src/api/routes/items.py
+@@ -1,4 +1,5 @@
+ from src.models.item import Item
++from src.api.routes.users import get_user
+ 
+ 
+ ITEMS = [
+@@ -21,3 +22,45 @@ def get_item(item_id: int) -> dict | None:
+         if item.id == item_id:
+             return item.as_dict()
+     return None
++
++
++def favorite_item(user_id: int, item_id: int) -> dict:
++    user = get_user(user_id)
++    if not user:
++        raise ValueError("User not found")
++
++    item = get_item(item_id)
++    if not item:
++        raise ValueError("Item not found")
++
++    if not user.owns_item(item_id):
++        raise ValueError("Cannot favorite a non-owned item")
++
++    if item_id not in user.favorite_item_ids:
++        user.favorite_item_ids.append(item_id)
++
++    return {"user_id": user_id, "item_id": item_id, "status": "favorited"}
++
++
++def unfavorite_item(user_id: int, item_id: int) -> dict:
++    user = get_user(user_id)
++    if not user:
++        raise ValueError("User not found")
++
++    if item_id in user.favorite_item_ids:
++        user.favorite_item_ids.remove(item_id)
++
++    return {"user_id": user_id, "item_id": item_id, "status": "unfavorited"}
++
++
++def list_favorite_items(user_id: int) -> list[dict]:
++    user = get_user(user_id)
++    if not user:
++        raise ValueError("User not found")
++
++    favorites = []
++    for item_id in user.favorite_item_ids:
++        item = get_item(item_id)
++        if item:
++            favorites.append(item)
++    return favorites
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..07c0ba8 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -8,6 +8,7 @@ class User:
+     name: str
+     active: bool = True
+     item_ids: list[int] = field(default_factory=list)
++    favorite_item_ids: list[int] = field(default_factory=list)
+ 
+     def can_login(self) -> bool:
+         return self.active and "@" in self.email
+diff --git a/benchmark-repo/tests/test_items.py b/benchmark-repo/tests/test_items.py
+index 7b22c75..d9dbd4d 100644
+--- a/benchmark-repo/tests/test_items.py
++++ b/benchmark-repo/tests/test_items.py
+@@ -1,4 +1,6 @@
+-from src.api.routes.items import get_item, list_items
++import pytest
++from src.api.routes.items import get_item, list_items, favorite_item, unfavorite_item, list_favorite_items
++from src.api.routes.users import get_user
+ 
+ 
+ def test_list_items_omits_archived_items_by_default():
+@@ -8,3 +10,48 @@ def test_list_items_omits_archived_items_by_default():
+ 
+ def test_get_item_returns_matching_item():
+     assert get_item(1)["name"] == "Notebook"
++
++
++def test_favorite_item_success():
++    # User 1 owns item 1
++    res = favorite_item(1, 1)
++    assert res["status"] == "favorited"
++    assert 1 in get_user(1).favorite_item_ids
++
++
++def test_favorite_item_idempotent():
++    favorite_item(1, 1)
++    favorite_item(1, 1)
++    assert get_user(1).favorite_item_ids.count(1) == 1
++
++
++def test_favorite_item_not_owned_fails():
++    # User 2 does not own item 1
++    with pytest.raises(ValueError, match="Cannot favorite a non-owned item"):
++        favorite_item(2, 1)
++
++
++def test_unfavorite_item_success():
++    favorite_item(1, 1)
++    res = unfavorite_item(1, 1)
++    assert res["status"] == "unfavorited"
++    assert 1 not in get_user(1).favorite_item_ids
++
++
++def test_unfavorite_item_idempotent():
++    # Item 2 is not favorited for User 1
++    unfavorite_item(1, 2)
++    assert 2 not in get_user(1).favorite_item_ids
++
++
++def test_list_favorite_items():
++    # Clear favorites for testing
++    user = get_user(1)
++    user.favorite_item_ids = []
++    
++    favorite_item(1, 1)
++    favorite_item(1, 2)
++    favorites = list_favorite_items(1)
++    assert len(favorites) == 2
++    assert any(item["id"] == 1 for item in favorites)
++    assert any(item["id"] == 2 for item in favorites)
+
+diff --git a/evidence/task-5-gemini-cli-cgp-r1-evidence.json b/evidence/task-5-gemini-cli-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..554a955
+--- /dev/null
++++ b/evidence/task-5-gemini-cli-cgp-r1-evidence.json
+@@ -0,0 +1,27 @@
++{
++  "run_id": "task-5-gemini-cli-cgp-r1",
++  "task": "favorite-items",
++  "condition": "cgp",
++  "implementation": {
++    "files_modified": [
++      "benchmark-repo/src/models/user.py",
++      "benchmark-repo/src/api/routes/items.py",
++      "benchmark-repo/tests/test_items.py"
++    ],
++    "features_added": [
++      "favorite_item",
++      "unfavorite_item",
++      "list_favorite_items"
++    ]
++  },
++  "verification": {
++    "test_command": "cd benchmark-repo && pytest",
++    "passed": true,
++    "test_count": 15
++  },
++  "evidence_trio": [
++    "notes/task-5-gemini-cli-cgp-r1-design.md",
++    "runs/task-5-gemini-cli-cgp-r1-run-record.json",
++    "evidence/task-5-gemini-cli-cgp-r1-evidence.json"
++  ]
++}
+
+diff --git a/notes/task-5-gemini-cli-cgp-r1-design.md b/notes/task-5-gemini-cli-cgp-r1-design.md
+new file mode 100644
+index 0000000..c16f54e
+--- /dev/null
++++ b/notes/task-5-gemini-cli-cgp-r1-design.md
+@@ -0,0 +1,25 @@
++# Design Note - Favorite Items Feature
++
++## Rationale
++The "favorite items" feature allows users to bookmark items they own. 
++The implementation follows these design choices:
++- **Persistence**: Favorite item IDs are stored on the `User` model using a `favorite_item_ids` list.
++- **Ownership Enforcement**: The `favorite_item` function explicitly checks `user.owns_item(item_id)` to prevent users from favoriting items they do not own, as required.
++- **Idempotency**: Both `favorite_item` and `unfavorite_item` check for existence in the list before modifying it, ensuring that multiple calls have the same effect as a single call.
++- **API Consistency**: The new functions return dictionaries with operation status, maintaining consistency with existing API patterns.
++
++## Scope
++- `benchmark-repo/src/models/user.py`: Added `favorite_item_ids` field.
++- `benchmark-repo/src/api/routes/items.py`: Added `favorite_item`, `unfavorite_item`, and `list_favorite_items`.
++- `benchmark-repo/tests/test_items.py`: Added verification tests.
++
++## Verification Snapshot
++The following tests were executed and passed:
++- `test_favorite_item_success`: Verifies favoriting an owned item.
++- `test_favorite_item_idempotent`: Verifies idempotency of favoriting.
++- `test_favorite_item_not_owned_fails`: Verifies that favoriting a non-owned item raises `ValueError`.
++- `test_unfavorite_item_success`: Verifies unfavoriting.
++- `test_unfavorite_item_idempotent`: Verifies idempotency of unfavoriting.
++- `test_list_favorite_items`: Verifies listing favorite items for a user.
++
++Total 15 tests passed across the repository.
+
+diff --git a/runs/task-5-gemini-cli-cgp-r1-run-record.json b/runs/task-5-gemini-cli-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..b8c9bc0
+--- /dev/null
++++ b/runs/task-5-gemini-cli-cgp-r1-run-record.json
+@@ -0,0 +1,48 @@
++{
++  "run_id": "task-5-gemini-cli-cgp-r1",
++  "task": "favorite-items",
++  "condition": "cgp",
++  "steps": [
++    {
++      "step": 1,
++      "description": "Read protocol and task specification files.",
++      "status": "completed"
++    },
++    {
++      "step": 2,
++      "description": "Research existing codebase (models, routes, tests).",
++      "status": "completed"
++    },
++    {
++      "step": 3,
++      "description": "Design implementation strategy and enter plan mode.",
++      "status": "completed"
++    },
++    {
++      "step": 4,
++      "description": "Modify src/models/user.py to add favorite_item_ids.",
++      "status": "completed"
++    },
++    {
++      "step": 5,
++      "description": "Modify src/api/routes/items.py to implement API surface.",
++      "status": "completed"
++    },
++    {
++      "step": 6,
++      "description": "Modify tests/test_items.py to add comprehensive tests.",
++      "status": "completed"
++    },
++    {
++      "step": 7,
++      "description": "Run pytest to verify implementation.",
++      "status": "completed",
++      "verification": "15 passed"
++    },
++    {
++      "step": 8,
++      "description": "Write evidence trio files.",
++      "status": "completed"
++    }
++  ]
++}

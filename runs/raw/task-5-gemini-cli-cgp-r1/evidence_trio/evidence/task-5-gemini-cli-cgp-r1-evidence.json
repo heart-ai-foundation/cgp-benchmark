@@ -1,0 +1,27 @@
+{
+  "run_id": "task-5-gemini-cli-cgp-r1",
+  "task": "favorite-items",
+  "condition": "cgp",
+  "implementation": {
+    "files_modified": [
+      "benchmark-repo/src/models/user.py",
+      "benchmark-repo/src/api/routes/items.py",
+      "benchmark-repo/tests/test_items.py"
+    ],
+    "features_added": [
+      "favorite_item",
+      "unfavorite_item",
+      "list_favorite_items"
+    ]
+  },
+  "verification": {
+    "test_command": "cd benchmark-repo && pytest",
+    "passed": true,
+    "test_count": 15
+  },
+  "evidence_trio": [
+    "notes/task-5-gemini-cli-cgp-r1-design.md",
+    "runs/task-5-gemini-cli-cgp-r1-run-record.json",
+    "evidence/task-5-gemini-cli-cgp-r1-evidence.json"
+  ]
+}
