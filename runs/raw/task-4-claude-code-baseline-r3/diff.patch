@@ -1,0 +1,70 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..77da219 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -1,29 +1,41 @@
++def _parse_debug(value) -> bool:
++    return bool(value)
++
++
++def _parse_page_size(value) -> int:
++    page_size = int(value)
++    if page_size < 1 or page_size > 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
++
++def _parse_features(value) -> list:
++    if isinstance(value, str):
++        return [value]
++    if isinstance(value, list):
++        return [str(feature) for feature in value]
++    raise ValueError("features must be a string or list")
++
++
++_DEFAULTS = {
++    "debug": False,
++    "page_size": 25,
++    "features": [],
++}
++
++_PARSERS = {
++    "debug": _parse_debug,
++    "page_size": _parse_page_size,
++    "features": _parse_features,
++}
++
++
+ def parse_config(raw: dict) -> dict:
+     if not isinstance(raw, dict):
+         raise TypeError("config must be a dictionary")
+ 
+-    parsed = {
+-        "debug": False,
+-        "page_size": 25,
+-        "features": [],
+-    }
+-
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
+-
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
+-
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
+-
++    parsed = dict(_DEFAULTS)
++    for key, parser in _PARSERS.items():
++        if key in raw:
++            parsed[key] = parser(raw[key])
+     return parsed
