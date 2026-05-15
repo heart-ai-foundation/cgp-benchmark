@@ -1,0 +1,140 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..4da4820 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -2,28 +2,36 @@ def parse_config(raw: dict) -> dict:
+     if not isinstance(raw, dict):
+         raise TypeError("config must be a dictionary")
+ 
+-    parsed = {
++    def _parse_debug(val):
++        return bool(val)
++
++    def _parse_page_size(val):
++        ps = int(val)
++        if not 1 <= ps <= 100:
++            raise ValueError("page_size must be between 1 and 100")
++        return ps
++
++    def _parse_features(val):
++        if isinstance(val, str):
++            return [val]
++        if isinstance(val, list):
++            return [str(f) for f in val]
++        raise ValueError("features must be a string or list")
++
++    handlers = {
++        "debug": _parse_debug,
++        "page_size": _parse_page_size,
++        "features": _parse_features,
++    }
++
++    config = {
+         "debug": False,
+         "page_size": 25,
+         "features": [],
+     }
+ 
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
+-
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
+-
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
++    for key, handler in handlers.items():
++        if key in raw:
++            config[key] = handler(raw[key])
+ 
+-    return parsed
++    return config
+
+diff --git a/evidence/task-4-gemini-cli-cgp-r3-evidence.json b/evidence/task-4-gemini-cli-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..11b4257
+--- /dev/null
++++ b/evidence/task-4-gemini-cli-cgp-r3-evidence.json
+@@ -0,0 +1,11 @@
++{
++  "run_id": "task-4-gemini-cli-cgp-r3",
++  "task": "parse-config-refactor",
++  "status": "completed",
++  "evidence": {
++    "pytest_status": "passed",
++    "test_count": 9,
++    "import_check": "passed",
++    "files_modified": ["benchmark-repo/src/utils/config.py"]
++  }
++}
+
+diff --git a/notes/task-4-gemini-cli-cgp-r3-design.md b/notes/task-4-gemini-cli-cgp-r3-design.md
+new file mode 100644
+index 0000000..620f24c
+--- /dev/null
++++ b/notes/task-4-gemini-cli-cgp-r3-design.md
+@@ -0,0 +1,21 @@
++# Design Note - Task 4: Parse Config Refactor
++
++## Rationale
++The current `parse_config` function in `src/utils/config.py` handles multiple configuration keys with nested conditional logic and validation, leading to higher cyclomatic complexity. Refactoring this into smaller, purpose-specific functions will improve maintainability and readability.
++
++## Scope
++- Modify `benchmark-repo/src/utils/config.py`.
++- No changes to other files.
++
++## Proposed Changes
++- Extract `debug` parsing logic.
++- Extract `page_size` parsing and validation logic.
++- Extract `features` parsing and validation logic.
++- Update `parse_config` to orchestrate these helpers.
++
++## Verification Snapshot
++- Baseline: `pytest` passed (9 items).
++- Post-refactor: `pytest` passed (9 items).
++- Import check: `from src.utils.config import parse_config` works and behaves correctly.
++  - Test input: `{'debug': '1', 'page_size': '50', 'features': 'test'}`
++  - Result: `{'debug': True, 'page_size': 50, 'features': ['test']}`
+
+diff --git a/runs/task-4-gemini-cli-cgp-r3-run-record.json b/runs/task-4-gemini-cli-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..e6603f6
+--- /dev/null
++++ b/runs/task-4-gemini-cli-cgp-r3-run-record.json
+@@ -0,0 +1,27 @@
++{
++  "run_id": "task-4-gemini-cli-cgp-r3",
++  "start_time": "2026-05-15T10:00:00Z",
++  "events": [
++    {
++      "timestamp": "2026-05-15T10:00:05Z",
++      "event": "protocol_read",
++      "details": "Read all CGP protocol files and task specification."
++    },
++    {
++      "timestamp": "2026-05-15T10:00:10Z",
++      "event": "baseline_verification",
++      "details": "Ran pytest; all 9 tests passed."
++    },
++    {
++      "timestamp": "2026-05-15T10:05:00Z",
++      "event": "implementation",
++      "details": "Refactored parse_config using nested handler functions and a dispatch dictionary to reduce complexity."
++    },
++    {
++      "timestamp": "2026-05-15T10:06:00Z",
++      "event": "post_refactor_verification",
++      "details": "Ran pytest; all 9 tests passed. Verified import and behavior with a manual check."
++    }
++  ],
++  "end_time": "2026-05-15T10:07:00Z"
++}
