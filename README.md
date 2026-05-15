@@ -19,6 +19,7 @@ Initial scaffold. The experiment design is locked in the Heart Corpus as `CGP_Dr
 - `analysis/` - reproducible analysis scripts
 - `paper/` - demo paper source
 - `docs/` - experiment protocol and task documentation
+- `docs/osf_preregistration/` - OSF-ready pre-data preregistration packet
 
 ## License
 

@@ -9,4 +9,4 @@ The six controlled tasks are:
 5. Feature implementation from spec: favorite items.
 6. Targeted bug fix: empty password handling in `LoginForm.jsx`.
 
-Each task receives a dedicated start tag before experiment execution.
+Each task receives a dedicated start tag before experiment execution. Full task specs live in `docs/task_specs/`.
