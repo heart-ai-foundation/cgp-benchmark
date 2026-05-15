@@ -1,0 +1,137 @@
+diff --git a/benchmark-repo/src/api/routes/items.py b/benchmark-repo/src/api/routes/items.py
+index eebe5c5..50962f8 100644
+--- a/benchmark-repo/src/api/routes/items.py
++++ b/benchmark-repo/src/api/routes/items.py
+@@ -1,3 +1,4 @@
++from src.api.routes.users import get_user
+ from src.models.item import Item
+ 
+ 
+@@ -21,3 +22,43 @@ def get_item(item_id: int) -> dict | None:
+         if item.id == item_id:
+             return item.as_dict()
+     return None
++
++
++def _find_item(item_id: int) -> Item | None:
++    for item in ITEMS:
++        if item.id == item_id:
++            return item
++    return None
++
++
++def favorite_item(user_id: int, item_id: int) -> dict:
++    user = get_user(user_id)
++    if user is None:
++        return {"ok": False, "error": "user_not_found"}
++    if _find_item(item_id) is None:
++        return {"ok": False, "error": "item_not_found"}
++    if not user.owns_item(item_id):
++        return {"ok": False, "error": "not_owner"}
++    if item_id not in user.favorite_item_ids:
++        user.favorite_item_ids.append(item_id)
++    return {"ok": True, "user_id": user.id, "item_id": item_id, "favorited": True}
++
++
++def unfavorite_item(user_id: int, item_id: int) -> dict:
++    user = get_user(user_id)
++    if user is None:
++        return {"ok": False, "error": "user_not_found"}
++    if item_id in user.favorite_item_ids:
++        user.favorite_item_ids.remove(item_id)
++    return {"ok": True, "user_id": user.id, "item_id": item_id, "favorited": False}
++
++
++def list_favorite_items(user_id: int) -> list[dict]:
++    user = get_user(user_id)
++    if user is None:
++        return []
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if item.id in user.favorite_item_ids
++    ]
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..07c0ba8 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -8,6 +8,7 @@ class User:
+     name: str
+     active: bool = True
+     item_ids: list[int] = field(default_factory=list)
++    favorite_item_ids: list[int] = field(default_factory=list)
+ 
+     def can_login(self) -> bool:
+         return self.active and "@" in self.email
+diff --git a/benchmark-repo/tests/test_items.py b/benchmark-repo/tests/test_items.py
+index 7b22c75..2735a55 100644
+--- a/benchmark-repo/tests/test_items.py
++++ b/benchmark-repo/tests/test_items.py
+@@ -1,4 +1,22 @@
+-from src.api.routes.items import get_item, list_items
++import pytest
++
++from src.api.routes.items import (
++    favorite_item,
++    get_item,
++    list_favorite_items,
++    list_items,
++    unfavorite_item,
++)
++from src.api.routes.users import get_user
++
++
++@pytest.fixture(autouse=True)
++def _reset_favorites():
++    for user_id in (1, 2):
++        user = get_user(user_id)
++        if user is not None:
++            user.favorite_item_ids.clear()
++    yield
+ 
+ 
+ def test_list_items_omits_archived_items_by_default():
+@@ -8,3 +26,43 @@ def test_list_items_omits_archived_items_by_default():
+ 
+ def test_get_item_returns_matching_item():
+     assert get_item(1)["name"] == "Notebook"
++
++
++def test_favorite_item_adds_to_favorites():
++    result = favorite_item(user_id=1, item_id=1)
++    assert result["ok"] is True
++    favorites = list_favorite_items(user_id=1)
++    assert [f["id"] for f in favorites] == [1]
++
++
++def test_favorite_non_owned_item_fails():
++    result = favorite_item(user_id=1, item_id=3)
++    assert result["ok"] is False
++    assert list_favorite_items(user_id=1) == []
++
++
++def test_favorite_item_is_idempotent():
++    favorite_item(user_id=1, item_id=1)
++    favorite_item(user_id=1, item_id=1)
++    favorites = list_favorite_items(user_id=1)
++    assert [f["id"] for f in favorites] == [1]
++
++
++def test_unfavorite_item_removes_from_favorites():
++    favorite_item(user_id=1, item_id=1)
++    result = unfavorite_item(user_id=1, item_id=1)
++    assert result["ok"] is True
++    assert list_favorite_items(user_id=1) == []
++
++
++def test_unfavorite_item_is_idempotent_when_not_favorited():
++    result = unfavorite_item(user_id=1, item_id=1)
++    assert result["ok"] is True
++    assert list_favorite_items(user_id=1) == []
++
++
++def test_list_favorite_items_returns_only_users_favorites():
++    favorite_item(user_id=1, item_id=2)
++    favorite_item(user_id=2, item_id=3)
++    user1_favs = list_favorite_items(user_id=1)
++    assert [f["id"] for f in user1_favs] == [2]

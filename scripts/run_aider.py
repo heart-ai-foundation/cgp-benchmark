@@ -105,7 +105,7 @@ def execute_aider(run_dir: Path, worktree: Path, model: str | None, timeout: int
     command = [
         "aider",
         "--message-file",
-        str(prompt_path),
+        str(prompt_path.resolve()),
         "--yes-always",
         "--no-pretty",
         "--no-stream",
@@ -113,9 +113,9 @@ def execute_aider(run_dir: Path, worktree: Path, model: str | None, timeout: int
         "--no-show-model-warnings",
         "--no-gitignore",
         "--llm-history-file",
-        str(llm_history_path),
+        str(llm_history_path.resolve()),
         "--chat-history-file",
-        str(chat_history_path),
+        str(chat_history_path.resolve()),
     ]
     if model:
         command.extend(["--model", model])
