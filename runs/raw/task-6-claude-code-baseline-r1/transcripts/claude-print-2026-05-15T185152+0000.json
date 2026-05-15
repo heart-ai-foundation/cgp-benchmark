@@ -1,0 +1,9 @@
+{
+  "command": "claude -p --permission-mode bypassPermissions --dangerously-skip-permissions --verbose --output-format stream-json --include-partial-messages",
+  "working_directory": "/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-claude-code-baseline-r1",
+  "returncode": 0,
+  "stdout": "transcripts/claude-print-2026-05-15T185152+0000.stream.jsonl",
+  "stderr": "transcripts/claude-print-2026-05-15T185152+0000.stderr.txt",
+  "stop_condition_alerted": false,
+  "stop_condition_matches": []
+}

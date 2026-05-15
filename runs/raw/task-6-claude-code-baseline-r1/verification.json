@@ -1,0 +1,26 @@
+{
+  "run_id": "task-6-claude-code-baseline-r1",
+  "metrics_base_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "verified_at": "2026-05-15T18:52:41+00:00",
+  "post_run_verification": [
+    {
+      "working_directory": "benchmark-repo",
+      "command": "npm test",
+      "result": "passed",
+      "returncode": 0,
+      "stdout_tail": "\n> cgp-benchmark-frontend@0.1.0 test\n> node --test frontend/tests/*.test.js\n\nTAP version 13\n# Subtest: renderUserList prints names and email addresses\nok 1 - renderUserList prints names and email addresses\n  ---\n  duration_ms: 5.514507\n  type: 'test'\n  ...\n# Subtest: renderItemList joins item names\nok 2 - renderItemList joins item names\n  ---\n  duration_ms: 1.866442\n  type: 'test'\n  ...\n# Subtest: submitLogin delegates valid credentials\nok 3 - submitLogin delegates valid credentials\n  ---\n  duration_ms: 1.387887\n  type: 'test'\n  ...\n# Subtest: submitLogin rejects empty password without throwing\nok 4 - submitLogin rejects empty password without throwing\n  ---\n  duration_ms: 2.012731\n  type: 'test'\n  ...\n1..4\n# tests 4\n# suites 0\n# pass 4\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 118.398154\n",
+      "stderr_tail": ""
+    }
+  ],
+  "changed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": null,
+  "run_validity": "valid"
+}
