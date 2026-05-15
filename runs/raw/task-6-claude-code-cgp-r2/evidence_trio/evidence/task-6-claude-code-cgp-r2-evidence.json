@@ -1,0 +1,44 @@
+{
+  "run_id": "task-6-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-6",
+  "task_slug": "login-empty-password",
+  "phase": "phase-1",
+  "outcome": "success",
+  "head_at_execution": "eebfef0d42f375daecc81b7e0d65d4beb54a9f5b",
+  "edits": [
+    {
+      "path": "benchmark-repo/frontend/src/components/LoginForm.jsx",
+      "change": "Replaced throw branch with structured return on empty password",
+      "summary": "if (!password) return { ok: false, error: 'Password is required' };"
+    },
+    {
+      "path": "benchmark-repo/frontend/tests/components.test.js",
+      "change": "Added regression test for empty password path",
+      "summary": "Asserts ok=false, error string, and authenticate not called"
+    }
+  ],
+  "allowed_files_respected": true,
+  "drift_surface_touched": [],
+  "non_goals_respected": true,
+  "verification": {
+    "command": "cd benchmark-repo && npm test",
+    "result": "pass",
+    "tests_total": 4,
+    "tests_passed": 4,
+    "tests_failed": 0,
+    "test_names": [
+      "renderUserList prints names and email addresses",
+      "renderItemList joins item names",
+      "submitLogin delegates valid credentials",
+      "submitLogin returns error for empty password"
+    ]
+  },
+  "evidence_trio": {
+    "design_note": "notes/task-6-claude-code-cgp-r2-design.md",
+    "run_record": "runs/task-6-claude-code-cgp-r2-run-record.json",
+    "evidence_json": "evidence/task-6-claude-code-cgp-r2-evidence.json"
+  },
+  "stop_condition_triggered": false
+}
