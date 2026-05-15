@@ -1,0 +1,9 @@
+{
+  "command": "gemini --skip-trust --approval-mode yolo --output-format stream-json",
+  "working_directory": "/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-2-gemini-cli-baseline-r1",
+  "returncode": 0,
+  "stdout": "transcripts/gemini-2026-05-15T192504+0000.stdout.jsonl",
+  "stderr": "transcripts/gemini-2026-05-15T192504+0000.stderr.txt",
+  "stop_condition_alerted": false,
+  "stop_condition_matches": []
+}
