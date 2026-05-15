@@ -1,9 +1,11 @@
 {
   "project": "CGP Drift Reduction Benchmark",
-  "current_commit": "pending-initial-commit",
+  "current_commit": "ced1f2939ecedf16c65bf7b6398397c6f3d0a265",
   "current_phase": "phase-0",
-  "active_protocol": "active/2026-05-14-phase-0-initial-benchmark-scaffold.md",
-  "completed_protocols": [],
+  "active_protocol": "active/2026-05-15-phase-0-run-plan-and-task-tags.md",
+  "completed_protocols": [
+    "completed/2026-05-14-phase-0-initial-benchmark-scaffold.md"
+  ],
   "allowed_files": [
     "README.md",
     "LICENSE",
@@ -14,14 +16,16 @@
     "analysis/**",
     "paper/**",
     "runs/**",
+    "scripts/**",
     "next-prompt-protocols/**"
   ],
   "non_goals": [
-    "do not run the 72-run experiment before task tags and harness validation exist",
+    "do not run the 72-run experiment during this slice",
     "do not draft benchmark results before raw run data exists",
     "do not change the locked v1.1 experiment design from this repository"
   ],
   "verification": {
+    "run_plan_check": "python scripts/generate_run_plan.py --check",
     "python_tests": "python -m pytest",
     "frontend_tests": "npm test",
     "protocol_check": "node next-prompt-protocols/tools/sync-protocols.mjs --check"

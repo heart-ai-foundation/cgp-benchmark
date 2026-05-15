@@ -20,6 +20,9 @@ Initial scaffold. The experiment design is locked in the Heart Corpus as `CGP_Dr
 - `paper/` - demo paper source
 - `docs/` - experiment protocol and task documentation
 - `docs/osf_preregistration/` - OSF-ready pre-data preregistration packet
+- `docs/run_harness.md` - post-preregistration execution procedure
+- `docs/prompt_templates/` - Baseline and CGP condition prompt templates
+- `runs/run_plan.csv` - deterministic randomized run order generated after OSF preregistration
 
 ## License
 

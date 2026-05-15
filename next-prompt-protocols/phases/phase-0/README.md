@@ -4,4 +4,4 @@ Phase objective: create a clean, executable benchmark repository that matches th
 
 Current active protocol:
 
-`active/2026-05-14-phase-0-initial-benchmark-scaffold.md`
+`active/2026-05-15-phase-0-run-plan-and-task-tags.md`

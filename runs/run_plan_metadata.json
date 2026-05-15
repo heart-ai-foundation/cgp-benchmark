@@ -1,0 +1,66 @@
+{
+  "seed": 20260515,
+  "agents": [
+    "claude-code",
+    "aider"
+  ],
+  "conditions": [
+    "baseline",
+    "cgp"
+  ],
+  "replications": [
+    1,
+    2,
+    3
+  ],
+  "tasks": [
+    {
+      "task_id": "task-1",
+      "slug": "input-validation",
+      "complexity": "simple",
+      "start_tag": "task-1-start",
+      "spec_path": "docs/task_specs/task-1-input-validation.md"
+    },
+    {
+      "task_id": "task-2",
+      "slug": "user-docstring",
+      "complexity": "simple",
+      "start_tag": "task-2-start",
+      "spec_path": "docs/task_specs/task-2-user-docstring.md"
+    },
+    {
+      "task_id": "task-3",
+      "slug": "user-items-endpoint",
+      "complexity": "medium",
+      "start_tag": "task-3-start",
+      "spec_path": "docs/task_specs/task-3-user-items-endpoint.md"
+    },
+    {
+      "task_id": "task-4",
+      "slug": "parse-config-refactor",
+      "complexity": "medium",
+      "start_tag": "task-4-start",
+      "spec_path": "docs/task_specs/task-4-parse-config-refactor.md"
+    },
+    {
+      "task_id": "task-5",
+      "slug": "favorite-items",
+      "complexity": "complex",
+      "start_tag": "task-5-start",
+      "spec_path": "docs/task_specs/task-5-favorite-items.md"
+    },
+    {
+      "task_id": "task-6",
+      "slug": "login-empty-password",
+      "complexity": "complex",
+      "start_tag": "task-6-start",
+      "spec_path": "docs/task_specs/task-6-login-empty-password.md"
+    }
+  ],
+  "run_count": 72,
+  "randomization": {
+    "task_order": "shuffled within each agent platform",
+    "condition_order": "shuffled within each task-agent pair",
+    "replication_order": "replications executed in ascending order within task-agent pair"
+  }
+}

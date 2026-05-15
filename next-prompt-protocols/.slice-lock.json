@@ -1,11 +1,11 @@
 {
   "lock_version": 1,
   "project": "CGP Drift Reduction Benchmark",
-  "current_commit": "pending-initial-commit",
+  "current_commit": "ced1f2939ecedf16c65bf7b6398397c6f3d0a265",
   "current_phase": "phase-0",
-  "active_protocol": "active/2026-05-14-phase-0-initial-benchmark-scaffold.md",
-  "active_protocol_sha256": "sha256:83ca96ab261fce19077e59cd23a756426a74b64a7e7e346172c54a18b170f9d4",
-  "active_objective": "Create the initial `cgp-benchmark` repository with a passing Python and frontend benchmark app, orientation docs, raw and processed run directories, paper placeholder, and Next-Prompt Protocol scaffold.",
+  "active_protocol": "active/2026-05-15-phase-0-run-plan-and-task-tags.md",
+  "active_protocol_sha256": "sha256:07a59abb343350aababf50941e20506e47aceec0e6c50f8a314274220aafa4fa",
+  "active_objective": "Add deterministic run-plan generation, validate the 72-run plan, document the run harness and prompt templates, and create/push the six task start tags after the run-plan commit.",
   "allowed_files": [
     "README.md",
     "LICENSE",
@@ -16,9 +16,11 @@
     "analysis/**",
     "paper/**",
     "runs/**",
+    "scripts/**",
     "next-prompt-protocols/**"
   ],
   "verification": {
+    "run_plan_check": "python scripts/generate_run_plan.py --check",
     "python_tests": "python -m pytest",
     "frontend_tests": "npm test",
     "protocol_check": "node next-prompt-protocols/tools/sync-protocols.mjs --check"
