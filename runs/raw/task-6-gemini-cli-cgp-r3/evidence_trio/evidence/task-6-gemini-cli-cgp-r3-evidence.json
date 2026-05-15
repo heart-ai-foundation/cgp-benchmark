@@ -1,0 +1,10 @@
+{
+  "run_id": "task-6-gemini-cli-cgp-r3",
+  "task": "task-6-login-empty-password",
+  "condition": "cgp",
+  "evidence": {
+    "bug_reproduced": true,
+    "fix_applied": true,
+    "tests_passed": true
+  }
+}

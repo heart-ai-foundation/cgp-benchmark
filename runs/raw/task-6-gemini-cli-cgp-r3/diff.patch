@@ -1,0 +1,103 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..3aea7d1 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..cdd5bfe 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,14 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
+
+diff --git a/evidence/task-6-gemini-cli-cgp-r3-evidence.json b/evidence/task-6-gemini-cli-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..dc6a104
+--- /dev/null
++++ b/evidence/task-6-gemini-cli-cgp-r3-evidence.json
+@@ -0,0 +1,10 @@
++{
++  "run_id": "task-6-gemini-cli-cgp-r3",
++  "task": "task-6-login-empty-password",
++  "condition": "cgp",
++  "evidence": {
++    "bug_reproduced": true,
++    "fix_applied": true,
++    "tests_passed": true
++  }
++}
+
+diff --git a/notes/task-6-gemini-cli-cgp-r3-design.md b/notes/task-6-gemini-cli-cgp-r3-design.md
+new file mode 100644
+index 0000000..91eee1e
+--- /dev/null
++++ b/notes/task-6-gemini-cli-cgp-r3-design.md
+@@ -0,0 +1,15 @@
++# Design Note - task-6-gemini-cli-cgp-r3
++
++## Problem
++`LoginForm.jsx`'s `submitLogin` function throws a hard `Error` when the password length is less than 1. This causes an unhandled exception in the frontend instead of a graceful error message.
++
++## Solution
++Modify `submitLogin` to return `{ ok: false, error: "Password is required" }` when the password is missing or empty, consistent with how the email field is handled.
++
++## Scope
++- `benchmark-repo/frontend/src/components/LoginForm.jsx`: Update validation logic.
++- `benchmark-repo/frontend/tests/components.test.js`: Add regression test.
++
++## Verification
++- Run `npm test` in `benchmark-repo`.
++- Ensure all 4 tests pass (including the new regression test).
+
+diff --git a/runs/task-6-gemini-cli-cgp-r3-run-record.json b/runs/task-6-gemini-cli-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..5641fed
+--- /dev/null
++++ b/runs/task-6-gemini-cli-cgp-r3-run-record.json
+@@ -0,0 +1,23 @@
++{
++  "run_id": "task-6-gemini-cli-cgp-r3",
++  "start_time": "2026-05-15T12:00:00Z",
++  "steps": [
++    {
++      "type": "research",
++      "description": "Read protocol files and task spec."
++    },
++    {
++      "type": "reproduction",
++      "description": "Added failing test case to components.test.js and confirmed failure."
++    },
++    {
++      "type": "fix",
++      "description": "Modified LoginForm.jsx to return error object instead of throwing Error."
++    },
++    {
++      "type": "verification",
++      "description": "Verified fix with npm test. All 4 tests passed."
++    }
++  ],
++  "end_time": "2026-05-15T12:05:00Z"
++}
