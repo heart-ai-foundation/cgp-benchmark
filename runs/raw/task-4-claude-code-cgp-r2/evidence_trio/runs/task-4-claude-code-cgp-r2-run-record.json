@@ -1,0 +1,52 @@
+{
+  "run_id": "task-4-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-4",
+  "task_slug": "parse-config-refactor",
+  "phase": "phase-1",
+  "start_tag": "task-4-start",
+  "start_anchor_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "head_at_run_start": "24f53ef8313579d661ef9bdc0c42faab226e52ef",
+  "timestamp_utc": "2026-05-15T19:27:47Z",
+  "active_protocol": "next-prompt-protocols/active/task-4-claude-code-cgp-r2.md",
+  "active_protocol_sha256": "sha256:76ae0a455674eb16518eb99214c9a6e293d0a26bf1e336f2303f189eeb885446",
+  "allowed_files": [
+    "benchmark-repo/src/utils/config.py",
+    "notes/task-4-claude-code-cgp-r2-design.md",
+    "runs/task-4-claude-code-cgp-r2-run-record.json",
+    "evidence/task-4-claude-code-cgp-r2-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/utils/config.py"
+  ],
+  "files_created": [
+    "notes/task-4-claude-code-cgp-r2-design.md",
+    "runs/task-4-claude-code-cgp-r2-run-record.json",
+    "evidence/task-4-claude-code-cgp-r2-evidence.json"
+  ],
+  "drift_surface_touched": false,
+  "drift_surface_files": [
+    "benchmark-repo/src/utils/helpers.py",
+    "benchmark-repo/tests/test_validators.py"
+  ],
+  "verification": [
+    {
+      "name": "pytest",
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "summary": "9 passed in 0.01s"
+    },
+    {
+      "name": "import_signature_behavior_check",
+      "command": "python -c \"from src.utils.config import parse_config; ...\" (signature + defaults + coercions + error paths)",
+      "result": "pass",
+      "summary": "signature `(raw: dict) -> dict` preserved; defaults, debug/page_size/features coercions, and TypeError/ValueError paths all behaviorally equivalent"
+    }
+  ],
+  "artifact_hashes": {
+    "benchmark-repo/src/utils/config.py": "sha256:c8659e401962986e752fab2e95c9c8130154af6e1f3b0c5eccfcb053dd661f03"
+  },
+  "stop_condition_triggered": false,
+  "notes": "CGP scaffold (manifest, slice lock, active protocol, role context, phase README, task spec) read in the prescribed order before any edits. parse_config refactored to a thin orchestrator backed by per-field coercion helpers and an ordered coercer map; signature and behavior preserved."
+}

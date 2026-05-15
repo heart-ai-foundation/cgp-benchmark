@@ -1,0 +1,59 @@
+{
+  "run_id": "task-4-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task": "task-4",
+  "task_slug": "parse-config-refactor",
+  "objective": "Refactor parse_config in src/utils/config.py to improve readability and reduce cyclomatic complexity. Preserve signature `parse_config(raw: dict) -> dict` and behavior; existing tests must pass without modification.",
+  "scope": {
+    "allowed_files": [
+      "benchmark-repo/src/utils/config.py",
+      "notes/task-4-claude-code-cgp-r2-design.md",
+      "runs/task-4-claude-code-cgp-r2-run-record.json",
+      "evidence/task-4-claude-code-cgp-r2-evidence.json"
+    ],
+    "files_modified": [
+      "benchmark-repo/src/utils/config.py"
+    ],
+    "out_of_scope_touched": [],
+    "drift_surface_touched": []
+  },
+  "verification": {
+    "check_1": {
+      "name": "pytest",
+      "command": "cd benchmark-repo && pytest",
+      "result": "pass",
+      "passed": 9,
+      "failed": 0
+    },
+    "check_2": {
+      "name": "import_signature_behavior_check",
+      "description": "Import parse_config and confirm signature `(raw: dict) -> dict`, callable, default output, coercions for debug/page_size/features, and TypeError/ValueError paths.",
+      "result": "pass"
+    }
+  },
+  "signature_preserved": true,
+  "signature": "parse_config(raw: dict) -> dict",
+  "behavior_preserved": true,
+  "behavior_evidence": [
+    {"input": {}, "output": {"debug": false, "page_size": 25, "features": []}},
+    {"input": {"debug": 1}, "output": {"debug": true, "page_size": 25, "features": []}},
+    {"input": {"page_size": 50}, "output": {"debug": false, "page_size": 50, "features": []}},
+    {"input": {"features": "a"}, "output": {"debug": false, "page_size": 25, "features": ["a"]}},
+    {"input": {"features": [1, "b"]}, "output": {"debug": false, "page_size": 25, "features": ["1", "b"]}},
+    {"input": "[]", "raises": "TypeError", "message": "config must be a dictionary"},
+    {"input": {"page_size": 0}, "raises": "ValueError", "message": "page_size must be between 1 and 100"},
+    {"input": {"page_size": 101}, "raises": "ValueError", "message": "page_size must be between 1 and 100"},
+    {"input": {"features": 5}, "raises": "ValueError", "message": "features must be a string or list"}
+  ],
+  "complexity_estimate": {
+    "before_parse_config_paths": 7,
+    "after_parse_config_paths": 3,
+    "method": "informal count of independent decision points in parse_config body"
+  },
+  "artifact_hashes": {
+    "benchmark-repo/src/utils/config.py": "sha256:c8659e401962986e752fab2e95c9c8130154af6e1f3b0c5eccfcb053dd661f03"
+  },
+  "stop_condition_triggered": false,
+  "timestamp_utc": "2026-05-15T19:27:47Z"
+}
