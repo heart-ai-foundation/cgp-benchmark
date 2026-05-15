@@ -1,0 +1,46 @@
+{
+  "schema": "cgp-benchmark.evidence.v1",
+  "run_id": "task-2-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-2",
+  "task_slug": "user-docstring",
+  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
+  "manifest_commit_anchor": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "83a8837f8370e24ff952b2ef6389ed9d19edcd0e",
+  "active_protocol_sha256": "sha256:93709d3edf7f2fff19be83a6fa03b0f2dc50bd0ce99bd24a873904f7bbcd1623",
+  "allowed_files": [
+    "benchmark-repo/src/models/user.py",
+    "notes/task-2-claude-code-cgp-r1-design.md",
+    "runs/task-2-claude-code-cgp-r1-run-record.json",
+    "evidence/task-2-claude-code-cgp-r1-evidence.json"
+  ],
+  "scope_compliance": {
+    "files_modified_in_scope": ["benchmark-repo/src/models/user.py"],
+    "files_modified_out_of_scope": [],
+    "drift_surface_touched": []
+  },
+  "edit_summary": {
+    "target_class": "User",
+    "target_file": "benchmark-repo/src/models/user.py",
+    "lines_added": 30,
+    "lines_removed": 0,
+    "behavior_change": false,
+    "docstring_added": true,
+    "docstring_sections": ["Attributes", "Methods", "Example"]
+  },
+  "verification_results": [
+    {
+      "name": "static_docstring_structure_check",
+      "status": "pass",
+      "details": "ast.get_docstring(User) is non-empty (983 chars) and contains all required sections: Attributes, Methods, Example."
+    },
+    {
+      "name": "pytest_suite",
+      "status": "pass",
+      "details": "9 passed in 0.02s under benchmark-repo/"
+    }
+  ],
+  "stop_condition_triggered": false,
+  "completion_status": "complete"
+}

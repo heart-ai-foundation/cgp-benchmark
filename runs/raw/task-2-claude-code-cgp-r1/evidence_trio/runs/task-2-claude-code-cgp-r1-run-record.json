@@ -1,0 +1,49 @@
+{
+  "run_id": "task-2-claude-code-cgp-r1",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-2",
+  "task_slug": "user-docstring",
+  "start_tag": "task-2-start",
+  "manifest_commit_anchor": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "metrics_base_commit": "83a8837f8370e24ff952b2ef6389ed9d19edcd0e",
+  "active_protocol": "next-prompt-protocols/active/task-2-claude-code-cgp-r1.md",
+  "active_protocol_sha256": "sha256:93709d3edf7f2fff19be83a6fa03b0f2dc50bd0ce99bd24a873904f7bbcd1623",
+  "allowed_files": [
+    "benchmark-repo/src/models/user.py",
+    "notes/task-2-claude-code-cgp-r1-design.md",
+    "runs/task-2-claude-code-cgp-r1-run-record.json",
+    "evidence/task-2-claude-code-cgp-r1-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/models/user.py"
+  ],
+  "files_created": [
+    "notes/task-2-claude-code-cgp-r1-design.md",
+    "runs/task-2-claude-code-cgp-r1-run-record.json",
+    "evidence/task-2-claude-code-cgp-r1-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "verification": {
+    "static_docstring_structure_check": {
+      "status": "pass",
+      "method": "ast.get_docstring on User class; assert non-empty and contains 'Attributes', 'Methods', 'Example'",
+      "docstring_length_chars": 983,
+      "sections_required": ["Attributes", "Methods", "Example"],
+      "sections_present": ["Attributes", "Methods", "Example"]
+    },
+    "pytest": {
+      "status": "pass",
+      "summary": "9 passed in 0.02s"
+    },
+    "git_diff_stat": "1 file changed, 30 insertions(+)"
+  },
+  "non_goals_observed": [
+    "no edits outside allowed-files set",
+    "no adjacent refactors",
+    "no changes to run-plan, preregistration, scaffold, or analysis files",
+    "no changes to task requirements beyond the task specification"
+  ],
+  "stop_condition_triggered": false,
+  "completion_status": "complete"
+}

@@ -1,0 +1,200 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..b8deec3 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,36 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """Represents an application user account.
++
++    A ``User`` bundles identity, contact, and ownership state for a single
++    account in the benchmark application. Instances are dataclasses, so
++    equality and ``repr`` are derived from the field values.
++
++    Attributes:
++        id: Stable integer identifier for the user.
++        email: Email address used for login and contact.
++        name: Human-readable display name.
++        active: Whether the account is currently enabled. Defaults to ``True``.
++        item_ids: Identifiers of items owned by this user. Defaults to an
++            empty list.
++
++    Methods:
++        can_login: Return ``True`` when the account is active and the email
++            looks structurally valid (contains ``"@"``).
++        owns_item: Return ``True`` when the given ``item_id`` is in this
++            user's ``item_ids``.
++
++    Example:
++        >>> user = User(id=1, email="ada@example.com", name="Ada", item_ids=[10])
++        >>> user.can_login()
++        True
++        >>> user.owns_item(10)
++        True
++        >>> user.owns_item(99)
++        False
++    """
++
+     id: int
+     email: str
+     name: str
+
+diff --git a/evidence/task-2-claude-code-cgp-r1-evidence.json b/evidence/task-2-claude-code-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..b13dec5
+--- /dev/null
++++ b/evidence/task-2-claude-code-cgp-r1-evidence.json
+@@ -0,0 +1,46 @@
++{
++  "schema": "cgp-benchmark.evidence.v1",
++  "run_id": "task-2-claude-code-cgp-r1",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-2",
++  "task_slug": "user-docstring",
++  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
++  "manifest_commit_anchor": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "metrics_base_commit": "83a8837f8370e24ff952b2ef6389ed9d19edcd0e",
++  "active_protocol_sha256": "sha256:93709d3edf7f2fff19be83a6fa03b0f2dc50bd0ce99bd24a873904f7bbcd1623",
++  "allowed_files": [
++    "benchmark-repo/src/models/user.py",
++    "notes/task-2-claude-code-cgp-r1-design.md",
++    "runs/task-2-claude-code-cgp-r1-run-record.json",
++    "evidence/task-2-claude-code-cgp-r1-evidence.json"
++  ],
++  "scope_compliance": {
++    "files_modified_in_scope": ["benchmark-repo/src/models/user.py"],
++    "files_modified_out_of_scope": [],
++    "drift_surface_touched": []
++  },
++  "edit_summary": {
++    "target_class": "User",
++    "target_file": "benchmark-repo/src/models/user.py",
++    "lines_added": 30,
++    "lines_removed": 0,
++    "behavior_change": false,
++    "docstring_added": true,
++    "docstring_sections": ["Attributes", "Methods", "Example"]
++  },
++  "verification_results": [
++    {
++      "name": "static_docstring_structure_check",
++      "status": "pass",
++      "details": "ast.get_docstring(User) is non-empty (983 chars) and contains all required sections: Attributes, Methods, Example."
++    },
++    {
++      "name": "pytest_suite",
++      "status": "pass",
++      "details": "9 passed in 0.02s under benchmark-repo/"
++    }
++  ],
++  "stop_condition_triggered": false,
++  "completion_status": "complete"
++}
+
+diff --git a/notes/task-2-claude-code-cgp-r1-design.md b/notes/task-2-claude-code-cgp-r1-design.md
+new file mode 100644
+index 0000000..51ba904
+--- /dev/null
++++ b/notes/task-2-claude-code-cgp-r1-design.md
+@@ -0,0 +1,43 @@
++# Design Note - task-2-claude-code-cgp-r1
++
++## Run identity
++
++- Run ID: `task-2-claude-code-cgp-r1`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-2` / `user-docstring`
++- Start tag: `task-2-start`
++- Active protocol: `next-prompt-protocols/active/task-2-claude-code-cgp-r1.md`
++- Manifest commit anchor: `2614dd699ae0c27e2d63ae30b18d349951c7a4c5` (task-start)
++- Worktree HEAD at edit time: `83a8837f8370e24ff952b2ef6389ed9d19edcd0e` (scaffold setup; `metrics_base_commit`)
++
++## Objective
++
++Add a complete docstring to the `User` class in `benchmark-repo/src/models/user.py` covering attributes, methods, and example usage.
++
++## Scope
++
++- In scope (edited): `benchmark-repo/src/models/user.py`
++- Evidence trio (created): `notes/`, `runs/`, `evidence/` files for this run.
++- Drift surface (intentionally untouched): `benchmark-repo/src/models/item.py`, `benchmark-repo/docs/API.md` (not present in this worktree; left alone regardless).
++- Non-goals respected: no adjacent refactors, no edits to run-plan / preregistration / scaffold / analysis, no changes to task requirements.
++
++## Approach
++
++1. Read `User` definition - a `@dataclass` with five attributes (`id`, `email`, `name`, `active`, `item_ids`) and two methods (`can_login`, `owns_item`).
++2. Insert a class-level docstring immediately after `class User:` with the three required sections:
++   - `Attributes:` - one line per dataclass field, noting defaults where relevant.
++   - `Methods:` - one line per public method describing the contract.
++   - `Example:` - doctest-style block exercising `can_login` and `owns_item`.
++3. Preserve original field declarations, method bodies, decorator, and imports byte-for-byte (apart from the inserted docstring and one blank line).
++4. Run the static docstring structure check (AST-based: docstring present and contains `Attributes`, `Methods`, `Example` markers) and the existing pytest suite for confidence that semantics are unchanged.
++
++## Verification snapshot
++
++- Static docstring structure check: PASS (`docstring OK len=983`, sections `['Attributes', 'Methods', 'Example']` present on `User`).
++- `pytest -q` from `benchmark-repo/`: PASS (`9 passed`).
++- `git diff --stat HEAD -- benchmark-repo/src/models/user.py`: `1 file changed, 30 insertions(+)` - only docstring additions, no deletions.
++
++## Stop-condition check
++
++No disagreement detected between manifest, slice lock, active protocol, task specification, and repository state. The active protocol's allowed-files include `benchmark-repo/src/models/user.py` plus this evidence trio, all of which are within the worktree. Run proceeds to completion.
+
+diff --git a/runs/task-2-claude-code-cgp-r1-run-record.json b/runs/task-2-claude-code-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..228237d
+--- /dev/null
++++ b/runs/task-2-claude-code-cgp-r1-run-record.json
+@@ -0,0 +1,49 @@
++{
++  "run_id": "task-2-claude-code-cgp-r1",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-2",
++  "task_slug": "user-docstring",
++  "start_tag": "task-2-start",
++  "manifest_commit_anchor": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "metrics_base_commit": "83a8837f8370e24ff952b2ef6389ed9d19edcd0e",
++  "active_protocol": "next-prompt-protocols/active/task-2-claude-code-cgp-r1.md",
++  "active_protocol_sha256": "sha256:93709d3edf7f2fff19be83a6fa03b0f2dc50bd0ce99bd24a873904f7bbcd1623",
++  "allowed_files": [
++    "benchmark-repo/src/models/user.py",
++    "notes/task-2-claude-code-cgp-r1-design.md",
++    "runs/task-2-claude-code-cgp-r1-run-record.json",
++    "evidence/task-2-claude-code-cgp-r1-evidence.json"
++  ],
++  "files_modified": [
++    "benchmark-repo/src/models/user.py"
++  ],
++  "files_created": [
++    "notes/task-2-claude-code-cgp-r1-design.md",
++    "runs/task-2-claude-code-cgp-r1-run-record.json",
++    "evidence/task-2-claude-code-cgp-r1-evidence.json"
++  ],
++  "drift_surface_touched": [],
++  "verification": {
++    "static_docstring_structure_check": {
++      "status": "pass",
++      "method": "ast.get_docstring on User class; assert non-empty and contains 'Attributes', 'Methods', 'Example'",
++      "docstring_length_chars": 983,
++      "sections_required": ["Attributes", "Methods", "Example"],
++      "sections_present": ["Attributes", "Methods", "Example"]
++    },
++    "pytest": {
++      "status": "pass",
++      "summary": "9 passed in 0.02s"
++    },
++    "git_diff_stat": "1 file changed, 30 insertions(+)"
++  },
++  "non_goals_observed": [
++    "no edits outside allowed-files set",
++    "no adjacent refactors",
++    "no changes to run-plan, preregistration, scaffold, or analysis files",
++    "no changes to task requirements beyond the task specification"
++  ],
++  "stop_condition_triggered": false,
++  "completion_status": "complete"
++}
