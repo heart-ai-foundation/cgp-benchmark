@@ -76,6 +76,14 @@ CGP run scaffolds include evidence trio paths in `notes/`, `runs/`, and `evidenc
 
 Running `prepare_run.py` creates setup artifacts only. The benchmark observation begins when the assigned agent receives the generated prompt.
 
+After the assigned agent finishes, capture the run from the main benchmark repo:
+
+```bash
+python scripts/capture_run.py --run-id task-1-claude-code-cgp-r1
+```
+
+The capture command reads the run metadata, runs the task verification commands, writes `diff.patch`, writes `metrics.json`, writes `verification.json`, updates run metadata, and copies the evidence trio for CGP runs.
+
 ## Invalid Run Handling
 
 If a run exposes a harness defect before or during execution, preserve its raw artifacts and mark it invalid. Do not reinterpret it as a valid benchmark observation. The corrected run should use the original planned `run_id` after the harness is fixed, with the invalid attempt retained separately or marked in metadata.

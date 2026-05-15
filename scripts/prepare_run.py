@@ -321,7 +321,12 @@ def main() -> int:
         metadata["worktree"] = str(worktree_path)
         (run_dir / "metadata.json").write_text(json.dumps(metadata, indent=2) + "\n", encoding="utf-8")
 
-    print(f"prepared {row['run_id']} in {run_dir}")
+    print(f"prepared {row['run_id']}")
+    print(f"run_dir: {run_dir}")
+    print(f"prompt: {run_dir / 'prompt.md'}")
+    if worktree_path:
+        print(f"worktree: {worktree_path}")
+    print(f"capture: python scripts/capture_run.py --run-id {row['run_id']}")
     return 0
 
 
