@@ -44,17 +44,7 @@ def is_completed_run(run_dir: Path) -> bool:
     metadata = read_json(metadata_path)
     if metadata.get("archive_status"):
         return False
-    return metadata.get("status") == "completed_valid" and metadata.get("run_validity") == "valid"
-
-
-def is_blocking_invalid_run(run_dir: Path) -> bool:
-    metadata_path = run_dir / "metadata.json"
-    if not metadata_path.exists():
-        return False
-    metadata = read_json(metadata_path)
-    if metadata.get("archive_status"):
-        return False
-    return metadata.get("run_validity") == "invalid" or metadata.get("status") == "completed_invalid"
+    return metadata.get("status") in {"completed_valid", "completed_invalid"} and metadata.get("run_validity") in {"valid", "invalid"}
 
 
 def next_run_id(root: Path) -> str:
@@ -63,8 +53,6 @@ def next_run_id(root: Path) -> str:
             if row["agent"] != "codex":
                 continue
             run_dir = root / "runs" / "raw" / row["run_id"]
-            if is_blocking_invalid_run(run_dir):
-                raise SystemExit(f"blocking invalid run exists: {row['run_id']}. Inspect/archive it before continuing.")
             if not is_completed_run(run_dir):
                 return row["run_id"]
     raise SystemExit("all Codex extension runs are completed")
