@@ -1,0 +1,51 @@
+{
+  "run_id": "task-2-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-2",
+  "task_slug": "user-docstring",
+  "start_tag": "task-2-start",
+  "phase": "phase-1",
+  "active_protocol": "next-prompt-protocols/active/task-2-claude-code-cgp-r2.md",
+  "head_commit_at_execution": "fc0a92c1b34dffdc3916d177596e7957dc8cbef4",
+  "metrics_base_commit_role": "task start anchor before run-specific scaffold setup; final setup commit recorded externally as metrics_base_commit",
+  "execution_timestamp_utc": "2026-05-15T19:57:11Z",
+  "allowed_files": [
+    "benchmark-repo/src/models/user.py",
+    "notes/task-2-claude-code-cgp-r2-design.md",
+    "runs/task-2-claude-code-cgp-r2-run-record.json",
+    "evidence/task-2-claude-code-cgp-r2-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/models/user.py"
+  ],
+  "files_created": [
+    "notes/task-2-claude-code-cgp-r2-design.md",
+    "runs/task-2-claude-code-cgp-r2-run-record.json",
+    "evidence/task-2-claude-code-cgp-r2-evidence.json"
+  ],
+  "drift_surface_touched": [],
+  "verification": {
+    "static_docstring_structure_check": {
+      "method": "ast.get_docstring on class User; required-token presence check",
+      "docstring_length": 830,
+      "required_tokens": [
+        "Attributes",
+        "Methods",
+        "Example",
+        "id",
+        "email",
+        "name",
+        "active",
+        "item_ids",
+        "can_login",
+        "owns_item"
+      ],
+      "missing_tokens": [],
+      "py_compile": "ok",
+      "result": "pass"
+    }
+  },
+  "stop_condition_triggered": false,
+  "notes": "Class-level docstring added to User dataclass; no signatures, decorators, fields, or method bodies modified. Drift-surface files (src/models/item.py, docs/API.md) not touched."
+}

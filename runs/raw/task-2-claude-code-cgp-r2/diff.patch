@@ -1,0 +1,231 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..c8f8467 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,33 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """Represents an application user with login and item-ownership state.
++
++    Attributes:
++        id: Unique integer identifier for the user.
++        email: Email address used to identify and authenticate the user.
++        name: Human-readable display name.
++        active: Whether the account is enabled. Defaults to ``True``.
++        item_ids: List of item identifiers owned by this user. Defaults to an
++            empty list.
++
++    Methods:
++        can_login: Return ``True`` when the user is active and the email
++            address contains an ``@`` character.
++        owns_item: Return ``True`` when the given ``item_id`` is present in
++            ``item_ids``.
++
++    Example:
++        >>> user = User(id=1, email="alice@example.com", name="Alice")
++        >>> user.can_login()
++        True
++        >>> user.item_ids.append(42)
++        >>> user.owns_item(42)
++        True
++        >>> user.owns_item(7)
++        False
++    """
++
+     id: int
+     email: str
+     name: str
+
+diff --git a/evidence/task-2-claude-code-cgp-r2-evidence.json b/evidence/task-2-claude-code-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..4c00c79
+--- /dev/null
++++ b/evidence/task-2-claude-code-cgp-r2-evidence.json
+@@ -0,0 +1,58 @@
++{
++  "run_id": "task-2-claude-code-cgp-r2",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-2",
++  "task_slug": "user-docstring",
++  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
++  "head_commit_at_execution": "fc0a92c1b34dffdc3916d177596e7957dc8cbef4",
++  "execution_timestamp_utc": "2026-05-15T19:57:11Z",
++  "scope": {
++    "allowed_files": [
++      "benchmark-repo/src/models/user.py",
++      "notes/task-2-claude-code-cgp-r2-design.md",
++      "runs/task-2-claude-code-cgp-r2-run-record.json",
++      "evidence/task-2-claude-code-cgp-r2-evidence.json"
++    ],
++    "files_modified": [
++      "benchmark-repo/src/models/user.py"
++    ],
++    "drift_surface_declared": [
++      "benchmark-repo/src/models/item.py",
++      "docs/API.md"
++    ],
++    "drift_surface_touched": [],
++    "scope_breach": false
++  },
++  "change_summary": {
++    "target_symbol": "User",
++    "target_path": "benchmark-repo/src/models/user.py",
++    "change_type": "added class-level docstring",
++    "lines_added": 27,
++    "lines_removed": 0,
++    "behavior_change": false,
++    "signature_change": false,
++    "field_or_default_change": false
++  },
++  "verification": {
++    "name": "static_docstring_structure_check",
++    "command": "python3 ast.get_docstring on class User",
++    "checks": [
++      {"name": "docstring_present", "result": "pass"},
++      {"name": "docstring_nonempty", "length": 830, "result": "pass"},
++      {"name": "contains_Attributes_section", "result": "pass"},
++      {"name": "contains_Methods_section", "result": "pass"},
++      {"name": "contains_Example_section", "result": "pass"},
++      {"name": "documents_all_fields", "fields": ["id", "email", "name", "active", "item_ids"], "result": "pass"},
++      {"name": "documents_all_methods", "methods": ["can_login", "owns_item"], "result": "pass"},
++      {"name": "py_compile", "result": "pass"}
++    ],
++    "overall_result": "pass"
++  },
++  "evidence_trio": {
++    "design_note": "notes/task-2-claude-code-cgp-r2-design.md",
++    "run_record": "runs/task-2-claude-code-cgp-r2-run-record.json",
++    "evidence_json": "evidence/task-2-claude-code-cgp-r2-evidence.json"
++  },
++  "stop_condition_triggered": false
++}
+
+diff --git a/notes/task-2-claude-code-cgp-r2-design.md b/notes/task-2-claude-code-cgp-r2-design.md
+new file mode 100644
+index 0000000..ace3091
+--- /dev/null
++++ b/notes/task-2-claude-code-cgp-r2-design.md
+@@ -0,0 +1,63 @@
++# Design Note - task-2-claude-code-cgp-r2
++
++## Run
++
++- Run ID: `task-2-claude-code-cgp-r2`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-2` / `user-docstring`
++- Start tag: `task-2-start`
++- HEAD at execution: `fc0a92c1b34dffdc3916d177596e7957dc8cbef4`
++
++## Objective
++
++Add a complete docstring to the `User` class in `benchmark-repo/src/models/user.py` covering attributes, methods, and example usage.
++
++## Scope
++
++Allowed edit (code):
++
++- `benchmark-repo/src/models/user.py`
++
++Evidence trio (written by this run):
++
++- `notes/task-2-claude-code-cgp-r2-design.md`
++- `runs/task-2-claude-code-cgp-r2-run-record.json`
++- `evidence/task-2-claude-code-cgp-r2-evidence.json`
++
++Drift surface (must remain untouched):
++
++- `benchmark-repo/src/models/item.py`
++- `docs/API.md`
++
++## Rationale
++
++`User` is a `@dataclass` with two methods (`can_login`, `owns_item`) and five fields (`id`, `email`, `name`, `active`, `item_ids`). A class-level docstring is the correct attachment point because:
++
++1. Dataclass fields are declared at class scope; documenting them in the class docstring keeps the description colocated with the declarations.
++2. The two methods are short, behavior-revealing predicates; documenting their contracts in the class docstring under a `Methods:` section satisfies the "covering methods" requirement without inflating per-method docstrings (which would expand scope beyond the task).
++3. An `Example:` block using Google/PEP 257-compatible doctest formatting demonstrates instantiation, `can_login`, and `owns_item` against representative inputs.
++
++The docstring structure used:
++
++- One-line summary.
++- `Attributes:` block enumerating all five fields with type/role.
++- `Methods:` block describing `can_login` and `owns_item` contracts.
++- `Example:` block with doctest-style usage.
++
++No code behavior, signatures, decorators, or imports were modified. Field declarations and method bodies are byte-identical to the pre-edit state.
++
++## Verification snapshot
++
++Static docstring structure check (AST-based) confirmed:
++
++- `User` has a non-empty docstring (length 830).
++- Required tokens present: `Attributes`, `Methods`, `Example`, `id`, `email`, `name`, `active`, `item_ids`, `can_login`, `owns_item`.
++- `python3 -m py_compile src/models/user.py` succeeds.
++
++## Non-goals honored
++
++- No edits outside `benchmark-repo/src/models/user.py` and the evidence trio.
++- No adjacent refactors (signatures, imports, field defaults, method bodies unchanged).
++- No changes to run-plan, preregistration, scaffold, or analysis files.
++- Drift-surface files `src/models/item.py` and `docs/API.md` untouched.
+
+diff --git a/runs/task-2-claude-code-cgp-r2-run-record.json b/runs/task-2-claude-code-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..953df33
+--- /dev/null
++++ b/runs/task-2-claude-code-cgp-r2-run-record.json
+@@ -0,0 +1,51 @@
++{
++  "run_id": "task-2-claude-code-cgp-r2",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-2",
++  "task_slug": "user-docstring",
++  "start_tag": "task-2-start",
++  "phase": "phase-1",
++  "active_protocol": "next-prompt-protocols/active/task-2-claude-code-cgp-r2.md",
++  "head_commit_at_execution": "fc0a92c1b34dffdc3916d177596e7957dc8cbef4",
++  "metrics_base_commit_role": "task start anchor before run-specific scaffold setup; final setup commit recorded externally as metrics_base_commit",
++  "execution_timestamp_utc": "2026-05-15T19:57:11Z",
++  "allowed_files": [
++    "benchmark-repo/src/models/user.py",
++    "notes/task-2-claude-code-cgp-r2-design.md",
++    "runs/task-2-claude-code-cgp-r2-run-record.json",
++    "evidence/task-2-claude-code-cgp-r2-evidence.json"
++  ],
++  "files_modified": [
++    "benchmark-repo/src/models/user.py"
++  ],
++  "files_created": [
++    "notes/task-2-claude-code-cgp-r2-design.md",
++    "runs/task-2-claude-code-cgp-r2-run-record.json",
++    "evidence/task-2-claude-code-cgp-r2-evidence.json"
++  ],
++  "drift_surface_touched": [],
++  "verification": {
++    "static_docstring_structure_check": {
++      "method": "ast.get_docstring on class User; required-token presence check",
++      "docstring_length": 830,
++      "required_tokens": [
++        "Attributes",
++        "Methods",
++        "Example",
++        "id",
++        "email",
++        "name",
++        "active",
++        "item_ids",
++        "can_login",
++        "owns_item"
++      ],
++      "missing_tokens": [],
++      "py_compile": "ok",
++      "result": "pass"
++    }
++  },
++  "stop_condition_triggered": false,
++  "notes": "Class-level docstring added to User dataclass; no signatures, decorators, fields, or method bodies modified. Drift-surface files (src/models/item.py, docs/API.md) not touched."
++}

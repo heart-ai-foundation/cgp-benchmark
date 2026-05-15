@@ -1,0 +1,22 @@
+{
+  "run_id": "task-2-claude-code-cgp-r2",
+  "metrics_base_commit": "fc0a92c1b34dffdc3916d177596e7957dc8cbef4",
+  "verified_at": "2026-05-15T19:57:59+00:00",
+  "post_run_verification": [],
+  "manual_verification_checks": [
+    "Static docstring structure check"
+  ],
+  "changed_files": [
+    "benchmark-repo/src/models/user.py",
+    "evidence/task-2-claude-code-cgp-r2-evidence.json",
+    "notes/task-2-claude-code-cgp-r2-design.md",
+    "runs/task-2-claude-code-cgp-r2-run-record.json"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": 3,
+  "run_validity": "valid"
+}

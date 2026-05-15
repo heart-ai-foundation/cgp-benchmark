@@ -1,0 +1,58 @@
+{
+  "run_id": "task-2-claude-code-cgp-r2",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-2",
+  "task_slug": "user-docstring",
+  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
+  "head_commit_at_execution": "fc0a92c1b34dffdc3916d177596e7957dc8cbef4",
+  "execution_timestamp_utc": "2026-05-15T19:57:11Z",
+  "scope": {
+    "allowed_files": [
+      "benchmark-repo/src/models/user.py",
+      "notes/task-2-claude-code-cgp-r2-design.md",
+      "runs/task-2-claude-code-cgp-r2-run-record.json",
+      "evidence/task-2-claude-code-cgp-r2-evidence.json"
+    ],
+    "files_modified": [
+      "benchmark-repo/src/models/user.py"
+    ],
+    "drift_surface_declared": [
+      "benchmark-repo/src/models/item.py",
+      "docs/API.md"
+    ],
+    "drift_surface_touched": [],
+    "scope_breach": false
+  },
+  "change_summary": {
+    "target_symbol": "User",
+    "target_path": "benchmark-repo/src/models/user.py",
+    "change_type": "added class-level docstring",
+    "lines_added": 27,
+    "lines_removed": 0,
+    "behavior_change": false,
+    "signature_change": false,
+    "field_or_default_change": false
+  },
+  "verification": {
+    "name": "static_docstring_structure_check",
+    "command": "python3 ast.get_docstring on class User",
+    "checks": [
+      {"name": "docstring_present", "result": "pass"},
+      {"name": "docstring_nonempty", "length": 830, "result": "pass"},
+      {"name": "contains_Attributes_section", "result": "pass"},
+      {"name": "contains_Methods_section", "result": "pass"},
+      {"name": "contains_Example_section", "result": "pass"},
+      {"name": "documents_all_fields", "fields": ["id", "email", "name", "active", "item_ids"], "result": "pass"},
+      {"name": "documents_all_methods", "methods": ["can_login", "owns_item"], "result": "pass"},
+      {"name": "py_compile", "result": "pass"}
+    ],
+    "overall_result": "pass"
+  },
+  "evidence_trio": {
+    "design_note": "notes/task-2-claude-code-cgp-r2-design.md",
+    "run_record": "runs/task-2-claude-code-cgp-r2-run-record.json",
+    "evidence_json": "evidence/task-2-claude-code-cgp-r2-evidence.json"
+  },
+  "stop_condition_triggered": false
+}
