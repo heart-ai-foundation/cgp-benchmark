@@ -1,0 +1,34 @@
+{
+  "run_id": "task-2-claude-code-cgp-r3",
+  "task_id": "task-2",
+  "task_slug": "user-docstring",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
+  "target_file": "benchmark-repo/src/models/user.py",
+  "target_symbol": "User",
+  "docstring_present": true,
+  "docstring_sections": ["Attributes", "Methods", "Example"],
+  "documented_attributes": ["id", "email", "name", "active", "item_ids"],
+  "documented_methods": ["can_login", "owns_item"],
+  "method_docstrings_present": {
+    "can_login": true,
+    "owns_item": true
+  },
+  "example_block_present": true,
+  "drift_surface": {
+    "src/models/item.py": "untouched",
+    "docs/API.md": "untouched"
+  },
+  "verification": {
+    "static_docstring_structure_check": "pass",
+    "tests_users": "2 passed"
+  },
+  "evidence_trio": {
+    "design_note": "notes/task-2-claude-code-cgp-r3-design.md",
+    "run_record": "runs/task-2-claude-code-cgp-r3-run-record.json",
+    "evidence_json": "evidence/task-2-claude-code-cgp-r3-evidence.json"
+  },
+  "stop_condition_triggered": false,
+  "completion": "success"
+}

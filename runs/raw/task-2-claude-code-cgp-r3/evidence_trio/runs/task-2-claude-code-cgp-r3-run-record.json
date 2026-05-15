@@ -1,0 +1,43 @@
+{
+  "run_id": "task-2-claude-code-cgp-r3",
+  "agent": "claude-code",
+  "condition": "cgp",
+  "task_id": "task-2",
+  "task_slug": "user-docstring",
+  "start_tag": "task-2-start",
+  "phase": "phase-1",
+  "active_protocol": "next-prompt-protocols/active/task-2-claude-code-cgp-r3.md",
+  "scaffold_head_commit": "82665c2a4feeb4d4a1e7e25de9d965b0b068c614",
+  "allowed_files": [
+    "benchmark-repo/src/models/user.py",
+    "notes/task-2-claude-code-cgp-r3-design.md",
+    "runs/task-2-claude-code-cgp-r3-run-record.json",
+    "evidence/task-2-claude-code-cgp-r3-evidence.json"
+  ],
+  "files_modified": [
+    "benchmark-repo/src/models/user.py"
+  ],
+  "files_created": [
+    "notes/task-2-claude-code-cgp-r3-design.md",
+    "runs/task-2-claude-code-cgp-r3-run-record.json",
+    "evidence/task-2-claude-code-cgp-r3-evidence.json"
+  ],
+  "drift_surface_touched": {
+    "src/models/item.py": false,
+    "docs/API.md": false
+  },
+  "verification": {
+    "static_docstring_structure_check": {
+      "command": "python -c \"<ast-based docstring structure assertions>\"",
+      "result": "pass",
+      "output": "OK: User class docstring structure check passed"
+    },
+    "regression_pytest": {
+      "command": "python -m pytest tests/test_users.py -q",
+      "result": "pass",
+      "summary": "2 passed in 0.01s"
+    }
+  },
+  "stop_condition_triggered": false,
+  "notes": "Manifest, lock, role context, active protocol, and task spec all agreed on objective and allowed_files. No drift surface files were modified."
+}
