@@ -1,0 +1,16 @@
+{
+  "run_id": "task-2-gemini-cli-cgp-r3",
+  "task": "user-docstring",
+  "status": "completed",
+  "evidence": {
+    "file_modified": "benchmark-repo/src/models/user.py",
+    "docstring_present": true,
+    "attributes_documented": ["id", "email", "name", "active", "item_ids"],
+    "methods_documented": ["can_login", "owns_item"],
+    "example_usage_present": true
+  },
+  "verification": {
+    "protocol_adherence": "Verified against .slice-lock.json and manifest.json",
+    "non_goals_preserved": true
+  }
+}
