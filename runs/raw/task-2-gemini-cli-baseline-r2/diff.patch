@@ -1,0 +1,51 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..c9bd9e0 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,23 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """
++    Represents a user in the system.
++
++    Attributes:
++        id (int): The unique identifier for the user.
++        email (str): The user's email address.
++        name (str): The user's full name.
++        active (bool): Flag indicating if the user account is active. Defaults to True.
++        item_ids (list[int]): A list of item IDs owned by the user. Defaults to an empty list.
++
++    Example:
++        >>> user = User(id=1, email="user@example.com", name="John Doe")
++        >>> user.can_login()
++        True
++        >>> user.owns_item(101)
++        False
++    """
+     id: int
+     email: str
+     name: str
+@@ -10,7 +27,22 @@ class User:
+     item_ids: list[int] = field(default_factory=list)
+ 
+     def can_login(self) -> bool:
++        """
++        Check if the user is allowed to log in.
++
++        Returns:
++            bool: True if the user is active and has a valid email address.
++        """
+         return self.active and "@" in self.email
+ 
+     def owns_item(self, item_id: int) -> bool:
++        """
++        Check if the user owns a specific item.
++
++        Args:
++            item_id (int): The ID of the item to check.
++
++        Returns:
++            bool: True if the item_id is in the user's list of owned items.
++        """
+         return item_id in self.item_ids
