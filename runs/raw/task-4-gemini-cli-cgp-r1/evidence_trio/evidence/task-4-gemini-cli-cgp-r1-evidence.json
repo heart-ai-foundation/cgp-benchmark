@@ -1,0 +1,11 @@
+{
+  "task_id": "task-4",
+  "condition": "cgp",
+  "success": true,
+  "files_modified": [
+    "benchmark-repo/src/utils/config.py"
+  ],
+  "verification_passed": true,
+  "design_note_path": "notes/task-4-gemini-cli-cgp-r1-design.md",
+  "run_record_path": "runs/task-4-gemini-cli-cgp-r1-run-record.json"
+}

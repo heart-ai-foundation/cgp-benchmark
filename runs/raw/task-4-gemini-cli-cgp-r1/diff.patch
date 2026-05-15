@@ -1,0 +1,112 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..f44f646 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -2,28 +2,23 @@ def parse_config(raw: dict) -> dict:
+     if not isinstance(raw, dict):
+         raise TypeError("config must be a dictionary")
+ 
+-    parsed = {
+-        "debug": False,
+-        "page_size": 25,
+-        "features": [],
++    return {
++        "debug": bool(raw.get("debug", False)),
++        "page_size": _parse_page_size(raw.get("page_size", 25)),
++        "features": _parse_features(raw.get("features", [])),
+     }
+ 
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
+ 
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
++def _parse_page_size(value) -> int:
++    page_size = int(value)
++    if not 1 <= page_size <= 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
+ 
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
+ 
+-    return parsed
++def _parse_features(value) -> list[str]:
++    if isinstance(value, str):
++        return [value]
++    if isinstance(value, list):
++        return [str(item) for item in value]
++    raise ValueError("features must be a string or list")
+
+diff --git a/evidence/task-4-gemini-cli-cgp-r1-evidence.json b/evidence/task-4-gemini-cli-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..cfe649a
+--- /dev/null
++++ b/evidence/task-4-gemini-cli-cgp-r1-evidence.json
+@@ -0,0 +1,11 @@
++{
++  "task_id": "task-4",
++  "condition": "cgp",
++  "success": true,
++  "files_modified": [
++    "benchmark-repo/src/utils/config.py"
++  ],
++  "verification_passed": true,
++  "design_note_path": "notes/task-4-gemini-cli-cgp-r1-design.md",
++  "run_record_path": "runs/task-4-gemini-cli-cgp-r1-run-record.json"
++}
+
+diff --git a/notes/task-4-gemini-cli-cgp-r1-design.md b/notes/task-4-gemini-cli-cgp-r1-design.md
+new file mode 100644
+index 0000000..980d93d
+--- /dev/null
++++ b/notes/task-4-gemini-cli-cgp-r1-design.md
+@@ -0,0 +1,17 @@
++# Design Note - Task 4: Parse Config Refactor
++
++## Rationale
++The original `parse_config` function in `src/utils/config.py` handled multiple responsibilities (validation, type conversion, and default setting) for multiple configuration fields within a single function body. This increased cyclomatic complexity and reduced readability.
++
++The refactoring extracts the logic for `page_size` and `features` into dedicated helper functions. This allows the main `parse_config` function to focus on the overall structure of the configuration object.
++
++## Refactoring Plan
++1.  Extract `page_size` parsing and validation into `_parse_page_size(value)`.
++2.  Extract `features` parsing and validation into `_parse_features(value)`.
++3.  Rewrite `parse_config` to use these helpers and `dict.get()` for cleaner default handling.
++4.  Preserve the `parse_config(raw: dict) -> dict` signature.
++
++## Verification Strategy
++-   Run existing `pytest` suite in `benchmark-repo`.
++-   Perform a manual import and execution test of `parse_config` with various inputs to ensure behavioral parity.
++-   Ensure no changes were made to files outside the allowed set.
+
+diff --git a/runs/task-4-gemini-cli-cgp-r1-run-record.json b/runs/task-4-gemini-cli-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..50d46ca
+--- /dev/null
++++ b/runs/task-4-gemini-cli-cgp-r1-run-record.json
+@@ -0,0 +1,15 @@
++{
++  "run_id": "task-4-gemini-cli-cgp-r1",
++  "timestamp": "2026-05-15T10:00:00Z",
++  "actions": [
++    "Read protocol files and task specification.",
++    "Analyzed src/utils/config.py and established baseline with pytest.",
++    "Created design note with refactoring plan.",
++    "Refactored parse_config by extracting helper functions for page_size and features.",
++    "Verified changes with pytest and a custom behavior verification script."
++  ],
++  "verification_results": {
++    "pytest": "pass",
++    "behavior_check": "pass"
++  }
++}
