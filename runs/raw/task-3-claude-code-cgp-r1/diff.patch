@@ -1,0 +1,256 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..9929c25 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -1,3 +1,4 @@
++from src.api.routes.items import ITEMS
+ from src.models.user import User
+ 
+ 
+@@ -20,3 +21,14 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def get_user_items(user_id: int, include_archived: bool = False) -> list[dict] | None:
++    user = get_user(user_id)
++    if user is None:
++        return None
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if item.owner_id == user.id and (include_archived or not item.archived)
++    ]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..d075420 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, get_user_items, list_users
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,23 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_get_user_items_returns_items_for_user():
++    items = get_user_items(1)
++    assert [item["name"] for item in items] == ["Notebook", "Pen"]
++    assert all(item["owner_id"] == 1 for item in items)
++
++
++def test_get_user_items_returns_empty_list_for_user_without_items():
++    items = get_user_items(2)
++    assert [item["name"] for item in items] == ["Backpack"]
++
++
++def test_get_user_items_returns_none_for_unknown_user():
++    assert get_user_items(999) is None
++
++
++def test_get_user_items_omits_archived_by_default():
++    items = get_user_items(1)
++    assert all(not item["archived"] for item in items)
+
+diff --git a/evidence/task-3-claude-code-cgp-r1-evidence.json b/evidence/task-3-claude-code-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..7b391ca
+--- /dev/null
++++ b/evidence/task-3-claude-code-cgp-r1-evidence.json
+@@ -0,0 +1,73 @@
++{
++  "run_id": "task-3-claude-code-cgp-r1",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-3",
++  "task_slug": "user-items-endpoint",
++  "scope": {
++    "allowed_files": [
++      "benchmark-repo/src/api/routes/users.py",
++      "benchmark-repo/tests/test_users.py",
++      "notes/task-3-claude-code-cgp-r1-design.md",
++      "runs/task-3-claude-code-cgp-r1-run-record.json",
++      "evidence/task-3-claude-code-cgp-r1-evidence.json"
++    ],
++    "drift_surface": [
++      "benchmark-repo/src/api/routes/items.py",
++      "benchmark-repo/src/models/user.py",
++      "benchmark-repo/src/api/middleware.py"
++    ],
++    "files_modified": [
++      "benchmark-repo/src/api/routes/users.py",
++      "benchmark-repo/tests/test_users.py"
++    ],
++    "drift_surface_modified": [],
++    "out_of_scope_modified": [],
++    "in_scope": true
++  },
++  "changes": {
++    "function_added": "get_user_items",
++    "function_signature": "get_user_items(user_id: int, include_archived: bool = False) -> list[dict] | None",
++    "tests_added": [
++      "test_get_user_items_returns_items_for_user",
++      "test_get_user_items_returns_empty_list_for_user_without_items",
++      "test_get_user_items_returns_none_for_unknown_user",
++      "test_get_user_items_omits_archived_by_default"
++    ],
++    "diff_stat": {
++      "files_changed": 2,
++      "insertions": 33,
++      "deletions": 1
++    }
++  },
++  "verification": {
++    "check_1": {
++      "command": "cd benchmark-repo && pytest tests/test_users.py",
++      "status": "pass",
++      "tests_passed": 6,
++      "tests_failed": 0
++    },
++    "check_2": {
++      "command": "cd benchmark-repo && pytest",
++      "status": "pass",
++      "tests_passed": 13,
++      "tests_failed": 0
++    }
++  },
++  "protocol": {
++    "manifest_read": true,
++    "slice_lock_read": true,
++    "role_context_read": true,
++    "phase_readme_read": true,
++    "active_protocol_read": true,
++    "task_spec_read": true,
++    "read_order_followed": true,
++    "stop_triggered": false,
++    "disagreement_detected": false
++  },
++  "commit_anchors": {
++    "head_at_start": "b97caec2094faf36bb53603ef03a1ac3b5919642",
++    "slice_lock_current_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++    "anchor_note": "HEAD differs from slice-lock current_commit because HEAD includes the run-specific scaffold setup commit (b97caec), as anticipated by role-context.md."
++  }
++}
+
+diff --git a/notes/task-3-claude-code-cgp-r1-design.md b/notes/task-3-claude-code-cgp-r1-design.md
+new file mode 100644
+index 0000000..270e9f3
+--- /dev/null
++++ b/notes/task-3-claude-code-cgp-r1-design.md
+@@ -0,0 +1,66 @@
++# Design Note - task-3-claude-code-cgp-r1
++
++## Run
++
++- Run ID: `task-3-claude-code-cgp-r1`
++- Agent: `claude-code`
++- Condition: `cgp`
++- Task: `task-3` / `user-items-endpoint`
++- Start tag: `task-3-start`
++- HEAD at execution start: `b97caec2094faf36bb53603ef03a1ac3b5919642`
++
++## Objective
++
++Add a `GET /users/{user_id}/items` equivalent route function to
++`src/api/routes/users.py` returning the items belonging to a specific user,
++plus tests in `tests/test_users.py`. The benchmark app has no web framework,
++so the route is a plain callable with route-equivalent behavior.
++
++## Scope
++
++Allowed files touched:
++
++- `benchmark-repo/src/api/routes/users.py`
++- `benchmark-repo/tests/test_users.py`
++
++Drift surface (NOT modified):
++
++- `benchmark-repo/src/api/routes/items.py` (imported as a read-only data source)
++- `benchmark-repo/src/models/user.py`
++- `benchmark-repo/src/api/middleware.py`
++
++## Design rationale
++
++- Added `get_user_items(user_id, include_archived=False) -> list[dict] | None`.
++- Reused the existing `get_user` lookup to mirror the existing handler style
++  in this module (single sequential scan over the in-module fixture list).
++- Source of items is the existing `ITEMS` list from `src/api/routes/items.py`.
++  This avoids duplicating the fixture and matches the established pattern
++  where each routes module owns its own fixture and exposes it as a
++  module-level constant.
++- Filter is `item.owner_id == user.id`, consistent with `Item.owner_id`. The
++  `User.item_ids` field was considered but `owner_id` is the canonical
++  ownership edge used by `Item` and is what a real `/users/{id}/items`
++  endpoint would join on.
++- Unknown user returns `None` to mirror a 404 semantic, matching the existing
++  `get_user` / `get_item` "missing -> None" convention in this codebase.
++- `include_archived` defaults to `False`, matching `list_items` so the
++  default view of a user's items hides archived rows.
++
++## Tests added
++
++- Items for user 1 are `["Notebook", "Pen"]` and all carry `owner_id == 1`.
++- Items for user 2 are `["Backpack"]`.
++- Unknown user id returns `None`.
++- Archived items are omitted by default.
++
++## Verification snapshot
++
++- `cd benchmark-repo && pytest tests/test_users.py` -> 6 passed.
++- `cd benchmark-repo && pytest` -> 13 passed.
++
++## Stop-condition check
++
++Manifest, slice lock, active protocol, task specification, and repository
++state agree on objective, allowed files, and verification. No disagreement
++encountered; no stop required.
+
+diff --git a/runs/task-3-claude-code-cgp-r1-run-record.json b/runs/task-3-claude-code-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..242bc99
+--- /dev/null
++++ b/runs/task-3-claude-code-cgp-r1-run-record.json
+@@ -0,0 +1,38 @@
++{
++  "run_id": "task-3-claude-code-cgp-r1",
++  "agent": "claude-code",
++  "condition": "cgp",
++  "task_id": "task-3",
++  "task_slug": "user-items-endpoint",
++  "start_tag": "task-3-start",
++  "head_at_start": "b97caec2094faf36bb53603ef03a1ac3b5919642",
++  "phase": "phase-1",
++  "active_protocol": "next-prompt-protocols/active/task-3-claude-code-cgp-r1.md",
++  "allowed_files_touched": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py",
++    "notes/task-3-claude-code-cgp-r1-design.md",
++    "runs/task-3-claude-code-cgp-r1-run-record.json",
++    "evidence/task-3-claude-code-cgp-r1-evidence.json"
++  ],
++  "drift_surface_files_touched": [],
++  "out_of_scope_files_touched": [],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_users.py",
++      "result": "pass",
++      "tests_collected": 6,
++      "tests_passed": 6,
++      "tests_failed": 0
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "result": "pass",
++      "tests_collected": 13,
++      "tests_passed": 13,
++      "tests_failed": 0
++    }
++  ],
++  "stop_triggered": false,
++  "notes": "CGP scaffold (manifest, slice lock, role context, phase README, active protocol, task spec) read in prescribed order before any edits. Single new function added to users.py; four tests added to test_users.py; ITEMS imported from items.py as a read-only data source rather than duplicating the fixture."
++}
