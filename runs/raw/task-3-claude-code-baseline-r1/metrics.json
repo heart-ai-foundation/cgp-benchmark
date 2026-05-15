@@ -1,0 +1,12 @@
+{
+  "changed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py"
+  ],
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": []
+}
