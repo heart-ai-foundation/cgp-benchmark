@@ -1,0 +1,11 @@
+Implemented the `parse_config` refactor in [config.py](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r2/benchmark-repo/src/utils/config.py:1). The function now delegates field parsing to focused helpers and applies them through a parser map, preserving `parse_config(raw: dict) -> dict` and existing behavior.
+
+Wrote the required evidence trio:
+- [design note](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r2/notes/task-4-codex-cgp-r2-design.md:1)
+- [run record](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r2/runs/task-4-codex-cgp-r2-run-record.json:1)
+- [evidence JSON](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r2/evidence/task-4-codex-cgp-r2-evidence.json:1)
+
+Verification passed:
+- `cd benchmark-repo && pytest`: 9 passed
+- Import/signature/behavior check for `parse_config(raw: dict) -> dict`: passed
+- Evidence JSON files validate with `python -m json.tool`

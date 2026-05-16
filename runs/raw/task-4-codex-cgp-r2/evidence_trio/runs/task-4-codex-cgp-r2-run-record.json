@@ -1,0 +1,27 @@
+{
+  "run_id": "task-4-codex-cgp-r2",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-4",
+  "task_slug": "parse-config-refactor",
+  "completed_at": "2026-05-15T18:05:16-07:00",
+  "files_changed": [
+    "benchmark-repo/src/utils/config.py",
+    "notes/task-4-codex-cgp-r2-design.md",
+    "runs/task-4-codex-cgp-r2-run-record.json",
+    "evidence/task-4-codex-cgp-r2-evidence.json"
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest",
+      "result": "passed",
+      "summary": "9 tests passed"
+    },
+    {
+      "command": "cd benchmark-repo && python - <<'PY' ... PY",
+      "result": "passed",
+      "summary": "parse_config import/signature/behavior check passed"
+    }
+  ],
+  "notes": "Refactored parse_config by extracting per-field parser helpers and applying them through a parser registry while preserving the public function signature and behavior."
+}

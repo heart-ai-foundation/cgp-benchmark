@@ -1,0 +1,173 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..c8883e6 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -1,29 +1,43 @@
++DEFAULT_CONFIG = {
++    "debug": False,
++    "page_size": 25,
++    "features": [],
++}
++
++
++def _parse_debug(value):
++    return bool(value)
++
++
++def _parse_page_size(value):
++    page_size = int(value)
++    if page_size < 1 or page_size > 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
++
++def _parse_features(value):
++    if isinstance(value, str):
++        return [value]
++    if isinstance(value, list):
++        return [str(feature) for feature in value]
++    raise ValueError("features must be a string or list")
++
++
++CONFIG_PARSERS = {
++    "debug": _parse_debug,
++    "page_size": _parse_page_size,
++    "features": _parse_features,
++}
++
++
+ def parse_config(raw: dict) -> dict:
+     if not isinstance(raw, dict):
+         raise TypeError("config must be a dictionary")
+ 
+-    parsed = {
+-        "debug": False,
+-        "page_size": 25,
+-        "features": [],
+-    }
+-
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
+-
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
+-
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
++    parsed = DEFAULT_CONFIG.copy()
++    for key, parser in CONFIG_PARSERS.items():
++        if key in raw:
++            parsed[key] = parser(raw[key])
+ 
+     return parsed
+
+diff --git a/evidence/task-4-codex-cgp-r2-evidence.json b/evidence/task-4-codex-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..a0b22de
+--- /dev/null
++++ b/evidence/task-4-codex-cgp-r2-evidence.json
+@@ -0,0 +1,30 @@
++{
++  "run_id": "task-4-codex-cgp-r2",
++  "objective": "Refactor parse_config in src/utils/config.py to improve readability and reduce cyclomatic complexity while preserving behavior.",
++  "scope_check": {
++    "allowed_files_only": true,
++    "changed_files": [
++      "benchmark-repo/src/utils/config.py",
++      "notes/task-4-codex-cgp-r2-design.md",
++      "runs/task-4-codex-cgp-r2-run-record.json",
++      "evidence/task-4-codex-cgp-r2-evidence.json"
++    ]
++  },
++  "implementation": {
++    "signature_preserved": "parse_config(raw: dict) -> dict",
++    "behavior_preserved": true,
++    "summary": "Defaults and field parsing are now separated into DEFAULT_CONFIG, private parser helpers, and CONFIG_PARSERS. parse_config validates the raw object, copies defaults, and applies configured parsers for present keys."
++  },
++  "verification": {
++    "pytest": {
++      "command": "cd benchmark-repo && pytest",
++      "status": "passed",
++      "details": "9 passed in 0.02s"
++    },
++    "import_check": {
++      "command": "cd benchmark-repo && python - <<'PY' ... PY",
++      "status": "passed",
++      "details": "Verified callable import, parameter name, raw: dict annotation, -> dict annotation, and representative coercion behavior."
++    }
++  }
++}
+
+diff --git a/notes/task-4-codex-cgp-r2-design.md b/notes/task-4-codex-cgp-r2-design.md
+new file mode 100644
+index 0000000..4efde64
+--- /dev/null
++++ b/notes/task-4-codex-cgp-r2-design.md
+@@ -0,0 +1,24 @@
++# Task 4 Design Note
++
++Run ID: `task-4-codex-cgp-r2`
++
++## Scope
++
++Refactored `parse_config(raw: dict) -> dict` in `benchmark-repo/src/utils/config.py` only. Evidence artifacts were written to the run-specific allowed paths.
++
++## Design
++
++The original function combined default construction, type coercion, range validation, and feature normalization in one branching body. The refactor extracts field-specific parsing into private helpers and uses a parser registry to apply those helpers to present keys.
++
++Behavior preserved:
++
++- Non-dict input raises `TypeError("config must be a dictionary")`.
++- Missing keys use `debug=False`, `page_size=25`, and `features=[]`.
++- `debug` is coerced with `bool`.
++- `page_size` is coerced with `int` and must remain in `[1, 100]`.
++- `features` accepts a string as a one-item list or a list converted with `str(...)`; other types raise `ValueError("features must be a string or list")`.
++
++## Verification Snapshot
++
++- `cd benchmark-repo && pytest` passed: 9 tests passed.
++- `cd benchmark-repo && python - <<'PY' ... PY` import/signature/behavior check passed.
+
+diff --git a/runs/task-4-codex-cgp-r2-run-record.json b/runs/task-4-codex-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..32059ac
+--- /dev/null
++++ b/runs/task-4-codex-cgp-r2-run-record.json
+@@ -0,0 +1,27 @@
++{
++  "run_id": "task-4-codex-cgp-r2",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-4",
++  "task_slug": "parse-config-refactor",
++  "completed_at": "2026-05-15T18:05:16-07:00",
++  "files_changed": [
++    "benchmark-repo/src/utils/config.py",
++    "notes/task-4-codex-cgp-r2-design.md",
++    "runs/task-4-codex-cgp-r2-run-record.json",
++    "evidence/task-4-codex-cgp-r2-evidence.json"
++  ],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest",
++      "result": "passed",
++      "summary": "9 tests passed"
++    },
++    {
++      "command": "cd benchmark-repo && python - <<'PY' ... PY",
++      "result": "passed",
++      "summary": "parse_config import/signature/behavior check passed"
++    }
++  ],
++  "notes": "Refactored parse_config by extracting per-field parser helpers and applying them through a parser registry while preserving the public function signature and behavior."
++}
