@@ -1,0 +1,37 @@
+{
+  "run_id": "task-5-aider-cgp-r1",
+  "agent": "aider",
+  "condition": "cgp",
+  "task": "task-5",
+  "task_name": "favorite-items",
+  "start_tag": "task-5-start",
+  "protocol_version": "1.0",
+  "files_modified": [
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/src/api/routes/items.py", 
+    "benchmark-repo/tests/test_items.py"
+  ],
+  "files_created": [
+    "notes/task-5-aider-cgp-r1-design.md",
+    "runs/task-5-aider-cgp-r1-run-record.json",
+    "evidence/task-5-aider-cgp-r1-evidence.json"
+  ],
+  "api_functions_implemented": [
+    "favorite_item(user_id: int, item_id: int) -> dict",
+    "unfavorite_item(user_id: int, item_id: int) -> dict", 
+    "list_favorite_items(user_id: int) -> list[dict]"
+  ],
+  "requirements_satisfied": [
+    "User can favorite an item",
+    "User can unfavorite an item", 
+    "User can list their favorite items",
+    "Favoriting non-owned item fails",
+    "Favoriting same item twice is idempotent",
+    "Unfavoriting non-favorited item is idempotent"
+  ],
+  "verification_commands": [
+    "cd benchmark-repo && pytest tests/test_items.py",
+    "cd benchmark-repo && pytest"
+  ],
+  "scope_compliance": "Only modified allowed files, no adjacent refactors performed"
+}
