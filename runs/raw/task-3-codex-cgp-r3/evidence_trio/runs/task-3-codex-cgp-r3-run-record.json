@@ -1,0 +1,29 @@
+{
+  "run_id": "task-3-codex-cgp-r3",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-3",
+  "task_slug": "user-items-endpoint",
+  "started_from_tag": "task-3-start",
+  "completed_at": "2026-05-15T17:41:40-07:00",
+  "status": "completed",
+  "files_changed": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-codex-cgp-r3-design.md",
+    "runs/task-3-codex-cgp-r3-run-record.json",
+    "evidence/task-3-codex-cgp-r3-evidence.json"
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_users.py",
+      "result": "passed",
+      "summary": "4 passed in 0.06s"
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "result": "passed",
+      "summary": "11 passed in 0.05s"
+    }
+  ]
+}

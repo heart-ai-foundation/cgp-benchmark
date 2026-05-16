@@ -1,0 +1,8 @@
+Implemented the user-items route callable as `list_user_items(user_id)` in [users.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r3/benchmark-repo/src/api/routes/users.py:26). It resolves the user, returns `None` for a missing user, and returns owned item dictionaries for existing users.
+
+Added tests in [test_users.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r3/benchmark-repo/tests/test_users.py:18), plus the required CGP evidence trio:
+`notes/task-3-codex-cgp-r3-design.md`, `runs/task-3-codex-cgp-r3-run-record.json`, and `evidence/task-3-codex-cgp-r3-evidence.json`.
+
+Verification passed:
+- `pytest tests/test_users.py`: 4 passed
+- `pytest`: 11 passed
