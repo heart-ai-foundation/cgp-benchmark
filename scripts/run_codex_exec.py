@@ -118,7 +118,7 @@ def update_metadata(run_dir: Path, transcript_path: Path) -> None:
     write_json(metadata_path, metadata)
 
 
-def execute_codex(run_dir: Path, worktree: Path, sandbox: str, approval: str) -> int:
+def execute_codex(run_dir: Path, worktree: Path, sandbox: str, bypass_approvals_and_sandbox: bool) -> int:
     prompt = (run_dir / "prompt.md").read_text(encoding="utf-8")
     transcripts = run_dir / "transcripts"
     transcripts.mkdir(parents=True, exist_ok=True)
@@ -132,15 +132,15 @@ def execute_codex(run_dir: Path, worktree: Path, sandbox: str, approval: str) ->
         "exec",
         "--cd",
         str(worktree),
-        "--sandbox",
-        sandbox,
-        "--ask-for-approval",
-        approval,
         "--json",
         "--output-last-message",
         str(last_message_path),
-        "-",
     ]
+    if bypass_approvals_and_sandbox:
+        command.append("--dangerously-bypass-approvals-and-sandbox")
+    else:
+        command.extend(["--sandbox", sandbox])
+    command.append("-")
 
     status(f"waiting for Codex exec in {worktree}")
     process = subprocess.Popen(
@@ -214,7 +214,7 @@ def main() -> int:
     selector.add_argument("--run-id")
     selector.add_argument("--next", action="store_true")
     parser.add_argument("--sandbox", default="workspace-write", choices=["read-only", "workspace-write", "danger-full-access"])
-    parser.add_argument("--ask-for-approval", default="never", choices=["untrusted", "on-failure", "on-request", "never"])
+    parser.add_argument("--dangerously-bypass-approvals-and-sandbox", action="store_true")
     parser.add_argument("--commit", action="store_true")
     parser.add_argument("--push", action="store_true")
     args = parser.parse_args()
@@ -226,7 +226,7 @@ def main() -> int:
     metadata = read_json(run_dir / "metadata.json")
     worktree = root / metadata["worktree"]
 
-    codex_returncode = execute_codex(run_dir, worktree, args.sandbox, args.ask_for_approval)
+    codex_returncode = execute_codex(run_dir, worktree, args.sandbox, args.dangerously_bypass_approvals_and_sandbox)
     capture_returncode = capture(root, run_id)
     if args.commit:
         commit_and_push(root, run_id, args.push)

@@ -23,5 +23,9 @@
   "verification_command_compliance": true,
   "task_verification_success": true,
   "evidence_trio_completeness": 0,
-  "run_validity": "invalid"
+  "run_validity": "invalid",
+  "archive_status": "invalid_harness_defect",
+  "invalid_reason": "Codex runner used obsolete --ask-for-approval flag rejected by installed codex exec CLI; no benchmark work was submitted",
+  "archived_at": "2026-05-16T00:00:45+00:00",
+  "replacement_required": "task-1-codex-cgp-r1"
 }
