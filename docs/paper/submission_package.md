@@ -25,7 +25,6 @@ Main manuscript:
 
 Figures:
 
-- `docs/paper/figures/graphical_abstract.svg`
 - `docs/paper/figures/figure1_benchmark_pipeline.svg`
 - `docs/paper/figures/figure2_validity_by_agent_condition.png`
 - `docs/paper/figures/figure2_validity_by_agent_condition.svg`
