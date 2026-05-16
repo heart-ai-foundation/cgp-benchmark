@@ -1,0 +1,10 @@
+Implemented the `parse_config` refactor in [config.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r1/benchmark-repo/src/utils/config.py:1). The function signature remains `parse_config(raw: dict) -> dict`; defaults and field-specific parsing now live in small helpers to reduce the main function’s branching.
+
+Wrote the required evidence trio:
+- [design note](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r1/notes/task-4-codex-cgp-r1-design.md:1)
+- [run record](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r1/runs/task-4-codex-cgp-r1-run-record.json:1)
+- [evidence JSON](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-4-codex-cgp-r1/evidence/task-4-codex-cgp-r1-evidence.json:1)
+
+Verification passed:
+- `cd benchmark-repo && pytest`: `9 passed`
+- Import/signature/behavior smoke check: `parse_config(raw: dict) -> dict` confirmed callable and behavior checked.

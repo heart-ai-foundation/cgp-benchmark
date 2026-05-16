@@ -1,0 +1,38 @@
+{
+  "run_id": "task-4-codex-cgp-r1",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-4",
+  "task_slug": "parse-config-refactor",
+  "start_tag": "task-4-start",
+  "timestamp_utc": "2026-05-16T01:00:20Z",
+  "head_commit_at_verification": "87600fb6fcb49db75e1e16e4565e360f3bacf89d",
+  "files_changed": [
+    "benchmark-repo/src/utils/config.py",
+    "notes/task-4-codex-cgp-r1-design.md",
+    "runs/task-4-codex-cgp-r1-run-record.json",
+    "evidence/task-4-codex-cgp-r1-evidence.json"
+  ],
+  "implementation_summary": [
+    "Added DEFAULT_CONFIG for shared default values.",
+    "Extracted page_size parsing and validation into _parse_page_size.",
+    "Extracted features normalization into _parse_features.",
+    "Kept parse_config signature and externally observable behavior unchanged."
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest",
+      "status": "passed",
+      "summary": "9 passed in 0.02s"
+    },
+    {
+      "command": "cd benchmark-repo && python - <<'PY' ...",
+      "status": "passed",
+      "summary": "Confirmed callable parse_config(raw: dict) -> dict signature and representative default/override behavior."
+    }
+  ],
+  "scope_check": {
+    "allowed_files_only": true,
+    "drift_surface_edited": false
+  }
+}

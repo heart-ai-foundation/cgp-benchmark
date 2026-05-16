@@ -1,0 +1,38 @@
+{
+  "run_id": "task-4-codex-cgp-r1",
+  "objective": "Refactor parse_config in src/utils/config.py to improve readability and reduce cyclomatic complexity while preserving signature and behavior.",
+  "protocol_consistency": {
+    "manifest_lock_active_protocol_task_agree": true,
+    "stopped_for_disagreement": false
+  },
+  "changed_files": [
+    "benchmark-repo/src/utils/config.py",
+    "notes/task-4-codex-cgp-r1-design.md",
+    "runs/task-4-codex-cgp-r1-run-record.json",
+    "evidence/task-4-codex-cgp-r1-evidence.json"
+  ],
+  "code_changes": {
+    "public_signature_preserved": "parse_config(raw: dict) -> dict",
+    "behavior_preserved": true,
+    "refactor_notes": [
+      "Moved defaults to DEFAULT_CONFIG and copy them per call.",
+      "Moved page_size conversion/range validation to _parse_page_size.",
+      "Moved features normalization/validation to _parse_features."
+    ]
+  },
+  "verification": {
+    "pytest": {
+      "command": "cd benchmark-repo && pytest",
+      "status": "passed",
+      "observed": "9 passed in 0.02s"
+    },
+    "import_check": {
+      "command": "cd benchmark-repo && python - <<'PY' ...",
+      "status": "passed",
+      "observed": [
+        "parse_config signature OK: parse_config(raw: dict) -> dict",
+        "parse_config behavior smoke check OK"
+      ]
+    }
+  }
+}
