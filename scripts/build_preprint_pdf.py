@@ -161,12 +161,13 @@ def latex_table_from_markdown(path: Path, caption: str, label: str) -> str:
     return "\n".join(tex)
 
 
-def latex_figure(filename: str, caption: str) -> str:
+def latex_figure(filename: str, caption: str, *, width: str = r"\textwidth", numbered: bool = True) -> str:
+    caption_command = "caption" if numbered else "caption*"
     return "\n".join(
         [
             r"\begin{figure}[H]\centering",
-            rf"\includegraphics[width=\textwidth]{{{filename}}}",
-            rf"\caption{{{caption}}}",
+            rf"\includegraphics[width={width}]{{{filename}}}",
+            rf"\{caption_command}{{{caption}}}",
             r"\end{figure}",
         ]
     )
@@ -181,18 +182,23 @@ def display_blocks() -> dict[str, str]:
         "graphical": latex_figure(
             graphical,
             r"Continuity-Governed Prompting reliability and auditability benchmark. The graphical abstract shows the controlled task set, the contrast between ordinary baseline prompting and the CGP scaffold, the isolated 144-run execution and capture process, and the observed operational validity movement from 77.8\% under baseline prompting to 94.4\% under CGP. The bottom panel states the governing interpretation boundary: the registered scope-drift endpoint was null at a baseline floor, while CGP improved task engagement and evidence completeness.",
+            width=r"0.92\textwidth",
+            numbered=False,
         ),
         "pipeline": latex_figure(
             pipeline,
             r"Benchmark run-capture pipeline. Each benchmark run began with a task specification containing allowed files and verification commands, then proceeded through either a baseline prompt or a CGP prompt that added manifest, lock, stop-condition, and evidence-trio requirements. Runs were executed in isolated git worktrees, captured as transcripts and diffs, and scored into run-level metrics. CGP evidence files were treated as allowed operational evidence when computing scope drift.",
+            width=r"0.92\textwidth",
         ),
         "validity": latex_figure(
             validity,
             r"Operational run validity by agent and prompt condition. Bars show the proportion of runs classified as valid under the operational composite endpoint for each agent platform and prompt condition. This figure should not be interpreted as the registered primary drift endpoint; registered scope drift was analyzed separately and returned a null result at a baseline floor.",
+            width=r"0.86\textwidth",
         ),
         "failures": latex_figure(
             failures,
             r"Invalid-run mechanisms by agent and prompt condition. Bars count invalid planned runs by observed failure mechanism. The dominant failure mode was non-submission in Aider baseline runs, where the agent completed without changing files while repository verification still passed.",
+            width=r"0.86\textwidth",
         ),
         "table1": latex_table_from_markdown(TABLES / "table1_summary_by_dataset_agent_condition.md", "Summary by dataset, agent, and condition.", "tab:summary"),
         "table2": latex_table_from_markdown(TABLES / "table2_invalid_run_mechanisms.md", "Invalid-run mechanisms.", "tab:failures"),
@@ -239,6 +245,7 @@ def render_tex() -> str:
 \usepackage{{booktabs}}
 \usepackage{{hyperref}}
 \usepackage{{float}}
+\usepackage{{caption}}
 \setmainfont{{TeX Gyre Pagella}}
 \emergencystretch=3em
 \sloppy
