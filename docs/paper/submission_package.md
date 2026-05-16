@@ -20,6 +20,7 @@ Empirical software-engineering benchmark / methods evaluation.
 
 Main manuscript:
 
+- `docs/paper/preprint_manuscript.md`
 - `docs/paper/manuscript_draft.md`
 
 Figures:

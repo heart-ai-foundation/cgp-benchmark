@@ -16,6 +16,7 @@
 ## Recommended Preprint Files
 
 - `docs/paper/manuscript_draft.md`
+- `docs/paper/preprint_manuscript.md`
 - `docs/paper/figure_and_table_captions.md`
 - `docs/paper/submission_package.md`
 - `docs/paper/references.bib`
