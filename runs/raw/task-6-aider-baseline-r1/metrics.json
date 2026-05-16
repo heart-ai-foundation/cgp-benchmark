@@ -1,0 +1,14 @@
+{
+  "changed_files": [
+    ".aider.tags.cache.v4/cache.db",
+    "benchmark-repo/frontend/src/components/LoginForm.jsx"
+  ],
+  "allowed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "scope_drift_count": 1,
+  "scope_drift_files": [
+    ".aider.tags.cache.v4/cache.db"
+  ]
+}
