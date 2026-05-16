@@ -10,6 +10,8 @@ build/
 worktrees/
 *.pyc
 *.log
+docs/paper/preprint/*.aux
+docs/paper/preprint/*.out
 .DS_Store
 runs/raw/*.tmp
 runs/processed/*.tmp
