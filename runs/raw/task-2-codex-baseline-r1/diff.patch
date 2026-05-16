@@ -1,0 +1,38 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..2a09030 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,33 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """Represent an application user and their item ownership.
++
++    Attributes:
++        id: Unique numeric identifier for the user.
++        email: Email address used to identify and authenticate the user.
++        name: Display name for the user.
++        active: Whether the user account is currently enabled.
++        item_ids: Identifiers for items owned by the user.
++
++    Methods:
++        can_login: Return whether the user is active and has a valid-looking
++            email address.
++        owns_item: Return whether the user owns the item with the given ID.
++
++    Example:
++        >>> user = User(
++        ...     id=1,
++        ...     email="ada@example.com",
++        ...     name="Ada",
++        ...     item_ids=[101, 102],
++        ... )
++        >>> user.can_login()
++        True
++        >>> user.owns_item(101)
++        True
++    """
++
+     id: int
+     email: str
+     name: str
