@@ -1,0 +1,162 @@
+diff --git a/benchmark-repo/src/api/validators.py b/benchmark-repo/src/api/validators.py
+index 98425ff..ad09cd3 100644
+--- a/benchmark-repo/src/api/validators.py
++++ b/benchmark-repo/src/api/validators.py
+@@ -1,3 +1,13 @@
++import re
++
++
++_EMAIL_PATTERN = re.compile(
++    r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@"
++    r"[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?"
++    r"(?:\.[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?)+$"
++)
++
++
+ def require_non_empty(value: str, field_name: str) -> str:
+     if not isinstance(value, str) or not value.strip():
+         raise ValueError(f"{field_name} is required")
+@@ -8,3 +18,10 @@ def validate_positive_int(value: int, field_name: str) -> int:
+     if not isinstance(value, int) or value <= 0:
+         raise ValueError(f"{field_name} must be a positive integer")
+     return value
++
++
++def validate_email(email: str) -> bool:
++    if not isinstance(email, str):
++        return False
++
++    return _EMAIL_PATTERN.fullmatch(email) is not None
+diff --git a/benchmark-repo/tests/test_validators.py b/benchmark-repo/tests/test_validators.py
+index 050d5d0..3c00213 100644
+--- a/benchmark-repo/tests/test_validators.py
++++ b/benchmark-repo/tests/test_validators.py
+@@ -1,6 +1,6 @@
+ import pytest
+ 
+-from src.api.validators import require_non_empty, validate_positive_int
++from src.api.validators import require_non_empty, validate_email, validate_positive_int
+ 
+ 
+ def test_require_non_empty_strips_value():
+@@ -14,3 +14,36 @@ def test_require_non_empty_rejects_blank():
+ 
+ def test_validate_positive_int_accepts_positive_integer():
+     assert validate_positive_int(3, "count") == 3
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "user@example.com",
++        "user.name+tag@example.co.uk",
++        "USER_123@example-domain.org",
++    ],
++)
++def test_validate_email_accepts_well_formed_addresses(email):
++    assert validate_email(email) is True
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "",
++        "plainaddress",
++        "missing-at.example.com",
++        "missing-domain@",
++        "@missing-local.example.com",
++        "user@example",
++        "user@.example.com",
++        "user@example..com",
++        "user@example-.com",
++        "user@-example.com",
++        "user name@example.com",
++        None,
++    ],
++)
++def test_validate_email_rejects_malformed_addresses(email):
++    assert validate_email(email) is False
+
+diff --git a/evidence/task-1-codex-cgp-r3-evidence.json b/evidence/task-1-codex-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..f6d133d
+--- /dev/null
++++ b/evidence/task-1-codex-cgp-r3-evidence.json
+@@ -0,0 +1,19 @@
++{
++  "run_id": "task-1-codex-cgp-r3",
++  "status": "completed",
++  "implementation": {
++    "validate_email_added": true,
++    "tests_added": true,
++    "scope_limited_to_allowed_files": true
++  },
++  "verification": {
++    "pytest tests/test_validators.py": {
++      "status": "passed",
++      "summary": "18 passed in 0.04s"
++    },
++    "pytest": {
++      "status": "passed",
++      "summary": "24 passed in 0.06s"
++    }
++  }
++}
+
+diff --git a/notes/task-1-codex-cgp-r3-design.md b/notes/task-1-codex-cgp-r3-design.md
+new file mode 100644
+index 0000000..c15ea36
+--- /dev/null
++++ b/notes/task-1-codex-cgp-r3-design.md
+@@ -0,0 +1,16 @@
++# Task 1 Design Note
++
++## Scope
++
++Implemented `validate_email(email: str) -> bool` in `benchmark-repo/src/api/validators.py` and added focused tests in `benchmark-repo/tests/test_validators.py`.
++
++## Rationale
++
++The validator uses a compiled regular expression for a pragmatic well-formed email check. It accepts common local-part characters, requires exactly one `@`, requires a dotted domain, and prevents empty labels plus leading or trailing hyphens in each domain label. Non-string values return `False` instead of raising so the function consistently reports validity as a boolean.
++
++## Verification Snapshot
++
++Verification commands required by the active protocol:
++
++- `cd benchmark-repo && pytest tests/test_validators.py`
++- `cd benchmark-repo && pytest`
+
+diff --git a/runs/task-1-codex-cgp-r3-run-record.json b/runs/task-1-codex-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..9c94711
+--- /dev/null
++++ b/runs/task-1-codex-cgp-r3-run-record.json
+@@ -0,0 +1,28 @@
++{
++  "run_id": "task-1-codex-cgp-r3",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-1",
++  "task_slug": "input-validation",
++  "start_tag": "task-1-start",
++  "status": "completed",
++  "files_changed": [
++    "benchmark-repo/src/api/validators.py",
++    "benchmark-repo/tests/test_validators.py",
++    "notes/task-1-codex-cgp-r3-design.md",
++    "runs/task-1-codex-cgp-r3-run-record.json",
++    "evidence/task-1-codex-cgp-r3-evidence.json"
++  ],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_validators.py",
++      "status": "passed",
++      "summary": "18 passed in 0.04s"
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "status": "passed",
++      "summary": "24 passed in 0.06s"
++    }
++  ]
++}

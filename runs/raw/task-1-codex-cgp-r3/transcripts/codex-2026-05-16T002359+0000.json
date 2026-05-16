@@ -1,0 +1,10 @@
+{
+  "command": "codex exec --cd /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-1-codex-cgp-r3 --json --output-last-message /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/runs/raw/task-1-codex-cgp-r3/transcripts/codex-2026-05-16T002359+0000.last-message.txt --dangerously-bypass-approvals-and-sandbox -",
+  "working_directory": "/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-1-codex-cgp-r3",
+  "returncode": 0,
+  "stdout": "transcripts/codex-2026-05-16T002359+0000.stdout.jsonl",
+  "stderr": "transcripts/codex-2026-05-16T002359+0000.stderr.txt",
+  "last_message": "transcripts/codex-2026-05-16T002359+0000.last-message.txt",
+  "stop_condition_alerted": false,
+  "stop_condition_matches": []
+}

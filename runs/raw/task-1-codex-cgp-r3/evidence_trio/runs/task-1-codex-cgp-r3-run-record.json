@@ -1,0 +1,28 @@
+{
+  "run_id": "task-1-codex-cgp-r3",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-1",
+  "task_slug": "input-validation",
+  "start_tag": "task-1-start",
+  "status": "completed",
+  "files_changed": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py",
+    "notes/task-1-codex-cgp-r3-design.md",
+    "runs/task-1-codex-cgp-r3-run-record.json",
+    "evidence/task-1-codex-cgp-r3-evidence.json"
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_validators.py",
+      "status": "passed",
+      "summary": "18 passed in 0.04s"
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "status": "passed",
+      "summary": "24 passed in 0.06s"
+    }
+  ]
+}
