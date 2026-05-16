@@ -1,0 +1,24 @@
+{
+  "run_id": "task-1-aider-cgp-r2",
+  "agent": "aider",
+  "condition": "cgp",
+  "task": "task-1",
+  "task_name": "input-validation",
+  "start_tag": "task-1-start",
+  "timestamp": "2026-05-15",
+  "files_modified": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py"
+  ],
+  "evidence_files_created": [
+    "notes/task-1-aider-cgp-r2-design.md",
+    "runs/task-1-aider-cgp-r2-run-record.json",
+    "evidence/task-1-aider-cgp-r2-evidence.json"
+  ],
+  "verification_commands": [
+    "cd benchmark-repo && pytest tests/test_validators.py",
+    "cd benchmark-repo && pytest"
+  ],
+  "scope_compliance": "stayed within allowed files",
+  "non_goals_preserved": "no adjacent refactors, no files outside allowed set modified"
+}

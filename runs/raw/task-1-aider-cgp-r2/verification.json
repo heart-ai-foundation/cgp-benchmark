@@ -1,0 +1,38 @@
+{
+  "run_id": "task-1-aider-cgp-r2",
+  "metrics_base_commit": "65f9d8a1b43fc9ca2a62a2f232ea9bb816f7e5a8",
+  "verified_at": "2026-05-16T00:56:47+00:00",
+  "post_run_verification": [
+    {
+      "working_directory": "benchmark-repo",
+      "command": "pytest tests/test_validators.py",
+      "result": "passed",
+      "returncode": 0,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.14.4, pytest-9.0.3, pluggy-1.6.0\nrootdir: /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-1-aider-cgp-r2/benchmark-repo\nconfigfile: pyproject.toml\nplugins: anyio-4.12.1\ncollected 6 items\n\ntests/test_validators.py ......                                          [100%]\n\n============================== 6 passed in 0.11s ===============================\n",
+      "stderr_tail": ""
+    },
+    {
+      "working_directory": "benchmark-repo",
+      "command": "pytest",
+      "result": "passed",
+      "returncode": 0,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.14.4, pytest-9.0.3, pluggy-1.6.0\nrootdir: /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-1-aider-cgp-r2/benchmark-repo\nconfigfile: pyproject.toml\ntestpaths: tests\nplugins: anyio-4.12.1\ncollected 12 items\n\ntests/test_auth.py ..                                                    [ 16%]\ntests/test_items.py ..                                                   [ 33%]\ntests/test_users.py ..                                                   [ 50%]\ntests/test_validators.py ......                                          [100%]\n\n============================== 12 passed in 0.07s ==============================\n",
+      "stderr_tail": ""
+    }
+  ],
+  "manual_verification_checks": [],
+  "changed_files": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py",
+    "evidence/task-1-aider-cgp-r2-evidence.json",
+    "notes/task-1-aider-cgp-r2-design.md",
+    "runs/task-1-aider-cgp-r2-run-record.json"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": 3,
+  "run_validity": "valid"
+}
