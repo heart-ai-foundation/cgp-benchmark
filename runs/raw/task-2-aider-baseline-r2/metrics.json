@@ -1,0 +1,8 @@
+{
+  "changed_files": [],
+  "allowed_files": [
+    "benchmark-repo/src/models/user.py"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": []
+}
