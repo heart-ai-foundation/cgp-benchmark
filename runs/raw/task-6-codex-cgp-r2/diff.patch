@@ -1,0 +1,167 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..3aea7d1 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..8c46fc2 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -26,11 +26,31 @@ test("renderItemList joins item names", async () => {
+ 
+ test("submitLogin delegates valid credentials", async () => {
+   const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  let calls = 0;
++  const authenticate = (payload) => {
++    calls += 1;
++    return { ok: true, payload };
++  };
++
+   const result = submitLogin(
+     { email: "ada@example.com", password: "secret" },
+-    (payload) => ({ ok: true, payload })
++    authenticate
+   );
+ 
+   assert.equal(result.ok, true);
++  assert.equal(calls, 1);
+   assert.equal(result.payload.email, "ada@example.com");
++  assert.equal(result.payload.password, "secret");
++});
++
++test("submitLogin returns an error for an empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => {
++      throw new Error("authenticate should not be called");
++    }
++  );
++
++  assert.deepEqual(result, { ok: false, error: "Password is required" });
+ });
+
+diff --git a/evidence/task-6-codex-cgp-r2-evidence.json b/evidence/task-6-codex-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..cf39b92
+--- /dev/null
++++ b/evidence/task-6-codex-cgp-r2-evidence.json
+@@ -0,0 +1,32 @@
++{
++  "run_id": "task-6-codex-cgp-r2",
++  "task": "task-6",
++  "expected_behavior": {
++    "empty_password": {
++      "ok": false,
++      "error": "Password is required"
++    },
++    "valid_credentials_delegate_to_authenticate": true
++  },
++  "observed_changes": {
++    "empty_password_guard": "returns the expected error object instead of throwing",
++    "valid_credentials": "delegates once to authenticate with email and password payload"
++  },
++  "regression_tests": [
++    "submitLogin returns an error for an empty password",
++    "submitLogin delegates valid credentials"
++  ],
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "status": "passed",
++    "output_summary": "4 tests passed, 0 failed"
++  },
++  "allowed_scope_confirmed": true,
++  "edited_files": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js",
++    "notes/task-6-codex-cgp-r2-design.md",
++    "runs/task-6-codex-cgp-r2-run-record.json",
++    "evidence/task-6-codex-cgp-r2-evidence.json"
++  ]
++}
+
+diff --git a/notes/task-6-codex-cgp-r2-design.md b/notes/task-6-codex-cgp-r2-design.md
+new file mode 100644
+index 0000000..84561b7
+--- /dev/null
++++ b/notes/task-6-codex-cgp-r2-design.md
+@@ -0,0 +1,24 @@
++# Task 6 Design Note
++
++Run ID: task-6-codex-cgp-r2
++Task: login-empty-password
++
++## Scope
++
++The active protocol and task specification agree that the slice is limited to `LoginForm.jsx`, `components.test.js`, and the required evidence trio. No drift-surface files were edited.
++
++## Change
++
++`submitLogin` now returns `{ ok: false, error: "Password is required" }` when the password value is empty or missing, instead of throwing from the password guard. Valid submissions continue to call the supplied `authenticate` function with the original email and password payload.
++
++## Regression Coverage
++
++The component test suite now includes an empty-password regression test that asserts the exact error result and fails if `authenticate` is called. The existing valid-credentials test was tightened to assert a single `authenticate` delegation and verify the password remains in the payload.
++
++## Verification Snapshot
++
++Command: `cd benchmark-repo && npm test`
++
++Result: pass
++
++Summary: 4 tests passed, 0 failed.
+
+diff --git a/runs/task-6-codex-cgp-r2-run-record.json b/runs/task-6-codex-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..64e0f01
+--- /dev/null
++++ b/runs/task-6-codex-cgp-r2-run-record.json
+@@ -0,0 +1,38 @@
++{
++  "run_id": "task-6-codex-cgp-r2",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_slug": "login-empty-password",
++  "started_from_tag": "task-6-start",
++  "timestamp": "2026-05-15T17:51:07-07:00",
++  "protocol_files_read": [
++    "next-prompt-protocols/.slice-lock.json",
++    "next-prompt-protocols/manifest.json",
++    "next-prompt-protocols/role-context.md",
++    "next-prompt-protocols/phases/phase-1/README.md",
++    "next-prompt-protocols/active/task-6-codex-cgp-r2.md",
++    "docs/task_specs/task-6-login-empty-password.md"
++  ],
++  "files_changed": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js",
++    "notes/task-6-codex-cgp-r2-design.md",
++    "runs/task-6-codex-cgp-r2-run-record.json",
++    "evidence/task-6-codex-cgp-r2-evidence.json"
++  ],
++  "drift_surface_files_changed": [],
++  "implementation_summary": "Changed the empty password guard to return the expected error result and added regression coverage while preserving authenticate delegation for valid credentials.",
++  "verification": [
++    {
++      "command": "cd benchmark-repo && npm test",
++      "status": "passed",
++      "tests": {
++        "total": 4,
++        "passed": 4,
++        "failed": 0
++      }
++    }
++  ],
++  "stop_condition_triggered": false
++}

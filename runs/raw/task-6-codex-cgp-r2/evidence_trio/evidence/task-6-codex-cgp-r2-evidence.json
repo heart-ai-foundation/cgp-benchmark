@@ -1,0 +1,32 @@
+{
+  "run_id": "task-6-codex-cgp-r2",
+  "task": "task-6",
+  "expected_behavior": {
+    "empty_password": {
+      "ok": false,
+      "error": "Password is required"
+    },
+    "valid_credentials_delegate_to_authenticate": true
+  },
+  "observed_changes": {
+    "empty_password_guard": "returns the expected error object instead of throwing",
+    "valid_credentials": "delegates once to authenticate with email and password payload"
+  },
+  "regression_tests": [
+    "submitLogin returns an error for an empty password",
+    "submitLogin delegates valid credentials"
+  ],
+  "verification": {
+    "command": "cd benchmark-repo && npm test",
+    "status": "passed",
+    "output_summary": "4 tests passed, 0 failed"
+  },
+  "allowed_scope_confirmed": true,
+  "edited_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js",
+    "notes/task-6-codex-cgp-r2-design.md",
+    "runs/task-6-codex-cgp-r2-run-record.json",
+    "evidence/task-6-codex-cgp-r2-evidence.json"
+  ]
+}
