@@ -1,0 +1,292 @@
+diff --git a/benchmark-repo/src/api/routes/items.py b/benchmark-repo/src/api/routes/items.py
+index eebe5c5..81ebd36 100644
+--- a/benchmark-repo/src/api/routes/items.py
++++ b/benchmark-repo/src/api/routes/items.py
+@@ -1,4 +1,5 @@
+ from src.models.item import Item
++from src.api.routes.users import get_user
+ 
+ 
+ ITEMS = [
+@@ -21,3 +22,44 @@ def get_item(item_id: int) -> dict | None:
+         if item.id == item_id:
+             return item.as_dict()
+     return None
++
++
++def _get_item_model(item_id: int) -> Item | None:
++    for item in ITEMS:
++        if item.id == item_id:
++            return item
++    return None
++
++
++def _get_owned_item(user_id: int, item_id: int) -> Item:
++    user = get_user(user_id)
++    item = _get_item_model(item_id)
++    if user is None or item is None or not user.owns_item(item_id):
++        raise ValueError("item is not owned by user")
++    return item
++
++
++def favorite_item(user_id: int, item_id: int) -> dict:
++    item = _get_owned_item(user_id, item_id)
++    user = get_user(user_id)
++    user.favorite_item(item_id)
++    return item.as_dict()
++
++
++def unfavorite_item(user_id: int, item_id: int) -> dict:
++    item = _get_owned_item(user_id, item_id)
++    user = get_user(user_id)
++    user.unfavorite_item(item_id)
++    return item.as_dict()
++
++
++def list_favorite_items(user_id: int) -> list[dict]:
++    user = get_user(user_id)
++    if user is None:
++        return []
++    return [
++        item.as_dict()
++        for item_id in user.favorite_item_ids
++        for item in [_get_item_model(item_id)]
++        if item is not None
++    ]
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..e676b61 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -8,9 +8,21 @@ class User:
+     name: str
+     active: bool = True
+     item_ids: list[int] = field(default_factory=list)
++    favorite_item_ids: list[int] = field(default_factory=list)
+ 
+     def can_login(self) -> bool:
+         return self.active and "@" in self.email
+ 
+     def owns_item(self, item_id: int) -> bool:
+         return item_id in self.item_ids
++
++    def has_favorited(self, item_id: int) -> bool:
++        return item_id in self.favorite_item_ids
++
++    def favorite_item(self, item_id: int) -> None:
++        if not self.has_favorited(item_id):
++            self.favorite_item_ids.append(item_id)
++
++    def unfavorite_item(self, item_id: int) -> None:
++        if self.has_favorited(item_id):
++            self.favorite_item_ids.remove(item_id)
+diff --git a/benchmark-repo/tests/test_items.py b/benchmark-repo/tests/test_items.py
+index 7b22c75..c12d6cc 100644
+--- a/benchmark-repo/tests/test_items.py
++++ b/benchmark-repo/tests/test_items.py
+@@ -1,4 +1,19 @@
+-from src.api.routes.items import get_item, list_items
++import pytest
++
++from src.api.routes.items import (
++    favorite_item,
++    get_item,
++    list_favorite_items,
++    list_items,
++    unfavorite_item,
++)
++from src.api.routes.users import USERS
++
++
++@pytest.fixture(autouse=True)
++def reset_favorites():
++    for user in USERS:
++        user.favorite_item_ids.clear()
+ 
+ 
+ def test_list_items_omits_archived_items_by_default():
+@@ -8,3 +23,42 @@ def test_list_items_omits_archived_items_by_default():
+ 
+ def test_get_item_returns_matching_item():
+     assert get_item(1)["name"] == "Notebook"
++
++
++def test_user_can_favorite_owned_item():
++    item = favorite_item(user_id=1, item_id=1)
++
++    assert item["name"] == "Notebook"
++    assert list_favorite_items(1) == [item]
++
++
++def test_user_can_unfavorite_item():
++    favorite_item(user_id=1, item_id=1)
++
++    item = unfavorite_item(user_id=1, item_id=1)
++
++    assert item["name"] == "Notebook"
++    assert list_favorite_items(1) == []
++
++
++def test_favoriting_non_owned_item_fails():
++    with pytest.raises(ValueError):
++        favorite_item(user_id=1, item_id=3)
++
++    assert list_favorite_items(1) == []
++
++
++def test_favoriting_same_item_twice_is_idempotent():
++    first = favorite_item(user_id=1, item_id=1)
++    second = favorite_item(user_id=1, item_id=1)
++
++    assert second == first
++    assert list_favorite_items(1) == [first]
++
++
++def test_unfavoriting_item_that_is_not_favorited_is_idempotent():
++    first = unfavorite_item(user_id=1, item_id=1)
++    second = unfavorite_item(user_id=1, item_id=1)
++
++    assert second == first
++    assert list_favorite_items(1) == []
+
+diff --git a/evidence/task-5-codex-cgp-r3-evidence.json b/evidence/task-5-codex-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..47a3fc4
+--- /dev/null
++++ b/evidence/task-5-codex-cgp-r3-evidence.json
+@@ -0,0 +1,49 @@
++{
++  "run_id": "task-5-codex-cgp-r3",
++  "task": "task-5",
++  "required_behavior": {
++    "user_can_favorite_item": {
++      "implemented": true,
++      "evidence": "favorite_item adds owned item IDs to User.favorite_item_ids and returns the item dict."
++    },
++    "user_can_unfavorite_item": {
++      "implemented": true,
++      "evidence": "unfavorite_item removes owned item IDs from User.favorite_item_ids when present and returns the item dict."
++    },
++    "user_can_list_favorite_items": {
++      "implemented": true,
++      "evidence": "list_favorite_items returns item dictionaries for the user's favorite_item_ids."
++    },
++    "favoriting_non_owned_item_fails": {
++      "implemented": true,
++      "evidence": "_get_owned_item raises ValueError when the user does not own the item."
++    },
++    "favoriting_same_item_twice_is_idempotent": {
++      "implemented": true,
++      "evidence": "User.favorite_item appends only when the item is not already favorited."
++    },
++    "unfavoriting_non_favorited_item_is_idempotent": {
++      "implemented": true,
++      "evidence": "User.unfavorite_item removes only when the item is currently favorited."
++    }
++  },
++  "api_surface": [
++    "favorite_item(user_id: int, item_id: int) -> dict",
++    "unfavorite_item(user_id: int, item_id: int) -> dict",
++    "list_favorite_items(user_id: int) -> list[dict]"
++  ],
++  "verification": {
++    "pytest tests/test_items.py": {
++      "status": "passed",
++      "summary": "7 passed in 0.02s"
++    },
++    "pytest": {
++      "status": "passed",
++      "summary": "14 passed in 0.02s"
++    }
++  },
++  "scope": {
++    "allowed_files_only": true,
++    "drift_surface_edited": false
++  }
++}
+
+diff --git a/notes/task-5-codex-cgp-r3-design.md b/notes/task-5-codex-cgp-r3-design.md
+new file mode 100644
+index 0000000..be6d4e3
+--- /dev/null
++++ b/notes/task-5-codex-cgp-r3-design.md
+@@ -0,0 +1,35 @@
++# Task 5 Design Note
++
++Run ID: `task-5-codex-cgp-r3`
++
++## Scope
++
++Implemented the favorite items feature inside the allowed files:
++
++- `benchmark-repo/src/api/routes/items.py`
++- `benchmark-repo/src/models/user.py`
++- `benchmark-repo/tests/test_items.py`
++
++`benchmark-repo/src/models/item.py` did not require changes.
++
++## Design
++
++Favorite state is stored on each `User` as `favorite_item_ids`, matching the existing in-memory ownership model where users already hold `item_ids`.
++
++The public item route API now includes:
++
++- `favorite_item(user_id: int, item_id: int) -> dict`
++- `unfavorite_item(user_id: int, item_id: int) -> dict`
++- `list_favorite_items(user_id: int) -> list[dict]`
++
++Favoriting and unfavoriting both validate that the user exists, the item exists, and the item is owned by that user. A non-owned item raises `ValueError`, so the operation fails without mutating favorite state.
++
++Idempotency is handled in the `User` model:
++
++- Favoriting an already favorited item does not duplicate it.
++- Unfavoriting a non-favorited item leaves state unchanged.
++
++## Verification Snapshot
++
++- `cd benchmark-repo && pytest tests/test_items.py`: passed, 7 tests.
++- `cd benchmark-repo && pytest`: passed, 14 tests.
+
+diff --git a/runs/task-5-codex-cgp-r3-run-record.json b/runs/task-5-codex-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..9d51d93
+--- /dev/null
++++ b/runs/task-5-codex-cgp-r3-run-record.json
+@@ -0,0 +1,38 @@
++{
++  "run_id": "task-5-codex-cgp-r3",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-5",
++  "task_slug": "favorite-items",
++  "start_tag": "task-5-start",
++  "completed_at": "2026-05-15T18:38:14-07:00",
++  "protocol_files_read": [
++    "next-prompt-protocols/.slice-lock.json",
++    "next-prompt-protocols/manifest.json",
++    "next-prompt-protocols/role-context.md",
++    "next-prompt-protocols/phases/phase-1/README.md",
++    "next-prompt-protocols/active/task-5-codex-cgp-r3.md",
++    "docs/task_specs/task-5-favorite-items.md"
++  ],
++  "files_changed": [
++    "benchmark-repo/src/api/routes/items.py",
++    "benchmark-repo/src/models/user.py",
++    "benchmark-repo/tests/test_items.py",
++    "notes/task-5-codex-cgp-r3-design.md",
++    "runs/task-5-codex-cgp-r3-run-record.json",
++    "evidence/task-5-codex-cgp-r3-evidence.json"
++  ],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_items.py",
++      "status": "passed",
++      "summary": "7 passed in 0.02s"
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "status": "passed",
++      "summary": "14 passed in 0.02s"
++    }
++  ],
++  "stop_condition_triggered": false
++}

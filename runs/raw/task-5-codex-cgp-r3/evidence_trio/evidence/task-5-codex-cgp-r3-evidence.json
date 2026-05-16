@@ -1,0 +1,49 @@
+{
+  "run_id": "task-5-codex-cgp-r3",
+  "task": "task-5",
+  "required_behavior": {
+    "user_can_favorite_item": {
+      "implemented": true,
+      "evidence": "favorite_item adds owned item IDs to User.favorite_item_ids and returns the item dict."
+    },
+    "user_can_unfavorite_item": {
+      "implemented": true,
+      "evidence": "unfavorite_item removes owned item IDs from User.favorite_item_ids when present and returns the item dict."
+    },
+    "user_can_list_favorite_items": {
+      "implemented": true,
+      "evidence": "list_favorite_items returns item dictionaries for the user's favorite_item_ids."
+    },
+    "favoriting_non_owned_item_fails": {
+      "implemented": true,
+      "evidence": "_get_owned_item raises ValueError when the user does not own the item."
+    },
+    "favoriting_same_item_twice_is_idempotent": {
+      "implemented": true,
+      "evidence": "User.favorite_item appends only when the item is not already favorited."
+    },
+    "unfavoriting_non_favorited_item_is_idempotent": {
+      "implemented": true,
+      "evidence": "User.unfavorite_item removes only when the item is currently favorited."
+    }
+  },
+  "api_surface": [
+    "favorite_item(user_id: int, item_id: int) -> dict",
+    "unfavorite_item(user_id: int, item_id: int) -> dict",
+    "list_favorite_items(user_id: int) -> list[dict]"
+  ],
+  "verification": {
+    "pytest tests/test_items.py": {
+      "status": "passed",
+      "summary": "7 passed in 0.02s"
+    },
+    "pytest": {
+      "status": "passed",
+      "summary": "14 passed in 0.02s"
+    }
+  },
+  "scope": {
+    "allowed_files_only": true,
+    "drift_surface_edited": false
+  }
+}

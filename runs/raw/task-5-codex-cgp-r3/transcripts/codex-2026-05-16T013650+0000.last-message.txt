@@ -1,0 +1,11 @@
+Implemented the favorite items feature within the allowed scope.
+
+Changed:
+- [items.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-5-codex-cgp-r3/benchmark-repo/src/api/routes/items.py): added `favorite_item`, `unfavorite_item`, and `list_favorite_items` with ownership validation.
+- [user.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-5-codex-cgp-r3/benchmark-repo/src/models/user.py): added per-user favorite state and idempotent helper methods.
+- [test_items.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-5-codex-cgp-r3/benchmark-repo/tests/test_items.py): added coverage for favorite, unfavorite, listing, non-owned failure, and idempotency.
+- Wrote the required evidence trio under `notes/`, `runs/`, and `evidence/`.
+
+Verification passed:
+- `cd benchmark-repo && pytest tests/test_items.py` -> 7 passed
+- `cd benchmark-repo && pytest` -> 14 passed
