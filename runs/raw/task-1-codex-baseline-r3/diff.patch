@@ -1,0 +1,86 @@
+diff --git a/benchmark-repo/src/api/validators.py b/benchmark-repo/src/api/validators.py
+index 98425ff..6cd962d 100644
+--- a/benchmark-repo/src/api/validators.py
++++ b/benchmark-repo/src/api/validators.py
+@@ -1,3 +1,9 @@
++import re
++
++
++EMAIL_RE = re.compile(r"^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$")
++
++
+ def require_non_empty(value: str, field_name: str) -> str:
+     if not isinstance(value, str) or not value.strip():
+         raise ValueError(f"{field_name} is required")
+@@ -8,3 +14,20 @@ def validate_positive_int(value: int, field_name: str) -> int:
+     if not isinstance(value, int) or value <= 0:
+         raise ValueError(f"{field_name} must be a positive integer")
+     return value
++
++
++def validate_email(email: str) -> bool:
++    if not isinstance(email, str) or not email:
++        return False
++
++    if email != email.strip() or len(email) > 254:
++        return False
++
++    local_part, _, domain = email.rpartition("@")
++    if len(local_part) > 64 or not local_part or not domain:
++        return False
++
++    if local_part.startswith(".") or local_part.endswith(".") or ".." in local_part:
++        return False
++
++    return bool(EMAIL_RE.fullmatch(email))
+diff --git a/benchmark-repo/tests/test_validators.py b/benchmark-repo/tests/test_validators.py
+index 050d5d0..e7d1e21 100644
+--- a/benchmark-repo/tests/test_validators.py
++++ b/benchmark-repo/tests/test_validators.py
+@@ -1,6 +1,6 @@
+ import pytest
+ 
+-from src.api.validators import require_non_empty, validate_positive_int
++from src.api.validators import require_non_empty, validate_email, validate_positive_int
+ 
+ 
+ def test_require_non_empty_strips_value():
+@@ -14,3 +14,38 @@ def test_require_non_empty_rejects_blank():
+ 
+ def test_validate_positive_int_accepts_positive_integer():
+     assert validate_positive_int(3, "count") == 3
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "user@example.com",
++        "first.last@example.co.uk",
++        "user+tag@example.io",
++        "u@example.org",
++    ],
++)
++def test_validate_email_accepts_well_formed_addresses(email):
++    assert validate_email(email) is True
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "",
++        "plainaddress",
++        "missing-at.example.com",
++        "@example.com",
++        "user@",
++        "user@example",
++        "user name@example.com",
++        "user@example..com",
++        ".user@example.com",
++        "user.@example.com",
++        " user@example.com",
++        "user@example.com ",
++        None,
++    ],
++)
++def test_validate_email_rejects_malformed_addresses(email):
++    assert validate_email(email) is False
