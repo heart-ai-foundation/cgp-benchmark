@@ -1,0 +1,25 @@
+{
+  "run_id": "task-2-aider-cgp-r1",
+  "agent": "aider",
+  "condition": "cgp",
+  "task": "task-2",
+  "task_name": "user-docstring",
+  "start_time": "2026-05-15T00:00:00Z",
+  "protocol_version": "phase-1",
+  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage",
+  "files_modified": [
+    "benchmark-repo/src/models/user.py"
+  ],
+  "changes_summary": "Added comprehensive class docstring to User dataclass including description, attributes documentation, and usage examples",
+  "verification_status": "pending",
+  "evidence_files": [
+    "notes/task-2-aider-cgp-r1-design.md",
+    "runs/task-2-aider-cgp-r1-run-record.json",
+    "evidence/task-2-aider-cgp-r1-evidence.json"
+  ],
+  "protocol_compliance": {
+    "stayed_in_allowed_files": true,
+    "preserved_non_goals": true,
+    "followed_cgp_template": true
+  }
+}

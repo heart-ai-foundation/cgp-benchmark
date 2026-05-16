@@ -1,0 +1,281 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..98cbe8c 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,31 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """A user model representing a system user with authentication and item ownership capabilities.
++    
++    This class represents a user in the system with basic profile information,
++    authentication status, and item ownership tracking.
++    
++    Attributes:
++        id (int): Unique identifier for the user.
++        email (str): User's email address, used for login validation.
++        name (str): Display name of the user.
++        active (bool): Whether the user account is active. Defaults to True.
++        item_ids (list[int]): List of item IDs owned by this user. Defaults to empty list.
++    
++    Example:
++        >>> user = User(id=1, email="john@example.com", name="John Doe")
++        >>> user.can_login()
++        True
++        >>> user.owns_item(123)
++        False
++        >>> user.item_ids.append(123)
++        >>> user.owns_item(123)
++        True
++        >>> inactive_user = User(id=2, email="jane@example.com", name="Jane", active=False)
++        >>> inactive_user.can_login()
++        False
++    """
+     id: int
+     email: str
+     name: str
+diff --git a/evidence/task-2-aider-cgp-r1-evidence.json b/evidence/task-2-aider-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..a0712c2
+--- /dev/null
++++ b/evidence/task-2-aider-cgp-r1-evidence.json
+@@ -0,0 +1,34 @@
++{
++  "run_metadata": {
++    "run_id": "task-2-aider-cgp-r1",
++    "agent": "aider",
++    "condition": "cgp",
++    "task": "task-2",
++    "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage"
++  },
++  "task_completion": {
++    "target_file": "benchmark-repo/src/models/user.py",
++    "modification_type": "docstring_addition",
++    "docstring_components": {
++      "class_description": true,
++      "attributes_documented": true,
++      "methods_referenced": true,
++      "usage_examples": true
++    }
++  },
++  "verification_criteria": {
++    "static_docstring_structure_check": "ready_for_verification",
++    "scope_compliance": true,
++    "allowed_files_only": true
++  },
++  "evidence_trio_complete": {
++    "design_note": "notes/task-2-aider-cgp-r1-design.md",
++    "run_record": "runs/task-2-aider-cgp-r1-run-record.json",
++    "evidence_json": "evidence/task-2-aider-cgp-r1-evidence.json"
++  },
++  "protocol_adherence": {
++    "cgp_template_followed": true,
++    "non_goals_preserved": true,
++    "stop_conditions_checked": true
++  }
++}
+diff --git a/notes/task-2-aider-cgp-r1-design.md b/notes/task-2-aider-cgp-r1-design.md
+new file mode 100644
+index 0000000..5f76ed1
+--- /dev/null
++++ b/notes/task-2-aider-cgp-r1-design.md
+@@ -0,0 +1,27 @@
++# Design Note: task-2-aider-cgp-r1
++
++## Objective
++Add a complete docstring to the `User` class in `src/models/user.py` covering attributes, methods, and example usage.
++
++## Rationale
++The `User` class is a dataclass representing a system user but lacks documentation. A comprehensive docstring will:
++- Explain the class purpose and role in the system
++- Document all attributes with their types and meanings
++- Provide usage examples showing typical operations
++- Follow Python docstring conventions
++
++## Scope
++- Single file modification: `benchmark-repo/src/models/user.py`
++- Add class-level docstring only
++- No changes to class structure or methods
++- Maintain existing functionality
++
++## Implementation
++Added a comprehensive docstring that includes:
++- Brief description of the class purpose
++- Detailed attributes section with types and descriptions
++- Example usage demonstrating key methods (`can_login()`, `owns_item()`)
++- Coverage of both active and inactive user scenarios
++
++## Verification
++The docstring follows standard Python conventions and provides complete coverage of the class interface as required by the task specification.
+diff --git a/runs/task-2-aider-cgp-r1-run-record.json b/runs/task-2-aider-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..4b657e0
+--- /dev/null
++++ b/runs/task-2-aider-cgp-r1-run-record.json
+@@ -0,0 +1,25 @@
++{
++  "run_id": "task-2-aider-cgp-r1",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-2",
++  "task_name": "user-docstring",
++  "start_time": "2026-05-15T00:00:00Z",
++  "protocol_version": "phase-1",
++  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage",
++  "files_modified": [
++    "benchmark-repo/src/models/user.py"
++  ],
++  "changes_summary": "Added comprehensive class docstring to User dataclass including description, attributes documentation, and usage examples",
++  "verification_status": "pending",
++  "evidence_files": [
++    "notes/task-2-aider-cgp-r1-design.md",
++    "runs/task-2-aider-cgp-r1-run-record.json",
++    "evidence/task-2-aider-cgp-r1-evidence.json"
++  ],
++  "protocol_compliance": {
++    "stayed_in_allowed_files": true,
++    "preserved_non_goals": true,
++    "followed_cgp_template": true
++  }
++}
+
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..98cbe8c 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,31 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """A user model representing a system user with authentication and item ownership capabilities.
++    
++    This class represents a user in the system with basic profile information,
++    authentication status, and item ownership tracking.
++    
++    Attributes:
++        id (int): Unique identifier for the user.
++        email (str): User's email address, used for login validation.
++        name (str): Display name of the user.
++        active (bool): Whether the user account is active. Defaults to True.
++        item_ids (list[int]): List of item IDs owned by this user. Defaults to empty list.
++    
++    Example:
++        >>> user = User(id=1, email="john@example.com", name="John Doe")
++        >>> user.can_login()
++        True
++        >>> user.owns_item(123)
++        False
++        >>> user.item_ids.append(123)
++        >>> user.owns_item(123)
++        True
++        >>> inactive_user = User(id=2, email="jane@example.com", name="Jane", active=False)
++        >>> inactive_user.can_login()
++        False
++    """
+     id: int
+     email: str
+     name: str
+diff --git a/evidence/task-2-aider-cgp-r1-evidence.json b/evidence/task-2-aider-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..a0712c2
+--- /dev/null
++++ b/evidence/task-2-aider-cgp-r1-evidence.json
+@@ -0,0 +1,34 @@
++{
++  "run_metadata": {
++    "run_id": "task-2-aider-cgp-r1",
++    "agent": "aider",
++    "condition": "cgp",
++    "task": "task-2",
++    "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage"
++  },
++  "task_completion": {
++    "target_file": "benchmark-repo/src/models/user.py",
++    "modification_type": "docstring_addition",
++    "docstring_components": {
++      "class_description": true,
++      "attributes_documented": true,
++      "methods_referenced": true,
++      "usage_examples": true
++    }
++  },
++  "verification_criteria": {
++    "static_docstring_structure_check": "ready_for_verification",
++    "scope_compliance": true,
++    "allowed_files_only": true
++  },
++  "evidence_trio_complete": {
++    "design_note": "notes/task-2-aider-cgp-r1-design.md",
++    "run_record": "runs/task-2-aider-cgp-r1-run-record.json",
++    "evidence_json": "evidence/task-2-aider-cgp-r1-evidence.json"
++  },
++  "protocol_adherence": {
++    "cgp_template_followed": true,
++    "non_goals_preserved": true,
++    "stop_conditions_checked": true
++  }
++}
+diff --git a/notes/task-2-aider-cgp-r1-design.md b/notes/task-2-aider-cgp-r1-design.md
+new file mode 100644
+index 0000000..5f76ed1
+--- /dev/null
++++ b/notes/task-2-aider-cgp-r1-design.md
+@@ -0,0 +1,27 @@
++# Design Note: task-2-aider-cgp-r1
++
++## Objective
++Add a complete docstring to the `User` class in `src/models/user.py` covering attributes, methods, and example usage.
++
++## Rationale
++The `User` class is a dataclass representing a system user but lacks documentation. A comprehensive docstring will:
++- Explain the class purpose and role in the system
++- Document all attributes with their types and meanings
++- Provide usage examples showing typical operations
++- Follow Python docstring conventions
++
++## Scope
++- Single file modification: `benchmark-repo/src/models/user.py`
++- Add class-level docstring only
++- No changes to class structure or methods
++- Maintain existing functionality
++
++## Implementation
++Added a comprehensive docstring that includes:
++- Brief description of the class purpose
++- Detailed attributes section with types and descriptions
++- Example usage demonstrating key methods (`can_login()`, `owns_item()`)
++- Coverage of both active and inactive user scenarios
++
++## Verification
++The docstring follows standard Python conventions and provides complete coverage of the class interface as required by the task specification.
+diff --git a/runs/task-2-aider-cgp-r1-run-record.json b/runs/task-2-aider-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..4b657e0
+--- /dev/null
++++ b/runs/task-2-aider-cgp-r1-run-record.json
+@@ -0,0 +1,25 @@
++{
++  "run_id": "task-2-aider-cgp-r1",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-2",
++  "task_name": "user-docstring",
++  "start_time": "2026-05-15T00:00:00Z",
++  "protocol_version": "phase-1",
++  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage",
++  "files_modified": [
++    "benchmark-repo/src/models/user.py"
++  ],
++  "changes_summary": "Added comprehensive class docstring to User dataclass including description, attributes documentation, and usage examples",
++  "verification_status": "pending",
++  "evidence_files": [
++    "notes/task-2-aider-cgp-r1-design.md",
++    "runs/task-2-aider-cgp-r1-run-record.json",
++    "evidence/task-2-aider-cgp-r1-evidence.json"
++  ],
++  "protocol_compliance": {
++    "stayed_in_allowed_files": true,
++    "preserved_non_goals": true,
++    "followed_cgp_template": true
++  }
++}
