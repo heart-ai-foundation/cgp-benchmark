@@ -1,0 +1,107 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..36ee3ce 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,29 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """Represent an application user and their owned item references.
++
++    Attributes:
++        id: Unique integer identifier for the user.
++        email: Email address used for login eligibility checks.
++        name: Display name for the user.
++        active: Whether the user account is enabled. Defaults to True.
++        item_ids: Item identifiers owned by the user. Defaults to an empty list.
++
++    Methods:
++        can_login: Return True when the user is active and the email contains
++            an at-sign.
++        owns_item: Return True when the given item identifier is present in
++            item_ids.
++
++    Example:
++        >>> user = User(id=1, email="ada@example.com", name="Ada", item_ids=[10])
++        >>> user.can_login()
++        True
++        >>> user.owns_item(10)
++        True
++    """
++
+     id: int
+     email: str
+     name: str
+
+diff --git a/evidence/task-2-codex-cgp-r1-evidence.json b/evidence/task-2-codex-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..1b49ad8
+--- /dev/null
++++ b/evidence/task-2-codex-cgp-r1-evidence.json
+@@ -0,0 +1,16 @@
++{
++  "run_id": "task-2-codex-cgp-r1",
++  "objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
++  "allowed_files_respected": true,
++  "implementation": {
++    "file": "benchmark-repo/src/models/user.py",
++    "change": "Added a User class docstring with Attributes, Methods, and Example sections."
++  },
++  "verification": {
++    "static_docstring_structure_check": {
++      "status": "passed",
++      "observed_output": "Static docstring structure check passed"
++    }
++  },
++  "drift_surface_changed": false
++}
+
+diff --git a/notes/task-2-codex-cgp-r1-design.md b/notes/task-2-codex-cgp-r1-design.md
+new file mode 100644
+index 0000000..6c70390
+--- /dev/null
++++ b/notes/task-2-codex-cgp-r1-design.md
+@@ -0,0 +1,14 @@
++# Design Note: task-2-codex-cgp-r1
++
++## Scope
++
++Added a class-level docstring to `benchmark-repo/src/models/user.py` for the `User` dataclass.
++
++## Rationale
++
++The docstring documents the public data carried by `User`, the two behavior methods exposed by the class, and a short interactive example showing login eligibility and item ownership checks. No runtime behavior was changed.
++
++## Verification
++
++- `cd benchmark-repo && python - <<'PY' ... PY`
++- Result: `Static docstring structure check passed`
+
+diff --git a/runs/task-2-codex-cgp-r1-run-record.json b/runs/task-2-codex-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..c812394
+--- /dev/null
++++ b/runs/task-2-codex-cgp-r1-run-record.json
+@@ -0,0 +1,22 @@
++{
++  "run_id": "task-2-codex-cgp-r1",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-2",
++  "task_slug": "user-docstring",
++  "start_tag": "task-2-start",
++  "files_changed": [
++    "benchmark-repo/src/models/user.py",
++    "notes/task-2-codex-cgp-r1-design.md",
++    "runs/task-2-codex-cgp-r1-run-record.json",
++    "evidence/task-2-codex-cgp-r1-evidence.json"
++  ],
++  "verification": [
++    {
++      "name": "Static docstring structure check",
++      "command": "cd benchmark-repo && python - <<'PY' ... PY",
++      "status": "passed"
++    }
++  ],
++  "scope_notes": "Edited only the active slice allowed files. No drift-surface files were changed."
++}

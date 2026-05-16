@@ -1,0 +1,22 @@
+{
+  "run_id": "task-2-codex-cgp-r1",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-2",
+  "task_slug": "user-docstring",
+  "start_tag": "task-2-start",
+  "files_changed": [
+    "benchmark-repo/src/models/user.py",
+    "notes/task-2-codex-cgp-r1-design.md",
+    "runs/task-2-codex-cgp-r1-run-record.json",
+    "evidence/task-2-codex-cgp-r1-evidence.json"
+  ],
+  "verification": [
+    {
+      "name": "Static docstring structure check",
+      "command": "cd benchmark-repo && python - <<'PY' ... PY",
+      "status": "passed"
+    }
+  ],
+  "scope_notes": "Edited only the active slice allowed files. No drift-surface files were changed."
+}
