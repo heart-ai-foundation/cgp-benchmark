@@ -1,0 +1,10 @@
+Implemented `list_user_items(user_id)` in `src/api/routes/users.py`. It returns item dictionaries for the matching user and `[]` for an unknown user.
+
+Added tests in `tests/test_users.py` covering:
+- user 1 returns `Notebook` and `Pen`
+- returned items belong to that user
+- unknown user returns an empty list
+
+Verification passed:
+- `pytest tests/test_users.py` → 4 passed
+- `pytest` → 11 passed
