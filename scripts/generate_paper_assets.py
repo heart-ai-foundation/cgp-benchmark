@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 
+plt.rcParams["svg.hashsalt"] = "cgp-benchmark-paper-assets"
 
 PROCESSED = Path("runs/processed")
 PAPER = Path("docs/paper")
@@ -89,8 +90,8 @@ def classify_failure(row: pd.Series) -> str:
 def save_figure(path_base: Path) -> None:
     path_base.parent.mkdir(parents=True, exist_ok=True)
     plt.tight_layout()
-    plt.savefig(path_base.with_suffix(".png"), dpi=220)
-    plt.savefig(path_base.with_suffix(".svg"))
+    plt.savefig(path_base.with_suffix(".png"), dpi=220, metadata={"Software": "cgp-benchmark"})
+    plt.savefig(path_base.with_suffix(".svg"), metadata={"Date": None})
     plt.close()
 
 
@@ -159,11 +160,72 @@ def make_pipeline_svg() -> None:
     (FIGURES / "figure1_benchmark_pipeline.svg").write_text(svg, encoding="utf-8")
 
 
+def make_graphical_abstract_svg() -> None:
+    FIGURES.mkdir(parents=True, exist_ok=True)
+    svg = """<svg xmlns="http://www.w3.org/2000/svg" width="1400" height="650" viewBox="0 0 1400 650">
+  <style>
+    .title { font-family: Arial, sans-serif; font-size: 34px; font-weight: 700; fill: #111827; text-anchor: middle; }
+    .label { font-family: Arial, sans-serif; font-size: 25px; font-weight: 700; fill: #111827; text-anchor: middle; }
+    .body { font-family: Arial, sans-serif; font-size: 19px; fill: #374151; text-anchor: middle; }
+    .metric { font-family: Arial, sans-serif; font-size: 44px; font-weight: 700; fill: #1d4ed8; text-anchor: middle; }
+    .box { fill: #f8fafc; stroke: #1f2937; stroke-width: 2; rx: 14; }
+    .cgp { fill: #dbeafe; stroke: #1d4ed8; stroke-width: 3; rx: 14; }
+    .baseline { fill: #f3f4f6; stroke: #4b5563; stroke-width: 2; rx: 14; }
+    .accent { fill: #ecfdf5; stroke: #047857; stroke-width: 2; rx: 14; }
+    .warn { fill: #fff7ed; stroke: #c2410c; stroke-width: 2; rx: 14; }
+    .arrow { stroke: #111827; stroke-width: 3; marker-end: url(#arrowhead); }
+  </style>
+  <defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#111827"/></marker></defs>
+  <rect width="1400" height="650" fill="#ffffff"/>
+  <text class="title" x="700" y="60">Continuity-Governed Prompting Reduces Invalid Agent Coding Runs</text>
+
+  <rect class="box" x="50" y="150" width="255" height="170"/>
+  <text class="label" x="177.5" y="198">Controlled Tasks</text>
+  <text class="body" x="177.5" y="236">6 coding tasks</text>
+  <text class="body" x="177.5" y="266">allowed files</text>
+  <text class="body" x="177.5" y="296">verification commands</text>
+
+  <line class="arrow" x1="305" y1="235" x2="375" y2="235"/>
+
+  <rect class="baseline" x="375" y="115" width="250" height="115"/>
+  <text class="label" x="500" y="158">Baseline</text>
+  <text class="body" x="500" y="194">ordinary task prompt</text>
+  <rect class="cgp" x="375" y="255" width="250" height="145"/>
+  <text class="label" x="500" y="298">CGP</text>
+  <text class="body" x="500" y="334">manifest, lock, non-goals</text>
+  <text class="body" x="500" y="364">stop rules, evidence trio</text>
+
+  <line class="arrow" x1="625" y1="235" x2="695" y2="235"/>
+
+  <rect class="box" x="695" y="150" width="255" height="170"/>
+  <text class="label" x="822.5" y="198">144 Runs</text>
+  <text class="body" x="822.5" y="236">4 agent platforms</text>
+  <text class="body" x="822.5" y="266">isolated git worktrees</text>
+  <text class="body" x="822.5" y="296">diff + transcript capture</text>
+
+  <line class="arrow" x1="950" y1="235" x2="1020" y2="235"/>
+
+  <rect class="accent" x="1020" y="110" width="330" height="250"/>
+  <text class="label" x="1185" y="155">Headline Result</text>
+  <text class="body" x="1185" y="193">valid completed runs</text>
+  <text class="metric" x="1185" y="255">77.8% to 94.4%</text>
+  <text class="body" x="1185" y="296">baseline to CGP, all agents</text>
+  <text class="body" x="1185" y="326">primary: 58.3% to 88.9%</text>
+
+  <rect class="warn" x="175" y="460" width="1050" height="105"/>
+  <text class="label" x="700" y="500">Main Mechanism</text>
+  <text class="body" x="700" y="538">CGP improved task engagement and evidence completeness; classic file-scope drift was rare.</text>
+</svg>
+"""
+    (FIGURES / "graphical_abstract.svg").write_text(svg, encoding="utf-8")
+
+
 def main() -> int:
     make_tables()
     make_validity_figure()
     make_failure_figure()
     make_pipeline_svg()
+    make_graphical_abstract_svg()
     print(f"wrote tables to {TABLES}")
     print(f"wrote figures to {FIGURES}")
     return 0
