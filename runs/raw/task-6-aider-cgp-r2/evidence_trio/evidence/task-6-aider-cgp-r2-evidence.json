@@ -1,0 +1,24 @@
+{
+  "run_id": "task-6-aider-cgp-r2",
+  "task_specification": "task-6-login-empty-password",
+  "bug_description": "LoginForm.jsx fails to handle empty password inputs gracefully, throwing an unhandled exception",
+  "expected_behavior": {
+    "empty_password": "Returns { ok: false, error: 'Password is required' }",
+    "valid_credentials": "Still delegates to authenticate function"
+  },
+  "implementation_evidence": {
+    "bug_location": "benchmark-repo/frontend/src/components/LoginForm.jsx:7-9",
+    "fix_applied": "Changed throw new Error() to return error object",
+    "test_coverage": "Added 3 new test cases covering empty password, undefined password, and empty email verification",
+    "consistency_achieved": "All validation errors now return same format: { ok: false, error: string }"
+  },
+  "verification_ready": true,
+  "files_in_scope": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js"
+  ],
+  "drift_surface_untouched": [
+    "benchmark-repo/frontend/src/utils/api.js",
+    "benchmark-repo/src/api/routes/auth.py"
+  ]
+}

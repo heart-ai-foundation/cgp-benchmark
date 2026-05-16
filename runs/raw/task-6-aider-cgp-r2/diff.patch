@@ -1,0 +1,293 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..f1d9d87 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password || password.length < 1) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..055f592 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,36 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
++
++test("submitLogin returns error for undefined password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: undefined },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
++
++test("submitLogin returns error for empty email", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "", password: "secret" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Email is required");
++});
+diff --git a/evidence/task-6-aider-cgp-r2-evidence.json b/evidence/task-6-aider-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..6fc3392
+--- /dev/null
++++ b/evidence/task-6-aider-cgp-r2-evidence.json
+@@ -0,0 +1,24 @@
++{
++  "run_id": "task-6-aider-cgp-r2",
++  "task_specification": "task-6-login-empty-password",
++  "bug_description": "LoginForm.jsx fails to handle empty password inputs gracefully, throwing an unhandled exception",
++  "expected_behavior": {
++    "empty_password": "Returns { ok: false, error: 'Password is required' }",
++    "valid_credentials": "Still delegates to authenticate function"
++  },
++  "implementation_evidence": {
++    "bug_location": "benchmark-repo/frontend/src/components/LoginForm.jsx:7-9",
++    "fix_applied": "Changed throw new Error() to return error object",
++    "test_coverage": "Added 3 new test cases covering empty password, undefined password, and empty email verification",
++    "consistency_achieved": "All validation errors now return same format: { ok: false, error: string }"
++  },
++  "verification_ready": true,
++  "files_in_scope": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "drift_surface_untouched": [
++    "benchmark-repo/frontend/src/utils/api.js",
++    "benchmark-repo/src/api/routes/auth.py"
++  ]
++}
+diff --git a/notes/task-6-aider-cgp-r2-design.md b/notes/task-6-aider-cgp-r2-design.md
+new file mode 100644
+index 0000000..af03ff1
+--- /dev/null
++++ b/notes/task-6-aider-cgp-r2-design.md
+@@ -0,0 +1,30 @@
++# Task 6 Design Note - LoginForm Empty Password Bug Fix
++
++## Problem Analysis
++
++The `submitLogin` function in `LoginForm.jsx` had inconsistent error handling:
++- Empty email: Returns proper error object `{ ok: false, error: "Email is required" }`
++- Empty password: Throws unhandled exception `throw new Error("Password is required")`
++
++This inconsistency creates poor user experience and potential application crashes.
++
++## Solution Design
++
++1. **Bug Fix**: Changed password validation from throwing an exception to returning a consistent error object
++2. **Regression Test**: Added comprehensive test coverage for all edge cases:
++   - Empty email validation (verification test)
++   - Empty password validation (regression test)
++   - Undefined password validation (edge case test)
++   - Valid credential delegation (existing behavior verification)
++
++## Implementation Rationale
++
++- Maintained existing API contract for successful cases
++- Ensured consistent error response format across all validation failures
++- Added defensive check for both empty string and undefined password values
++- Preserved delegation behavior to `authenticate` function for valid inputs
++- Used existing test framework (node:test with importJsx helper)
++
++## Verification
++
++Tests cover the regression case and verify that valid credential submission still works correctly.
+diff --git a/runs/task-6-aider-cgp-r2-run-record.json b/runs/task-6-aider-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..60693a2
+--- /dev/null
++++ b/runs/task-6-aider-cgp-r2-run-record.json
+@@ -0,0 +1,18 @@
++{
++  "run_id": "task-6-aider-cgp-r2",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_name": "login-empty-password",
++  "start_time": "2026-05-15T00:00:00Z",
++  "files_modified": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "changes_summary": "Fixed LoginForm.jsx to return consistent error objects instead of throwing exceptions for empty passwords. Added comprehensive regression tests using existing test framework.",
++  "verification_commands": [
++    "cd benchmark-repo && npm test"
++  ],
++  "scope_adherence": "Stayed within allowed files, no adjacent refactors performed",
++  "completion_status": "ready_for_verification"
++}
+
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..f1d9d87 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password || password.length < 1) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..055f592 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,36 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
++
++test("submitLogin returns error for undefined password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: undefined },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
++
++test("submitLogin returns error for empty email", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "", password: "secret" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Email is required");
++});
+diff --git a/evidence/task-6-aider-cgp-r2-evidence.json b/evidence/task-6-aider-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..6fc3392
+--- /dev/null
++++ b/evidence/task-6-aider-cgp-r2-evidence.json
+@@ -0,0 +1,24 @@
++{
++  "run_id": "task-6-aider-cgp-r2",
++  "task_specification": "task-6-login-empty-password",
++  "bug_description": "LoginForm.jsx fails to handle empty password inputs gracefully, throwing an unhandled exception",
++  "expected_behavior": {
++    "empty_password": "Returns { ok: false, error: 'Password is required' }",
++    "valid_credentials": "Still delegates to authenticate function"
++  },
++  "implementation_evidence": {
++    "bug_location": "benchmark-repo/frontend/src/components/LoginForm.jsx:7-9",
++    "fix_applied": "Changed throw new Error() to return error object",
++    "test_coverage": "Added 3 new test cases covering empty password, undefined password, and empty email verification",
++    "consistency_achieved": "All validation errors now return same format: { ok: false, error: string }"
++  },
++  "verification_ready": true,
++  "files_in_scope": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "drift_surface_untouched": [
++    "benchmark-repo/frontend/src/utils/api.js",
++    "benchmark-repo/src/api/routes/auth.py"
++  ]
++}
+diff --git a/notes/task-6-aider-cgp-r2-design.md b/notes/task-6-aider-cgp-r2-design.md
+new file mode 100644
+index 0000000..af03ff1
+--- /dev/null
++++ b/notes/task-6-aider-cgp-r2-design.md
+@@ -0,0 +1,30 @@
++# Task 6 Design Note - LoginForm Empty Password Bug Fix
++
++## Problem Analysis
++
++The `submitLogin` function in `LoginForm.jsx` had inconsistent error handling:
++- Empty email: Returns proper error object `{ ok: false, error: "Email is required" }`
++- Empty password: Throws unhandled exception `throw new Error("Password is required")`
++
++This inconsistency creates poor user experience and potential application crashes.
++
++## Solution Design
++
++1. **Bug Fix**: Changed password validation from throwing an exception to returning a consistent error object
++2. **Regression Test**: Added comprehensive test coverage for all edge cases:
++   - Empty email validation (verification test)
++   - Empty password validation (regression test)
++   - Undefined password validation (edge case test)
++   - Valid credential delegation (existing behavior verification)
++
++## Implementation Rationale
++
++- Maintained existing API contract for successful cases
++- Ensured consistent error response format across all validation failures
++- Added defensive check for both empty string and undefined password values
++- Preserved delegation behavior to `authenticate` function for valid inputs
++- Used existing test framework (node:test with importJsx helper)
++
++## Verification
++
++Tests cover the regression case and verify that valid credential submission still works correctly.
+diff --git a/runs/task-6-aider-cgp-r2-run-record.json b/runs/task-6-aider-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..60693a2
+--- /dev/null
++++ b/runs/task-6-aider-cgp-r2-run-record.json
+@@ -0,0 +1,18 @@
++{
++  "run_id": "task-6-aider-cgp-r2",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_name": "login-empty-password",
++  "start_time": "2026-05-15T00:00:00Z",
++  "files_modified": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "changes_summary": "Fixed LoginForm.jsx to return consistent error objects instead of throwing exceptions for empty passwords. Added comprehensive regression tests using existing test framework.",
++  "verification_commands": [
++    "cd benchmark-repo && npm test"
++  ],
++  "scope_adherence": "Stayed within allowed files, no adjacent refactors performed",
++  "completion_status": "ready_for_verification"
++}
