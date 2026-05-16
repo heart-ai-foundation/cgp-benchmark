@@ -1,0 +1,28 @@
+{
+  "run_id": "task-4-aider-cgp-r1",
+  "task": "task-4-parse-config-refactor",
+  "agent": "aider",
+  "condition": "cgp",
+  "evidence_type": "refactoring",
+  "changes": {
+    "files_modified": ["benchmark-repo/src/utils/config.py"],
+    "functions_added": ["_parse_debug", "_parse_page_size", "_parse_features"],
+    "functions_modified": ["parse_config"],
+    "cyclomatic_complexity_reduction": {
+      "before": 6,
+      "after": 2,
+      "improvement": "66.7%"
+    }
+  },
+  "preservation": {
+    "function_signature": "parse_config(raw: dict) -> dict",
+    "behavior_preserved": true,
+    "error_conditions_preserved": true,
+    "default_values_preserved": true
+  },
+  "verification": {
+    "pytest_required": true,
+    "import_check_required": true,
+    "status": "pending"
+  }
+}
