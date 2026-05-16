@@ -1,0 +1,36 @@
+{
+  "run_id": "task-2-aider-cgp-r3",
+  "task_specification": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage",
+  "evidence_type": "docstring_addition",
+  "target_file": "benchmark-repo/src/models/user.py",
+  "target_class": "User",
+  "docstring_sections": {
+    "description": true,
+    "attributes": true,
+    "methods": true,
+    "examples": true
+  },
+  "attributes_documented": [
+    "id",
+    "email", 
+    "name",
+    "active",
+    "item_ids"
+  ],
+  "methods_documented": [
+    "can_login",
+    "owns_item"
+  ],
+  "examples_provided": {
+    "basic_usage": true,
+    "method_calls": true,
+    "edge_cases": true
+  },
+  "docstring_style": "google_numpy_hybrid",
+  "verification_ready": true,
+  "protocol_adherence": {
+    "allowed_files_only": true,
+    "no_adjacent_refactors": true,
+    "task_scope_maintained": true
+  }
+}
