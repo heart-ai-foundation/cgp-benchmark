@@ -1,0 +1,18 @@
+{
+  "changed_files": [
+    "benchmark-repo/src/utils/config.py",
+    "evidence/task-4-aider-cgp-r2-evidence.json",
+    "notes/task-4-aider-cgp-r2-design.md",
+    "notes/task-4-aider-cgp-r2-run-record.json"
+  ],
+  "allowed_files": [
+    "benchmark-repo/src/utils/config.py",
+    "evidence/task-4-aider-cgp-r2-evidence.json",
+    "notes/task-4-aider-cgp-r2-design.md",
+    "runs/task-4-aider-cgp-r2-run-record.json"
+  ],
+  "scope_drift_count": 1,
+  "scope_drift_files": [
+    "notes/task-4-aider-cgp-r2-run-record.json"
+  ]
+}

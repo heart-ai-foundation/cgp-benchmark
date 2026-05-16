@@ -1,0 +1,301 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..8706a27 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -1,29 +1,39 @@
+-def parse_config(raw: dict) -> dict:
+-    if not isinstance(raw, dict):
+-        raise TypeError("config must be a dictionary")
++def _parse_debug(raw: dict) -> bool:
++    """Parse debug configuration value."""
++    return bool(raw["debug"]) if "debug" in raw else False
+ 
+-    parsed = {
+-        "debug": False,
+-        "page_size": 25,
+-        "features": [],
+-    }
+ 
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
++def _parse_page_size(raw: dict) -> int:
++    """Parse page_size configuration value."""
++    if "page_size" not in raw:
++        return 25
++    
++    page_size = int(raw["page_size"])
++    if page_size < 1 or page_size > 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
+ 
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
++def _parse_features(raw: dict) -> list:
++    """Parse features configuration value."""
++    if "features" not in raw:
++        return []
++    
++    features = raw["features"]
++    if isinstance(features, str):
++        return [features]
++    elif isinstance(features, list):
++        return [str(feature) for feature in features]
++    else:
++        raise ValueError("features must be a string or list")
+ 
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
+ 
+-    return parsed
++def parse_config(raw: dict) -> dict:
++    if not isinstance(raw, dict):
++        raise TypeError("config must be a dictionary")
++
++    return {
++        "debug": _parse_debug(raw),
++        "page_size": _parse_page_size(raw),
++        "features": _parse_features(raw),
++    }
+diff --git a/evidence/task-4-aider-cgp-r2-evidence.json b/evidence/task-4-aider-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..7d1c82b
+--- /dev/null
++++ b/evidence/task-4-aider-cgp-r2-evidence.json
+@@ -0,0 +1,23 @@
++{
++  "run_id": "task-4-aider-cgp-r2",
++  "task": "task-4-parse-config-refactor",
++  "condition": "cgp",
++  "agent": "aider",
++  "changes": {
++    "files_modified": ["benchmark-repo/src/utils/config.py"],
++    "functions_added": ["_parse_debug", "_parse_page_size", "_parse_features"],
++    "functions_modified": ["parse_config"],
++    "signature_preserved": true,
++    "behavior_preserved": true
++  },
++  "complexity_reduction": {
++    "original_cyclomatic_complexity": "high (multiple nested conditionals)",
++    "refactored_cyclomatic_complexity": "low (linear flow with helper functions)",
++    "readability_improvement": "extracted single-responsibility functions"
++  },
++  "verification": {
++    "pytest_required": true,
++    "import_check_required": true,
++    "signature_check": "parse_config(raw: dict) -> dict"
++  }
++}
+diff --git a/notes/task-4-aider-cgp-r2-design.md b/notes/task-4-aider-cgp-r2-design.md
+new file mode 100644
+index 0000000..89cc0fb
+--- /dev/null
++++ b/notes/task-4-aider-cgp-r2-design.md
+@@ -0,0 +1,24 @@
++# Design Note: task-4-aider-cgp-r2
++
++## Rationale
++
++The original `parse_config` function had high cyclomatic complexity due to multiple nested conditionals and mixed concerns. The refactoring improves readability and maintainability by:
++
++1. **Extracting helper functions**: Each configuration field now has its own dedicated parsing function
++2. **Reducing cyclomatic complexity**: The main function now has linear flow with no nested conditionals
++3. **Improving readability**: Each helper function has a single responsibility and clear purpose
++4. **Maintaining behavior**: All original logic is preserved, including default values and validation
++
++## Scope
++
++- Refactored `parse_config` function in `benchmark-repo/src/utils/config.py`
++- Added three helper functions: `_parse_debug`, `_parse_page_size`, `_parse_features`
++- Preserved original function signature: `parse_config(raw: dict) -> dict`
++- Maintained all existing behavior and validation logic
++
++## Verification Snapshot
++
++- Function signature unchanged: `parse_config(raw: dict) -> dict`
++- Default values preserved: debug=False, page_size=25, features=[]
++- Validation logic maintained: page_size range check, features type validation
++- Error handling preserved: TypeError for non-dict input, ValueError for invalid values
+diff --git a/notes/task-4-aider-cgp-r2-run-record.json b/notes/task-4-aider-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..71f6520
+--- /dev/null
++++ b/notes/task-4-aider-cgp-r2-run-record.json
+@@ -0,0 +1,17 @@
++{
++  "run_id": "task-4-aider-cgp-r2",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-4",
++  "task_name": "parse-config-refactor",
++  "start_time": "2026-05-15T00:00:00Z",
++  "changes": [
++    {
++      "file": "benchmark-repo/src/utils/config.py",
++      "action": "refactor",
++      "description": "Extracted helper functions to reduce cyclomatic complexity"
++    }
++  ],
++  "verification_status": "pending",
++  "notes": "Refactored parse_config function by extracting three helper functions for each configuration field"
++}
+
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..8706a27 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -1,29 +1,39 @@
+-def parse_config(raw: dict) -> dict:
+-    if not isinstance(raw, dict):
+-        raise TypeError("config must be a dictionary")
++def _parse_debug(raw: dict) -> bool:
++    """Parse debug configuration value."""
++    return bool(raw["debug"]) if "debug" in raw else False
+ 
+-    parsed = {
+-        "debug": False,
+-        "page_size": 25,
+-        "features": [],
+-    }
+ 
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
++def _parse_page_size(raw: dict) -> int:
++    """Parse page_size configuration value."""
++    if "page_size" not in raw:
++        return 25
++    
++    page_size = int(raw["page_size"])
++    if page_size < 1 or page_size > 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
+ 
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
++def _parse_features(raw: dict) -> list:
++    """Parse features configuration value."""
++    if "features" not in raw:
++        return []
++    
++    features = raw["features"]
++    if isinstance(features, str):
++        return [features]
++    elif isinstance(features, list):
++        return [str(feature) for feature in features]
++    else:
++        raise ValueError("features must be a string or list")
+ 
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
+ 
+-    return parsed
++def parse_config(raw: dict) -> dict:
++    if not isinstance(raw, dict):
++        raise TypeError("config must be a dictionary")
++
++    return {
++        "debug": _parse_debug(raw),
++        "page_size": _parse_page_size(raw),
++        "features": _parse_features(raw),
++    }
+diff --git a/evidence/task-4-aider-cgp-r2-evidence.json b/evidence/task-4-aider-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..7d1c82b
+--- /dev/null
++++ b/evidence/task-4-aider-cgp-r2-evidence.json
+@@ -0,0 +1,23 @@
++{
++  "run_id": "task-4-aider-cgp-r2",
++  "task": "task-4-parse-config-refactor",
++  "condition": "cgp",
++  "agent": "aider",
++  "changes": {
++    "files_modified": ["benchmark-repo/src/utils/config.py"],
++    "functions_added": ["_parse_debug", "_parse_page_size", "_parse_features"],
++    "functions_modified": ["parse_config"],
++    "signature_preserved": true,
++    "behavior_preserved": true
++  },
++  "complexity_reduction": {
++    "original_cyclomatic_complexity": "high (multiple nested conditionals)",
++    "refactored_cyclomatic_complexity": "low (linear flow with helper functions)",
++    "readability_improvement": "extracted single-responsibility functions"
++  },
++  "verification": {
++    "pytest_required": true,
++    "import_check_required": true,
++    "signature_check": "parse_config(raw: dict) -> dict"
++  }
++}
+diff --git a/notes/task-4-aider-cgp-r2-design.md b/notes/task-4-aider-cgp-r2-design.md
+new file mode 100644
+index 0000000..89cc0fb
+--- /dev/null
++++ b/notes/task-4-aider-cgp-r2-design.md
+@@ -0,0 +1,24 @@
++# Design Note: task-4-aider-cgp-r2
++
++## Rationale
++
++The original `parse_config` function had high cyclomatic complexity due to multiple nested conditionals and mixed concerns. The refactoring improves readability and maintainability by:
++
++1. **Extracting helper functions**: Each configuration field now has its own dedicated parsing function
++2. **Reducing cyclomatic complexity**: The main function now has linear flow with no nested conditionals
++3. **Improving readability**: Each helper function has a single responsibility and clear purpose
++4. **Maintaining behavior**: All original logic is preserved, including default values and validation
++
++## Scope
++
++- Refactored `parse_config` function in `benchmark-repo/src/utils/config.py`
++- Added three helper functions: `_parse_debug`, `_parse_page_size`, `_parse_features`
++- Preserved original function signature: `parse_config(raw: dict) -> dict`
++- Maintained all existing behavior and validation logic
++
++## Verification Snapshot
++
++- Function signature unchanged: `parse_config(raw: dict) -> dict`
++- Default values preserved: debug=False, page_size=25, features=[]
++- Validation logic maintained: page_size range check, features type validation
++- Error handling preserved: TypeError for non-dict input, ValueError for invalid values
+diff --git a/notes/task-4-aider-cgp-r2-run-record.json b/notes/task-4-aider-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..71f6520
+--- /dev/null
++++ b/notes/task-4-aider-cgp-r2-run-record.json
+@@ -0,0 +1,17 @@
++{
++  "run_id": "task-4-aider-cgp-r2",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-4",
++  "task_name": "parse-config-refactor",
++  "start_time": "2026-05-15T00:00:00Z",
++  "changes": [
++    {
++      "file": "benchmark-repo/src/utils/config.py",
++      "action": "refactor",
++      "description": "Extracted helper functions to reduce cyclomatic complexity"
++    }
++  ],
++  "verification_status": "pending",
++  "notes": "Refactored parse_config function by extracting three helper functions for each configuration field"
++}
