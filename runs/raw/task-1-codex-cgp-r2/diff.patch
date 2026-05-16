@@ -1,0 +1,209 @@
+diff --git a/benchmark-repo/src/api/validators.py b/benchmark-repo/src/api/validators.py
+index 98425ff..ad4a963 100644
+--- a/benchmark-repo/src/api/validators.py
++++ b/benchmark-repo/src/api/validators.py
+@@ -1,3 +1,14 @@
++import re
++
++
++_EMAIL_PATTERN = re.compile(
++    r"^(?=.{1,254}$)(?=.{1,64}@)"
++    r"[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@"
++    r"(?:[A-Za-z0-9](?:[A-Za-z0-9-]{0,61}[A-Za-z0-9])?\.)+"
++    r"[A-Za-z]{2,63}$"
++)
++
++
+ def require_non_empty(value: str, field_name: str) -> str:
+     if not isinstance(value, str) or not value.strip():
+         raise ValueError(f"{field_name} is required")
+@@ -8,3 +19,17 @@ def validate_positive_int(value: int, field_name: str) -> int:
+     if not isinstance(value, int) or value <= 0:
+         raise ValueError(f"{field_name} must be a positive integer")
+     return value
++
++
++def validate_email(email: str) -> bool:
++    if not isinstance(email, str):
++        return False
++
++    local_part, separator, _domain = email.partition("@")
++    if not separator:
++        return False
++
++    if local_part.startswith(".") or local_part.endswith(".") or ".." in local_part:
++        return False
++
++    return bool(_EMAIL_PATTERN.fullmatch(email))
+diff --git a/benchmark-repo/tests/test_validators.py b/benchmark-repo/tests/test_validators.py
+index 050d5d0..8c1b43e 100644
+--- a/benchmark-repo/tests/test_validators.py
++++ b/benchmark-repo/tests/test_validators.py
+@@ -1,6 +1,6 @@
+ import pytest
+ 
+-from src.api.validators import require_non_empty, validate_positive_int
++from src.api.validators import require_non_empty, validate_email, validate_positive_int
+ 
+ 
+ def test_require_non_empty_strips_value():
+@@ -14,3 +14,43 @@ def test_require_non_empty_rejects_blank():
+ 
+ def test_validate_positive_int_accepts_positive_integer():
+     assert validate_positive_int(3, "count") == 3
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "user@example.com",
++        "first.last@example.co",
++        "user+tag@sub.example.org",
++        "a_b-c@example-domain.com",
++    ],
++)
++def test_validate_email_accepts_well_formed_email(email):
++    assert validate_email(email) is True
++
++
++@pytest.mark.parametrize(
++    "email",
++    [
++        "",
++        "plain-address",
++        "missing-domain@",
++        "@missing-local.com",
++        "two@@example.com",
++        "user@example",
++        "user@example..com",
++        "user@-example.com",
++        "user@example-.com",
++        ".user@example.com",
++        "user.@example.com",
++        "user..name@example.com",
++        "user name@example.com",
++        "user@example.com ",
++    ],
++)
++def test_validate_email_rejects_malformed_email(email):
++    assert validate_email(email) is False
++
++
++def test_validate_email_rejects_non_string_value():
++    assert validate_email(None) is False
+
+diff --git a/evidence/task-1-codex-cgp-r2-evidence.json b/evidence/task-1-codex-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..a9ac70c
+--- /dev/null
++++ b/evidence/task-1-codex-cgp-r2-evidence.json
+@@ -0,0 +1,34 @@
++{
++  "run_id": "task-1-codex-cgp-r2",
++  "objective": "Add validate_email(email: str) -> bool and corresponding tests.",
++  "result": "completed",
++  "implementation": {
++    "validator_added": "benchmark-repo/src/api/validators.py",
++    "tests_added": "benchmark-repo/tests/test_validators.py",
++    "behavior": {
++      "returns_true_for_well_formed_email": true,
++      "returns_false_for_malformed_email": true,
++      "raises_for_invalid_email": false
++    }
++  },
++  "verification": {
++    "pytest_tests_test_validators": {
++      "command": "cd benchmark-repo && pytest tests/test_validators.py",
++      "status": "passed",
++      "tests": 22
++    },
++    "pytest_full": {
++      "command": "cd benchmark-repo && pytest",
++      "status": "passed",
++      "tests": 28
++    }
++  },
++  "allowed_files": [
++    "benchmark-repo/src/api/validators.py",
++    "benchmark-repo/tests/test_validators.py",
++    "notes/task-1-codex-cgp-r2-design.md",
++    "runs/task-1-codex-cgp-r2-run-record.json",
++    "evidence/task-1-codex-cgp-r2-evidence.json"
++  ],
++  "non_goals_preserved": true
++}
+
+diff --git a/notes/task-1-codex-cgp-r2-design.md b/notes/task-1-codex-cgp-r2-design.md
+new file mode 100644
+index 0000000..267745d
+--- /dev/null
++++ b/notes/task-1-codex-cgp-r2-design.md
+@@ -0,0 +1,21 @@
++# Design Note: task-1-codex-cgp-r2
++
++## Scope
++
++Implemented `validate_email(email: str) -> bool` in `benchmark-repo/src/api/validators.py` and added focused coverage in `benchmark-repo/tests/test_validators.py`.
++
++## Rationale
++
++The validator is dependency-free and intentionally practical rather than fully RFC-exhaustive. It accepts common mailbox forms with dotted domains, subdomains, plus tags, underscores, and hyphenated domain labels. It rejects missing local or domain parts, multiple `@` signs, whitespace, domain labels with illegal edge hyphens, missing dotted TLDs, and local parts with leading, trailing, or consecutive dots.
++
++The function returns only `True` or `False`, including `False` for non-string inputs, so callers can use it without exception handling.
++
++## Verification Snapshot
++
++- `cd benchmark-repo && pytest tests/test_validators.py`: passed, 22 tests.
++- `cd benchmark-repo && pytest`: passed, 28 tests.
++
++## Files Changed
++
++- `benchmark-repo/src/api/validators.py`
++- `benchmark-repo/tests/test_validators.py`
+
+diff --git a/runs/task-1-codex-cgp-r2-run-record.json b/runs/task-1-codex-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..cdd57ca
+--- /dev/null
++++ b/runs/task-1-codex-cgp-r2-run-record.json
+@@ -0,0 +1,40 @@
++{
++  "run_id": "task-1-codex-cgp-r2",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-1",
++  "task_name": "input-validation",
++  "started_from_tag": "task-1-start",
++  "completed_at": "2026-05-15T17:21:21-07:00",
++  "protocol_files_read": [
++    "next-prompt-protocols/.slice-lock.json",
++    "next-prompt-protocols/manifest.json",
++    "next-prompt-protocols/role-context.md",
++    "next-prompt-protocols/phases/phase-1/README.md",
++    "next-prompt-protocols/active/task-1-codex-cgp-r2.md",
++    "docs/task_specs/task-1-input-validation.md"
++  ],
++  "files_changed": [
++    "benchmark-repo/src/api/validators.py",
++    "benchmark-repo/tests/test_validators.py",
++    "notes/task-1-codex-cgp-r2-design.md",
++    "runs/task-1-codex-cgp-r2-run-record.json",
++    "evidence/task-1-codex-cgp-r2-evidence.json"
++  ],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_validators.py",
++      "status": "passed",
++      "summary": "22 passed in 0.07s"
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "status": "passed",
++      "summary": "28 passed in 0.12s"
++    }
++  ],
++  "scope_check": {
++    "allowed_files_only": true,
++    "notes": "Implementation and evidence files stayed within the manifest allowed-files set."
++  }
++}

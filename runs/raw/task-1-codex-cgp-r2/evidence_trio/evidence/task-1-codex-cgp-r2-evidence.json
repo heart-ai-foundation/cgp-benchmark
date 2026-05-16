@@ -1,0 +1,34 @@
+{
+  "run_id": "task-1-codex-cgp-r2",
+  "objective": "Add validate_email(email: str) -> bool and corresponding tests.",
+  "result": "completed",
+  "implementation": {
+    "validator_added": "benchmark-repo/src/api/validators.py",
+    "tests_added": "benchmark-repo/tests/test_validators.py",
+    "behavior": {
+      "returns_true_for_well_formed_email": true,
+      "returns_false_for_malformed_email": true,
+      "raises_for_invalid_email": false
+    }
+  },
+  "verification": {
+    "pytest_tests_test_validators": {
+      "command": "cd benchmark-repo && pytest tests/test_validators.py",
+      "status": "passed",
+      "tests": 22
+    },
+    "pytest_full": {
+      "command": "cd benchmark-repo && pytest",
+      "status": "passed",
+      "tests": 28
+    }
+  },
+  "allowed_files": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py",
+    "notes/task-1-codex-cgp-r2-design.md",
+    "runs/task-1-codex-cgp-r2-run-record.json",
+    "evidence/task-1-codex-cgp-r2-evidence.json"
+  ],
+  "non_goals_preserved": true
+}
