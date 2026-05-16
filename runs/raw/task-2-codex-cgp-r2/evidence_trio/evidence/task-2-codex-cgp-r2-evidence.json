@@ -1,0 +1,29 @@
+{
+  "run_id": "task-2-codex-cgp-r2",
+  "task_requirement": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
+  "implementation_file": "benchmark-repo/src/models/user.py",
+  "docstring_sections": [
+    "summary",
+    "Attributes",
+    "Methods",
+    "Example"
+  ],
+  "documented_attributes": [
+    "id",
+    "email",
+    "name",
+    "active",
+    "item_ids"
+  ],
+  "documented_methods": [
+    "can_login",
+    "owns_item"
+  ],
+  "example_usage_included": true,
+  "verification": {
+    "name": "Static docstring structure check",
+    "status": "passed",
+    "output": "Static docstring structure check passed"
+  },
+  "allowed_files_only": true
+}

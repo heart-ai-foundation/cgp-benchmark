@@ -1,0 +1,24 @@
+{
+  "run_id": "task-2-codex-cgp-r2",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-2",
+  "slug": "user-docstring",
+  "started_from_tag": "task-2-start",
+  "completed_at": "2026-05-15T18:20:18-07:00",
+  "files_changed": [
+    "benchmark-repo/src/models/user.py",
+    "notes/task-2-codex-cgp-r2-design.md",
+    "runs/task-2-codex-cgp-r2-run-record.json",
+    "evidence/task-2-codex-cgp-r2-evidence.json"
+  ],
+  "verification": [
+    {
+      "name": "Static docstring structure check",
+      "command": "cd benchmark-repo && python - <<'PY' ... PY",
+      "status": "passed",
+      "output": "Static docstring structure check passed"
+    }
+  ],
+  "scope_notes": "Stayed within allowed files from the active protocol."
+}
