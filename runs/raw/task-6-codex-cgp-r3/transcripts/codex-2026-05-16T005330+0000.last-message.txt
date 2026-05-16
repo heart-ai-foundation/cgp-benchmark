@@ -1,0 +1,12 @@
+Implemented the empty-password fix and regression coverage.
+
+Changed:
+- [LoginForm.jsx](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-6-codex-cgp-r3/benchmark-repo/frontend/src/components/LoginForm.jsx): empty or missing password now returns `{ ok: false, error: "Password is required" }`.
+- [components.test.js](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-6-codex-cgp-r3/benchmark-repo/frontend/tests/components.test.js): added regression test confirming empty password does not call `authenticate`.
+
+Evidence trio written:
+- `notes/task-6-codex-cgp-r3-design.md`
+- `runs/task-6-codex-cgp-r3-run-record.json`
+- `evidence/task-6-codex-cgp-r3-evidence.json`
+
+Verification passed: `cd benchmark-repo && npm test` → 4 tests passed.

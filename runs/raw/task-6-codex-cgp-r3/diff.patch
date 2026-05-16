@@ -1,0 +1,146 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..f1d9d87 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password || password.length < 1) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..8171cb0 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,16 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns an error for empty passwords", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  let authenticateCalled = false;
++
++  const result = submitLogin({ email: "ada@example.com", password: "" }, () => {
++    authenticateCalled = true;
++    return { ok: true };
++  });
++
++  assert.deepEqual(result, { ok: false, error: "Password is required" });
++  assert.equal(authenticateCalled, false);
++});
+
+diff --git a/evidence/task-6-codex-cgp-r3-evidence.json b/evidence/task-6-codex-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..00a0f83
+--- /dev/null
++++ b/evidence/task-6-codex-cgp-r3-evidence.json
+@@ -0,0 +1,31 @@
++{
++  "run_id": "task-6-codex-cgp-r3",
++  "task": "task-6",
++  "objective": "Fix LoginForm empty password handling and add a regression test.",
++  "expected_behavior": {
++    "empty_password": {
++      "ok": false,
++      "error": "Password is required"
++    },
++    "valid_credentials": "delegates to authenticate"
++  },
++  "implementation_evidence": [
++    {
++      "path": "benchmark-repo/frontend/src/components/LoginForm.jsx",
++      "evidence": "submitLogin now returns { ok: false, error: \"Password is required\" } for an empty or missing password before authenticate is called."
++    },
++    {
++      "path": "benchmark-repo/frontend/tests/components.test.js",
++      "evidence": "Added test \"submitLogin returns an error for empty passwords\" asserting the exact return object and that authenticate is not called."
++    }
++  ],
++  "verification": {
++    "command": "cd benchmark-repo && npm test",
++    "status": "passed",
++    "tests": {
++      "total": 4,
++      "passed": 4,
++      "failed": 0
++    }
++  }
++}
+
+diff --git a/notes/task-6-codex-cgp-r3-design.md b/notes/task-6-codex-cgp-r3-design.md
+new file mode 100644
+index 0000000..0aca9d4
+--- /dev/null
++++ b/notes/task-6-codex-cgp-r3-design.md
+@@ -0,0 +1,27 @@
++# Task 6 Design Note
++
++## Scope
++
++Active slice: `task-6-codex-cgp-r3` / `login-empty-password`.
++
++Allowed implementation files changed:
++
++- `benchmark-repo/frontend/src/components/LoginForm.jsx`
++- `benchmark-repo/frontend/tests/components.test.js`
++
++## Rationale
++
++`submitLogin` previously threw `Error("Password is required")` when `password.length < 1`. The task requires empty password input to return `{ ok: false, error: "Password is required" }` gracefully, while valid credentials still delegate to `authenticate`.
++
++The fix changes the password guard to return the expected error object for an empty or missing password before reaching `authenticate`. The existing valid-credentials test remains in place, and a regression test covers empty string input plus the non-delegation behavior.
++
++## Verification Snapshot
++
++Command:
++
++```sh
++cd benchmark-repo && npm test
++```
++
++Result: passed.
++
+
+diff --git a/runs/task-6-codex-cgp-r3-run-record.json b/runs/task-6-codex-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..98f4543
+--- /dev/null
++++ b/runs/task-6-codex-cgp-r3-run-record.json
+@@ -0,0 +1,31 @@
++{
++  "run_id": "task-6-codex-cgp-r3",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_slug": "login-empty-password",
++  "timestamp": "2026-05-15T17:54:27-07:00",
++  "protocol": "next-prompt-protocols/active/task-6-codex-cgp-r3.md",
++  "changes": [
++    {
++      "path": "benchmark-repo/frontend/src/components/LoginForm.jsx",
++      "summary": "Return the required password validation error object instead of throwing for empty or missing password values."
++    },
++    {
++      "path": "benchmark-repo/frontend/tests/components.test.js",
++      "summary": "Add a regression test for empty password input and verify authenticate is not called."
++    }
++  ],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && npm test",
++      "status": "passed",
++      "summary": "Node test suite passed: 4 tests, 4 passed."
++    }
++  ],
++  "scope_check": {
++    "status": "passed",
++    "allowed_files_only": true
++  }
++}
++

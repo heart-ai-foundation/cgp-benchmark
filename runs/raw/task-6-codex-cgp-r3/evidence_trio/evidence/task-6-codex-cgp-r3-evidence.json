@@ -1,0 +1,31 @@
+{
+  "run_id": "task-6-codex-cgp-r3",
+  "task": "task-6",
+  "objective": "Fix LoginForm empty password handling and add a regression test.",
+  "expected_behavior": {
+    "empty_password": {
+      "ok": false,
+      "error": "Password is required"
+    },
+    "valid_credentials": "delegates to authenticate"
+  },
+  "implementation_evidence": [
+    {
+      "path": "benchmark-repo/frontend/src/components/LoginForm.jsx",
+      "evidence": "submitLogin now returns { ok: false, error: \"Password is required\" } for an empty or missing password before authenticate is called."
+    },
+    {
+      "path": "benchmark-repo/frontend/tests/components.test.js",
+      "evidence": "Added test \"submitLogin returns an error for empty passwords\" asserting the exact return object and that authenticate is not called."
+    }
+  ],
+  "verification": {
+    "command": "cd benchmark-repo && npm test",
+    "status": "passed",
+    "tests": {
+      "total": 4,
+      "passed": 4,
+      "failed": 0
+    }
+  }
+}
