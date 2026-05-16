@@ -1,0 +1,16 @@
+{
+  "planned_runs": 144,
+  "completed_runs": 144,
+  "missing_or_prepared_runs": 0,
+  "primary_completed_runs": 72,
+  "extension_completed_runs": 72,
+  "archived_invalid_harness_records_excluded": 8,
+  "outputs": [
+    "run_level_metrics.csv",
+    "summary_by_agent_condition.csv",
+    "summary_by_condition.csv",
+    "summary_by_dataset_agent_condition.csv",
+    "summary_by_dataset_condition.csv",
+    "summary_by_task_agent_condition.csv"
+  ]
+}

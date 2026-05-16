@@ -1,0 +1,5 @@
+dataset,condition,n,valid_n,valid_rate,invalid_n,work_submitted_rate,task_success_rate,verification_compliance_rate,scope_drift_any_rate,mean_scope_drift_count,mean_changed_file_count,evidence_trio_complete_rate
+extension,baseline,36,35,0.9722222222222222,1,1,1,1,0.027777777777777776,0.027777777777777776,1.8611111111111112,
+extension,cgp,36,36,1,0,1,1,1,0,0,4.833333333333333,1
+primary,baseline,36,21,0.5833333333333334,15,0.5833333333333334,1,1,0,0,1,
+primary,cgp,36,32,0.8888888888888888,4,1,0.9166666666666666,0.9166666666666666,0.027777777777777776,0.027777777777777776,4.805555555555555,0.9722222222222222

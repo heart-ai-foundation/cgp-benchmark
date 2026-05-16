@@ -1,0 +1,9 @@
+dataset,agent,condition,n,valid_n,valid_rate,invalid_n,work_submitted_rate,task_success_rate,verification_compliance_rate,scope_drift_any_rate,mean_scope_drift_count,mean_changed_file_count,evidence_trio_complete_rate
+extension,codex,baseline,18,18,1,0,1,1,1,0,0,1.8333333333333333,
+extension,codex,cgp,18,18,1,0,1,1,1,0,0,4.833333333333333,1
+extension,gemini-cli,baseline,18,17,0.9444444444444444,1,1,1,1,0.05555555555555555,0.05555555555555555,1.8888888888888888,
+extension,gemini-cli,cgp,18,18,1,0,1,1,1,0,0,4.833333333333333,1
+primary,aider,baseline,18,3,0.16666666666666666,15,0.16666666666666666,1,1,0,0,0.16666666666666666,
+primary,aider,cgp,18,14,0.7777777777777778,4,1,0.8333333333333334,0.8333333333333334,0.05555555555555555,0.05555555555555555,4.833333333333333,0.9444444444444444
+primary,claude-code,baseline,18,18,1,0,1,1,1,0,0,1.8333333333333333,
+primary,claude-code,cgp,18,18,1,0,1,1,1,0,0,4.777777777777778,1
