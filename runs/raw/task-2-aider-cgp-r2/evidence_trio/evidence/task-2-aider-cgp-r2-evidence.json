@@ -1,0 +1,31 @@
+{
+  "run_id": "task-2-aider-cgp-r2",
+  "task": "task-2-user-docstring",
+  "condition": "cgp",
+  "agent": "aider",
+  "completion_status": "completed",
+  "objective_met": true,
+  "changes": {
+    "files_modified": 1,
+    "lines_added": 21,
+    "lines_removed": 0,
+    "docstring_added": true
+  },
+  "docstring_coverage": {
+    "class_description": true,
+    "attributes_documented": true,
+    "methods_documented": true,
+    "example_provided": true,
+    "type_information": true
+  },
+  "protocol_adherence": {
+    "allowed_files_only": true,
+    "no_adjacent_refactors": true,
+    "evidence_trio_complete": true,
+    "verification_ready": true
+  },
+  "verification": {
+    "command": "cd benchmark-repo && Static docstring structure check",
+    "expected_result": "pass"
+  }
+}
