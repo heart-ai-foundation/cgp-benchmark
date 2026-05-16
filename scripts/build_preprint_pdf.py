@@ -123,9 +123,9 @@ def read_main_body() -> list[str]:
     text = (PAPER / "preprint_manuscript.md").read_text(encoding="utf-8")
     body_lines = text.splitlines()
     start = next((idx for idx, line in enumerate(body_lines) if line.strip() == "## Abstract"), 0)
-    # Stop before the integrated figures/tables section; LaTeX emits these explicitly.
+    # Stop before the source manuscript's collection block; this builder places displays inline.
     stop = next((idx for idx, line in enumerate(body_lines) if line.strip() == "## Figures and Tables"), len(body_lines))
-    return paragraphize(body_lines[start:stop])
+    return place_displays_inline(paragraphize(body_lines[start:stop]))
 
 
 def convert_svg(name: str) -> str:
@@ -152,7 +152,7 @@ def latex_table_from_markdown(path: Path, caption: str, label: str) -> str:
         rows.append(cells)
     header, body = rows[0], rows[1:]
     colspec = "l" * len(header)
-    tex = [r"\begin{table}[htbp]", r"\centering", r"\small", r"\resizebox{\textwidth}{!}{%", rf"\begin{{tabular}}{{{colspec}}}", r"\toprule"]
+    tex = [r"\begin{table}[H]", r"\centering", r"\small", r"\resizebox{\textwidth}{!}{%", rf"\begin{{tabular}}{{{colspec}}}", r"\toprule"]
     tex.append(" & ".join(tex_escape(cell) for cell in header) + r" \\")
     tex.append(r"\midrule")
     for row in body:
@@ -161,37 +161,76 @@ def latex_table_from_markdown(path: Path, caption: str, label: str) -> str:
     return "\n".join(tex)
 
 
-def figures_and_tables() -> list[str]:
+def latex_figure(filename: str, caption: str) -> str:
+    return "\n".join(
+        [
+            r"\begin{figure}[H]\centering",
+            rf"\includegraphics[width=\textwidth]{{{filename}}}",
+            rf"\caption{{{caption}}}",
+            r"\end{figure}",
+        ]
+    )
+
+
+def display_blocks() -> dict[str, str]:
     graphical = convert_svg("graphical_abstract")
     pipeline = convert_svg("figure1_benchmark_pipeline")
     validity = copy_png("figure2_validity_by_agent_condition")
     failures = copy_png("figure3_invalid_run_mechanisms")
-    return [
-        r"\section{Figures and Tables}",
-        r"\begin{figure}[htbp]\centering",
-        rf"\includegraphics[width=\textwidth]{{{graphical}}}",
-        r"\caption{Continuity-Governed Prompting reliability and auditability benchmark. The graphical abstract shows the controlled task set, the contrast between ordinary baseline prompting and the CGP scaffold, the isolated 144-run execution and capture process, and the observed operational validity movement from 77.8\% under baseline prompting to 94.4\% under CGP. The bottom panel states the governing interpretation boundary: the registered scope-drift endpoint was null at a baseline floor, while CGP improved task engagement and evidence completeness.}",
-        r"\end{figure}",
-        r"\begin{figure}[htbp]\centering",
-        rf"\includegraphics[width=\textwidth]{{{pipeline}}}",
-        r"\caption{Benchmark run-capture pipeline. Each benchmark run began with a task specification containing allowed files and verification commands, then proceeded through either a baseline prompt or a CGP prompt that added manifest, lock, stop-condition, and evidence-trio requirements. Runs were executed in isolated git worktrees, captured as transcripts and diffs, and scored into run-level metrics. CGP evidence files were treated as allowed operational evidence when computing scope drift.}",
-        r"\end{figure}",
-        r"\begin{figure}[htbp]\centering",
-        rf"\includegraphics[width=\textwidth]{{{validity}}}",
-        r"\caption{Operational run validity by agent and prompt condition. Bars show the proportion of runs classified as valid under the operational composite endpoint for each agent platform and prompt condition. This figure should not be interpreted as the registered primary drift endpoint; registered scope drift was analyzed separately and returned a null result at a baseline floor.}",
-        r"\end{figure}",
-        r"\begin{figure}[htbp]\centering",
-        rf"\includegraphics[width=\textwidth]{{{failures}}}",
-        r"\caption{Invalid-run mechanisms by agent and prompt condition. Bars count invalid planned runs by observed failure mechanism. The dominant failure mode was non-submission in Aider baseline runs, where the agent completed without changing files while repository verification still passed.}",
-        r"\end{figure}",
-        latex_table_from_markdown(TABLES / "table1_summary_by_dataset_agent_condition.md", "Summary by dataset, agent, and condition.", "tab:summary"),
-        latex_table_from_markdown(TABLES / "table2_invalid_run_mechanisms.md", "Invalid-run mechanisms.", "tab:failures"),
-    ]
+    return {
+        "graphical": latex_figure(
+            graphical,
+            r"Continuity-Governed Prompting reliability and auditability benchmark. The graphical abstract shows the controlled task set, the contrast between ordinary baseline prompting and the CGP scaffold, the isolated 144-run execution and capture process, and the observed operational validity movement from 77.8\% under baseline prompting to 94.4\% under CGP. The bottom panel states the governing interpretation boundary: the registered scope-drift endpoint was null at a baseline floor, while CGP improved task engagement and evidence completeness.",
+        ),
+        "pipeline": latex_figure(
+            pipeline,
+            r"Benchmark run-capture pipeline. Each benchmark run began with a task specification containing allowed files and verification commands, then proceeded through either a baseline prompt or a CGP prompt that added manifest, lock, stop-condition, and evidence-trio requirements. Runs were executed in isolated git worktrees, captured as transcripts and diffs, and scored into run-level metrics. CGP evidence files were treated as allowed operational evidence when computing scope drift.",
+        ),
+        "validity": latex_figure(
+            validity,
+            r"Operational run validity by agent and prompt condition. Bars show the proportion of runs classified as valid under the operational composite endpoint for each agent platform and prompt condition. This figure should not be interpreted as the registered primary drift endpoint; registered scope drift was analyzed separately and returned a null result at a baseline floor.",
+        ),
+        "failures": latex_figure(
+            failures,
+            r"Invalid-run mechanisms by agent and prompt condition. Bars count invalid planned runs by observed failure mechanism. The dominant failure mode was non-submission in Aider baseline runs, where the agent completed without changing files while repository verification still passed.",
+        ),
+        "table1": latex_table_from_markdown(TABLES / "table1_summary_by_dataset_agent_condition.md", "Summary by dataset, agent, and condition.", "tab:summary"),
+        "table2": latex_table_from_markdown(TABLES / "table2_invalid_run_mechanisms.md", "Invalid-run mechanisms.", "tab:failures"),
+    }
+
+
+def place_displays_inline(body: list[str]) -> list[str]:
+    displays = display_blocks()
+    out: list[str] = []
+    pending_graphical = False
+    inserted = {key: False for key in displays}
+
+    for line in body:
+        out.append(line)
+        if line == r"\section*{Graphical Abstract}":
+            pending_graphical = True
+            continue
+        if pending_graphical and line and not line.startswith("\\section"):
+            out.extend(["", displays["graphical"], ""])
+            inserted["graphical"] = True
+            pending_graphical = False
+        if "Figure 1" in line and not inserted["pipeline"]:
+            out.extend(["", displays["pipeline"], ""])
+            inserted["pipeline"] = True
+        if "Table 1" in line and "Figure 2" in line and not inserted["table1"]:
+            out.extend(["", displays["table1"], "", displays["validity"], ""])
+            inserted["table1"] = True
+            inserted["validity"] = True
+        if "Table 2" in line and "Figure 3" in line and not inserted["table2"]:
+            out.extend(["", displays["table2"], "", displays["failures"], ""])
+            inserted["table2"] = True
+            inserted["failures"] = True
+
+    return out
 
 
 def render_tex() -> str:
     body = "\n".join(read_main_body())
-    displays = "\n\n".join(figures_and_tables())
     refs = "\n".join(rf"\item {ref}" for ref in REFERENCES)
     return rf"""\documentclass[11pt]{{article}}
 \usepackage[margin=1in]{{geometry}}
@@ -199,6 +238,7 @@ def render_tex() -> str:
 \usepackage{{graphicx}}
 \usepackage{{booktabs}}
 \usepackage{{hyperref}}
+\usepackage{{float}}
 \setmainfont{{TeX Gyre Pagella}}
 \emergencystretch=3em
 \sloppy
@@ -214,8 +254,7 @@ OSF registration: \url{{https://osf.io/fnmg5}}
 
 {body}
 
-{displays}
-
+\clearpage
 \section*{{References}}
 \begin{{enumerate}}
 {refs}
