@@ -177,7 +177,7 @@ def make_graphical_abstract_svg() -> None:
   </style>
   <defs><marker id="arrowhead" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#111827"/></marker></defs>
   <rect width="1400" height="650" fill="#ffffff"/>
-  <text class="title" x="700" y="60">Continuity-Governed Prompting Reduces Invalid Agent Coding Runs</text>
+  <text class="title" x="700" y="60">Continuity-Governed Prompting: Reliability and Auditability Benchmark</text>
 
   <rect class="box" x="50" y="150" width="255" height="170"/>
   <text class="label" x="177.5" y="198">Controlled Tasks</text>
@@ -206,7 +206,7 @@ def make_graphical_abstract_svg() -> None:
   <line class="arrow" x1="950" y1="235" x2="1020" y2="235"/>
 
   <rect class="accent" x="1020" y="110" width="330" height="250"/>
-  <text class="label" x="1185" y="155">Headline Result</text>
+  <text class="label" x="1185" y="155">Observed Reliability</text>
   <text class="body" x="1185" y="193">valid completed runs</text>
   <text class="metric" x="1185" y="255">77.8% to 94.4%</text>
   <text class="body" x="1185" y="296">baseline to CGP, all agents</text>
@@ -214,7 +214,7 @@ def make_graphical_abstract_svg() -> None:
 
   <rect class="warn" x="175" y="460" width="1050" height="105"/>
   <text class="label" x="700" y="500">Main Mechanism</text>
-  <text class="body" x="700" y="538">CGP improved task engagement and evidence completeness; classic file-scope drift was rare.</text>
+  <text class="body" x="700" y="538">Registered drift endpoint was null at floor; CGP improved task engagement and evidence completeness.</text>
 </svg>
 """
     (FIGURES / "graphical_abstract.svg").write_text(svg, encoding="utf-8")

@@ -1,16 +1,26 @@
 # Results Snapshot
 
+**Status:** The registered primary endpoint was scope drift. The primary preregistered dataset was at a baseline floor for this endpoint: 0 baseline scope-drift events and 1 CGP scope-drift event. Across all planned primary plus companion-extension runs, scope drift occurred once under baseline and once under CGP. This snapshot must therefore not be read as evidence that CGP reduced drift. The governing research-integrity record is `docs/research_integrity/CGP_Benchmark_Preregistration_Deviation_Note_v1_0.md`.
+
 This snapshot was generated from `runs/processed/run_level_metrics.csv` after excluding archived harness-defect records under `runs/raw/invalid/`. The processed analysis includes 144 completed planned runs: 72 primary runs from Claude Code and Aider, and 72 companion extension runs from Codex and Gemini CLI. Eight archived harness-defect records are preserved but excluded from the planned-run analysis.
 
-Across all agents and both datasets, baseline prompting produced 56 valid runs out of 72, for a validity rate of 77.8%. Continuity-Governed Prompting produced 68 valid runs out of 72, for a validity rate of 94.4%. Work submission was also higher under CGP: 100.0% of CGP runs submitted work, compared with 79.2% of baseline runs. Verification success was high in both conditions, with 100.0% under baseline and 95.8% under CGP. Scope drift was rare in both conditions, occurring in 1 of 72 baseline runs and 1 of 72 CGP runs.
+## Result Against Registered Primary Endpoint
 
-In the primary preregistered dataset, baseline prompting produced 21 valid runs out of 36, for a validity rate of 58.3%. Continuity-Governed Prompting produced 32 valid runs out of 36, for a validity rate of 88.9%. This primary contrast is strongly shaped by Aider: Aider baseline runs were valid in 3 of 18 cases, while Aider CGP runs were valid in 14 of 18 cases. Claude Code completed all primary baseline and CGP runs validly.
+The registered H1/M1 endpoint was scope drift count. In the primary preregistered dataset, baseline prompting produced 0 scope-drift events and CGP produced 1 scope-drift event. The exact paired Wilcoxon two-sided p value was 1.0000. This is a null result at a baseline floor, not evidence of drift reduction. In the companion extension, baseline produced 1 scope-drift event and CGP produced 0, also with exact paired Wilcoxon two-sided p value 1.0000. Across all planned runs, baseline and CGP each produced 1 scope-drift event.
+
+## Observed Findings
+
+Across all agents and both datasets, baseline prompting produced 56 valid runs out of 72, for a validity rate of 77.8%. Continuity-Governed Prompting produced 68 valid runs out of 72, for a validity rate of 94.4%. Work submission was also higher under CGP: 100.0% of CGP runs submitted work, compared with 79.2% of baseline runs. Verification success moved in the unfavorable direction, from 100.0% under baseline to 95.8% under CGP.
+
+In the primary preregistered dataset, baseline prompting produced 21 valid runs out of 36, for a validity rate of 58.3%. Continuity-Governed Prompting produced 32 valid runs out of 36, for a validity rate of 88.9%. This primary contrast is strongly shaped by Aider, a single platform with 18 runs per condition. Aider baseline runs were valid in 3 of 18 cases, while Aider CGP runs were valid in 14 of 18 cases. Claude Code completed all primary baseline and CGP runs validly. No population-level claim follows from this single-platform contrast without additional analysis and replication.
 
 In the companion extension dataset, baseline prompting produced 35 valid runs out of 36, for a validity rate of 97.2%. Continuity-Governed Prompting produced 36 valid runs out of 36. Codex completed all extension runs validly in both conditions. Gemini CLI completed all CGP extension runs validly and had one invalid baseline run due to scope drift into `benchmark-repo/tests/test_config.py`.
 
 The most common invalid-run mechanism was not classic scope drift. In Aider baseline runs, many invalid observations reflected non-submission: the agent completed without changing files. These records are retained as invalid benchmark outcomes because the assigned task was not performed. CGP substantially reduced this non-submission pattern for Aider, though some Aider CGP runs still failed because of task verification failures or incomplete/misplaced evidence files.
 
 CGP evidence-trio completeness was high. Across all CGP runs, 71 of 72 had complete evidence trios, for a completeness rate of 98.6%. In the primary dataset, 35 of 36 CGP runs had complete evidence trios. In the extension dataset, all 36 CGP runs had complete evidence trios.
+
+The registered-analysis output is `runs/processed/registered_analysis.md`.
 
 ## Key Tables
 
