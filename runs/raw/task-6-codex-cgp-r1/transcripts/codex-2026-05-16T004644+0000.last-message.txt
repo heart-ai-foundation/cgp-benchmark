@@ -1,0 +1,10 @@
+Implemented the empty-password fix in [LoginForm.jsx](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-codex-cgp-r1/benchmark-repo/frontend/src/components/LoginForm.jsx:6): it now returns `{ ok: false, error: "Password is required" }` instead of throwing.
+
+Added regression coverage in [components.test.js](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-codex-cgp-r1/benchmark-repo/frontend/tests/components.test.js:27), including explicit validation that valid credentials still call `authenticate` once.
+
+Wrote the required evidence trio:
+- [design note](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-codex-cgp-r1/notes/task-6-codex-cgp-r1-design.md)
+- [run record](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-codex-cgp-r1/runs/task-6-codex-cgp-r1-run-record.json)
+- [evidence JSON](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-codex-cgp-r1/evidence/task-6-codex-cgp-r1-evidence.json)
+
+Verification: `cd benchmark-repo && npm test` passed, 4 tests passed and 0 failed.
