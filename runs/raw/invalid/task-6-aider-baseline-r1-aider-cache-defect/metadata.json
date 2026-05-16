@@ -24,5 +24,9 @@
   "verification_command_compliance": true,
   "task_verification_success": true,
   "evidence_trio_completeness": null,
-  "run_validity": "invalid"
+  "run_validity": "invalid",
+  "archive_status": "invalid_harness_defect",
+  "invalid_reason": "Aider wrote .aider.tags.cache.v4/cache.db into the worktree, causing scope drift from a tool cache artifact; runner updated to disable repo map with --map-tokens 0",
+  "archived_at": "2026-05-16T00:12:48+00:00",
+  "replacement_required": "task-6-aider-baseline-r1"
 }

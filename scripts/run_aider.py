@@ -68,7 +68,12 @@ def ensure_prepared(root: Path, run_id: str) -> Path:
     run_dir = root / "runs" / "raw" / run_id
     if not run_dir.exists():
         status(f"preparing {run_id}")
-        run(["python", "scripts/prepare_run.py", "--run-id", run_id], cwd=root)
+        result = run(["python", "scripts/prepare_run.py", "--run-id", run_id], cwd=root, check=False)
+        print(result.stdout, end="")
+        if result.stderr:
+            print(result.stderr, end="", file=sys.stderr)
+        if result.returncode != 0:
+            raise SystemExit(f"prepare_run failed for {run_id} with return code {result.returncode}")
     else:
         status(f"using existing prepared run {run_id}")
     metadata = read_json(run_dir / "metadata.json")
@@ -120,6 +125,8 @@ def execute_aider(run_dir: Path, worktree: Path, model: str | None, timeout: int
         "--no-check-update",
         "--no-show-model-warnings",
         "--no-gitignore",
+        "--map-tokens",
+        "0",
         "--llm-history-file",
         str(llm_history_path.resolve()),
         "--chat-history-file",

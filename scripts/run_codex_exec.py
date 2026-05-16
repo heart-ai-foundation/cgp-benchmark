@@ -58,7 +58,12 @@ def ensure_prepared(root: Path, run_id: str) -> Path:
     run_dir = root / "runs" / "raw" / run_id
     if not run_dir.exists():
         status(f"preparing {run_id}")
-        run(["python", "scripts/prepare_run.py", "--run-id", run_id, "--run-plan", str(RUN_PLAN)], cwd=root)
+        result = run(["python", "scripts/prepare_run.py", "--run-id", run_id, "--run-plan", str(RUN_PLAN)], cwd=root, check=False)
+        print(result.stdout, end="")
+        if result.stderr:
+            print(result.stderr, end="", file=sys.stderr)
+        if result.returncode != 0:
+            raise SystemExit(f"prepare_run failed for {run_id} with return code {result.returncode}")
     else:
         status(f"using existing prepared run {run_id}")
     metadata = read_json(run_dir / "metadata.json")
