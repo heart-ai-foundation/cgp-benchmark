@@ -18,7 +18,7 @@ The benchmark used six controlled coding tasks in a small Python and JavaScript 
 
 The primary preregistered plan contained 72 planned runs: six tasks, two prompt conditions, two agent platforms, and three replications per task-condition-agent cell. The primary platforms were Claude Code and Aider. A companion extension added 72 planned runs using Codex and Gemini CLI with the same tasks, conditions, seed logic, and replication count. Primary and extension data were analyzed separately and together, with the extension interpreted as external-validity evidence rather than a silent replacement for the preregistered primary dataset.
 
-Each run was executed in an isolated git worktree from the task start tag. The harness generated the prompt, executed the assigned agent, captured stdout and stderr or structured transcript output, computed a git diff against the run-specific metrics base commit, ran the task verification commands, and wrote raw artifacts under `runs/raw/RUN_ID/`. For Continuity-Governed Prompting runs, the harness also copied the required evidence trio consisting of a design note, operational run record, and machine-readable evidence JSON file. Harness-defect and wrong-agent runs were preserved under `runs/raw/invalid/` and excluded from the planned-run analysis.
+Each run was executed in an isolated git worktree from the task start tag. The harness generated the prompt, executed the assigned agent, captured stdout and stderr or structured transcript output, computed a git diff against the run-specific metrics base commit, ran the task verification commands, and wrote raw artifacts under `runs/raw/RUN_ID/`. For Continuity-Governed Prompting runs, the harness also copied the required evidence trio consisting of a design note, operational run record, and machine-readable evidence JSON file. Harness-defect and wrong-agent runs were preserved under `runs/raw/invalid/` and excluded from the planned-run analysis. The end-to-end capture flow is summarized in Figure 1.
 
 The primary run-level outcome was run validity. A run was valid when work was submitted, scope drift count was zero, verification passed, and, for Continuity-Governed Prompting runs, the evidence trio was complete. Scope drift was measured by comparing changed files against the task-specific allowed-file set, with CGP evidence files treated as allowed operational evidence. Work submission, verification compliance, task verification success, changed-file count, and evidence-trio completeness were recorded as secondary outcomes.
 
@@ -28,11 +28,11 @@ The final planned-run analysis included 144 completed runs. The primary dataset 
 
 Across all agents and datasets, baseline prompting produced 56 valid runs out of 72, for a validity rate of 77.8%. Continuity-Governed Prompting produced 68 valid runs out of 72, for a validity rate of 94.4%. Work submission increased from 79.2% under baseline prompting to 100.0% under Continuity-Governed Prompting. Verification success remained high in both conditions, at 100.0% for baseline and 95.8% for Continuity-Governed Prompting. Scope drift was uncommon, occurring in one baseline run and one governed run.
 
-In the primary preregistered dataset, baseline prompting produced 21 valid runs out of 36, for a validity rate of 58.3%. Continuity-Governed Prompting produced 32 valid runs out of 36, for a validity rate of 88.9%. This primary contrast was driven largely by Aider. Aider baseline runs were valid in 3 of 18 cases, whereas Aider CGP runs were valid in 14 of 18 cases. Claude Code completed all 36 primary runs validly across both conditions.
+In the primary preregistered dataset, baseline prompting produced 21 valid runs out of 36, for a validity rate of 58.3%. Continuity-Governed Prompting produced 32 valid runs out of 36, for a validity rate of 88.9%. This primary contrast was driven largely by Aider. Aider baseline runs were valid in 3 of 18 cases, whereas Aider CGP runs were valid in 14 of 18 cases. Claude Code completed all 36 primary runs validly across both conditions. Agent- and condition-level rates are reported in Table 1 and visualized in Figure 2.
 
 In the companion extension dataset, baseline prompting produced 35 valid runs out of 36, and Continuity-Governed Prompting produced 36 valid runs out of 36. Codex completed all baseline and governed extension runs validly. Gemini CLI completed all governed runs validly and had one invalid baseline run due to scope drift into `benchmark-repo/tests/test_config.py`.
 
-The dominant invalid-run mechanism was not broad file drift. Many Aider baseline runs submitted no work, producing no changed files while still passing the repository’s existing verification commands. These runs were classified as invalid because the assigned task was not performed. In contrast, CGP eliminated non-submission for Aider but did not eliminate all failures: several Aider CGP runs failed verification, and one had incomplete or misplaced evidence. Across all CGP runs, 71 of 72 had complete evidence trios, for a completeness rate of 98.6%.
+The dominant invalid-run mechanism was not broad file drift. Many Aider baseline runs submitted no work, producing no changed files while still passing the repository’s existing verification commands. These runs were classified as invalid because the assigned task was not performed. In contrast, CGP eliminated non-submission for Aider but did not eliminate all failures: several Aider CGP runs failed verification, and one had incomplete or misplaced evidence. Across all CGP runs, 71 of 72 had complete evidence trios, for a completeness rate of 98.6%. Invalid-run mechanisms are summarized in Table 2 and Figure 3.
 
 ## Discussion
 
@@ -46,4 +46,12 @@ Future work should extend the benchmark to larger repositories, additional task 
 
 ## Tables and Figures To Add
 
-Table 1 should report run validity, work submission, verification success, scope drift, and evidence completeness by dataset, agent, and condition. Table 2 should report invalid-run mechanisms by agent and condition. Figure 1 should show the benchmark design and run-capture pipeline. Figure 2 should compare validity rates by condition and agent. Figure 3 should show failure-mode composition, emphasizing non-submission, verification failure, evidence incompleteness, and scope drift.
+Figure 1. Benchmark run-capture pipeline. Source file: `docs/paper/figures/figure1_benchmark_pipeline.svg`.
+
+Figure 2. Run validity by agent and prompt condition. Source files: `docs/paper/figures/figure2_validity_by_agent_condition.png` and `docs/paper/figures/figure2_validity_by_agent_condition.svg`.
+
+Figure 3. Invalid run mechanisms. Source files: `docs/paper/figures/figure3_invalid_run_mechanisms.png` and `docs/paper/figures/figure3_invalid_run_mechanisms.svg`.
+
+Table 1. Summary by dataset, agent, and condition. Source file: `docs/paper/tables/table1_summary_by_dataset_agent_condition.md`.
+
+Table 2. Invalid run mechanisms. Source file: `docs/paper/tables/table2_invalid_run_mechanisms.md`.
