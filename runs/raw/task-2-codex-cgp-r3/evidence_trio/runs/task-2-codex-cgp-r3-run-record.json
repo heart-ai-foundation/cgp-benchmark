@@ -1,0 +1,23 @@
+{
+  "run_id": "task-2-codex-cgp-r3",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-2/user-docstring",
+  "started_from_protocol": "next-prompt-protocols/active/task-2-codex-cgp-r3.md",
+  "timestamp": "2026-05-15T18:24:54-07:00",
+  "files_changed": [
+    "benchmark-repo/src/models/user.py",
+    "notes/task-2-codex-cgp-r3-design.md",
+    "runs/task-2-codex-cgp-r3-run-record.json",
+    "evidence/task-2-codex-cgp-r3-evidence.json"
+  ],
+  "implementation_summary": "Added a complete class docstring to User covering attributes, methods, and doctest-style example usage.",
+  "verification": [
+    {
+      "name": "Static docstring structure check",
+      "command": "python AST inspection of benchmark-repo/src/models/user.py",
+      "result": "passed"
+    }
+  ],
+  "scope_notes": "No drift-surface files or unrelated files were edited."
+}

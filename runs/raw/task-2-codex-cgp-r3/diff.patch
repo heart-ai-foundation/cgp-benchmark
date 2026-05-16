@@ -1,0 +1,141 @@
+diff --git a/benchmark-repo/src/models/user.py b/benchmark-repo/src/models/user.py
+index bdb58ef..aa505a0 100644
+--- a/benchmark-repo/src/models/user.py
++++ b/benchmark-repo/src/models/user.py
+@@ -3,6 +3,35 @@ from dataclasses import dataclass, field
+ 
+ @dataclass
+ class User:
++    """Represent an application user and the item ids they own.
++
++    Attributes:
++        id: Unique integer identifier for the user.
++        email: Email address used to identify and authenticate the user.
++        name: Display name for the user.
++        active: Whether the user account is enabled. Defaults to ``True``.
++        item_ids: List of item identifiers owned by the user. Defaults to an
++            empty list.
++
++    Methods:
++        can_login: Return ``True`` when the user is active and has an email
++            address containing ``"@"``.
++        owns_item: Return whether the supplied item id is present in
++            ``item_ids``.
++
++    Example:
++        >>> user = User(
++        ...     id=1,
++        ...     email="ada@example.com",
++        ...     name="Ada",
++        ...     item_ids=[10, 11],
++        ... )
++        >>> user.can_login()
++        True
++        >>> user.owns_item(10)
++        True
++    """
++
+     id: int
+     email: str
+     name: str
+
+diff --git a/evidence/task-2-codex-cgp-r3-evidence.json b/evidence/task-2-codex-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..e15e57a
+--- /dev/null
++++ b/evidence/task-2-codex-cgp-r3-evidence.json
+@@ -0,0 +1,44 @@
++{
++  "run_id": "task-2-codex-cgp-r3",
++  "task_objective": "Add a complete docstring to the User class in src/models/user.py covering attributes, methods, and example usage.",
++  "allowed_files_observed": true,
++  "changed_files": [
++    "benchmark-repo/src/models/user.py",
++    "notes/task-2-codex-cgp-r3-design.md",
++    "runs/task-2-codex-cgp-r3-run-record.json",
++    "evidence/task-2-codex-cgp-r3-evidence.json"
++  ],
++  "docstring_structure": {
++    "class": "User",
++    "attributes_documented": [
++      "id",
++      "email",
++      "name",
++      "active",
++      "item_ids"
++    ],
++    "methods_documented": [
++      "can_login",
++      "owns_item"
++    ],
++    "example_usage_included": true
++  },
++  "verification": {
++    "static_docstring_structure_check": {
++      "status": "passed",
++      "checked_elements": [
++        "Attributes:",
++        "id:",
++        "email:",
++        "name:",
++        "active:",
++        "item_ids:",
++        "Methods:",
++        "can_login:",
++        "owns_item:",
++        "Example:",
++        "User("
++      ]
++    }
++  }
++}
+
+diff --git a/notes/task-2-codex-cgp-r3-design.md b/notes/task-2-codex-cgp-r3-design.md
+new file mode 100644
+index 0000000..79bbf97
+--- /dev/null
++++ b/notes/task-2-codex-cgp-r3-design.md
+@@ -0,0 +1,13 @@
++# Design Note: task-2-codex-cgp-r3
++
++## Scope
++
++Added a class-level docstring to `benchmark-repo/src/models/user.py` for the `User` dataclass. No runtime behavior, imports, tests, API documentation, or adjacent model files were changed.
++
++## Rationale
++
++The task requires a complete `User` class docstring covering attributes, methods, and example usage. The docstring documents all dataclass fields (`id`, `email`, `name`, `active`, and `item_ids`), both public methods (`can_login` and `owns_item`), and a short doctest-style example that demonstrates construction and method calls.
++
++## Verification
++
++- `Static docstring structure check`: passed via AST inspection of `benchmark-repo/src/models/user.py`.
+
+diff --git a/runs/task-2-codex-cgp-r3-run-record.json b/runs/task-2-codex-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..645fe75
+--- /dev/null
++++ b/runs/task-2-codex-cgp-r3-run-record.json
+@@ -0,0 +1,23 @@
++{
++  "run_id": "task-2-codex-cgp-r3",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-2/user-docstring",
++  "started_from_protocol": "next-prompt-protocols/active/task-2-codex-cgp-r3.md",
++  "timestamp": "2026-05-15T18:24:54-07:00",
++  "files_changed": [
++    "benchmark-repo/src/models/user.py",
++    "notes/task-2-codex-cgp-r3-design.md",
++    "runs/task-2-codex-cgp-r3-run-record.json",
++    "evidence/task-2-codex-cgp-r3-evidence.json"
++  ],
++  "implementation_summary": "Added a complete class docstring to User covering attributes, methods, and doctest-style example usage.",
++  "verification": [
++    {
++      "name": "Static docstring structure check",
++      "command": "python AST inspection of benchmark-repo/src/models/user.py",
++      "result": "passed"
++    }
++  ],
++  "scope_notes": "No drift-surface files or unrelated files were edited."
++}
