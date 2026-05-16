@@ -1,0 +1,5 @@
+Added the `User` class docstring in [user.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-2-codex-baseline-r3/benchmark-repo/src/models/user.py:5), covering attributes, methods, and example usage.
+
+Verification passed:
+- `pytest`: 9 passed
+- Static AST docstring check: `Attributes:`, `Methods:`, and `Example:` sections present.
