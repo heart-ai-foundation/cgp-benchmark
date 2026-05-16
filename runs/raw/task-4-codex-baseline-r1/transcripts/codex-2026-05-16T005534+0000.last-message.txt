@@ -1,0 +1,7 @@
+Implemented the refactor in [src/utils/config.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-4-codex-baseline-r1/benchmark-repo/src/utils/config.py:1).
+
+`parse_config` now delegates field-specific parsing to small helpers and a parser map, while preserving the public signature and behavior, including fresh default `features` lists per call.
+
+Verification passed:
+- `pytest` -> `9 passed`
+- Import/signature/behavior check for `parse_config(raw: dict) -> dict` passed.

@@ -1,0 +1,67 @@
+diff --git a/benchmark-repo/src/utils/config.py b/benchmark-repo/src/utils/config.py
+index e157d9a..643665a 100644
+--- a/benchmark-repo/src/utils/config.py
++++ b/benchmark-repo/src/utils/config.py
+@@ -1,29 +1,40 @@
+-def parse_config(raw: dict) -> dict:
+-    if not isinstance(raw, dict):
+-        raise TypeError("config must be a dictionary")
+-
+-    parsed = {
++def _default_config() -> dict:
++    return {
+         "debug": False,
+         "page_size": 25,
+         "features": [],
+     }
+ 
+-    if "debug" in raw:
+-        parsed["debug"] = bool(raw["debug"])
+-
+-    if "page_size" in raw:
+-        page_size = int(raw["page_size"])
+-        if page_size < 1 or page_size > 100:
+-            raise ValueError("page_size must be between 1 and 100")
+-        parsed["page_size"] = page_size
+-
+-    if "features" in raw:
+-        features = raw["features"]
+-        if isinstance(features, str):
+-            parsed["features"] = [features]
+-        elif isinstance(features, list):
+-            parsed["features"] = [str(feature) for feature in features]
+-        else:
+-            raise ValueError("features must be a string or list")
++
++def _parse_page_size(value) -> int:
++    page_size = int(value)
++    if page_size < 1 or page_size > 100:
++        raise ValueError("page_size must be between 1 and 100")
++    return page_size
++
++
++def _parse_features(value) -> list:
++    if isinstance(value, str):
++        return [value]
++    if isinstance(value, list):
++        return [str(feature) for feature in value]
++    raise ValueError("features must be a string or list")
++
++
++FIELD_PARSERS = {
++    "debug": bool,
++    "page_size": _parse_page_size,
++    "features": _parse_features,
++}
++
++
++def parse_config(raw: dict) -> dict:
++    if not isinstance(raw, dict):
++        raise TypeError("config must be a dictionary")
++
++    parsed = _default_config()
++    for field, parser in FIELD_PARSERS.items():
++        if field in raw:
++            parsed[field] = parser(raw[field])
+ 
+     return parsed
