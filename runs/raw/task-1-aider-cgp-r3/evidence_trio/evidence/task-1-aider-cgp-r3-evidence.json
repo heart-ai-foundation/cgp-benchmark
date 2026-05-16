@@ -1,0 +1,37 @@
+{
+  "run_metadata": {
+    "run_id": "task-1-aider-cgp-r3",
+    "agent": "aider",
+    "condition": "cgp",
+    "task": "task-1",
+    "objective": "Add a function `validate_email(email: str) -> bool` to `src/api/validators.py` that returns `True` if the email is well-formed and `False` otherwise. Add corresponding tests in `tests/test_validators.py`."
+  },
+  "implementation_evidence": {
+    "function_added": {
+      "name": "validate_email",
+      "signature": "validate_email(email: str) -> bool",
+      "location": "benchmark-repo/src/api/validators.py",
+      "validation_method": "regex_pattern",
+      "pattern": "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"
+    },
+    "tests_added": {
+      "location": "benchmark-repo/tests/test_validators.py",
+      "test_functions": [
+        "test_validate_email_accepts_valid_emails",
+        "test_validate_email_rejects_invalid_emails", 
+        "test_validate_email_handles_non_string_input"
+      ],
+      "coverage_areas": ["valid_emails", "invalid_emails", "non_string_inputs"]
+    }
+  },
+  "scope_compliance": {
+    "allowed_files_only": true,
+    "no_drift_surface_edits": true,
+    "files_modified": [
+      "benchmark-repo/src/api/validators.py",
+      "benchmark-repo/tests/test_validators.py"
+    ]
+  },
+  "verification_ready": true,
+  "evidence_trio_complete": true
+}
