@@ -1,0 +1,30 @@
+{
+  "run_id": "task-6-aider-cgp-r1",
+  "metrics_base_commit": "45df261848d89c87549b69dc8942a2193beb8db9",
+  "verified_at": "2026-05-16T00:17:28+00:00",
+  "post_run_verification": [
+    {
+      "working_directory": "benchmark-repo",
+      "command": "npm test",
+      "result": "passed",
+      "returncode": 0,
+      "stdout_tail": "\n> cgp-benchmark-frontend@0.1.0 test\n> node --test frontend/tests/*.test.js\n\nTAP version 13\n# Subtest: renderUserList prints names and email addresses\nok 1 - renderUserList prints names and email addresses\n  ---\n  duration_ms: 6.251701\n  type: 'test'\n  ...\n# Subtest: renderItemList joins item names\nok 2 - renderItemList joins item names\n  ---\n  duration_ms: 1.889538\n  type: 'test'\n  ...\n# Subtest: submitLogin delegates valid credentials\nok 3 - submitLogin delegates valid credentials\n  ---\n  duration_ms: 1.336035\n  type: 'test'\n  ...\n# Subtest: submitLogin returns error for empty password\nok 4 - submitLogin returns error for empty password\n  ---\n  duration_ms: 0.917159\n  type: 'test'\n  ...\n# Subtest: submitLogin returns error for undefined password\nok 5 - submitLogin returns error for undefined password\n  ---\n  duration_ms: 0.776751\n  type: 'test'\n  ...\n1..5\n# tests 5\n# suites 0\n# pass 5\n# fail 0\n# cancelled 0\n# skipped 0\n# todo 0\n# duration_ms 139.097054\n",
+      "stderr_tail": ""
+    }
+  ],
+  "manual_verification_checks": [],
+  "changed_files": [
+    "benchmark-repo/frontend/src/components/LoginForm.jsx",
+    "benchmark-repo/frontend/tests/components.test.js",
+    "evidence/task-6-aider-cgp-r1-evidence.json",
+    "notes/task-6-aider-cgp-r1-design.md",
+    "runs/task-6-aider-cgp-r1-run-record.json"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": 3,
+  "run_validity": "valid"
+}
