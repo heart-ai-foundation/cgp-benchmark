@@ -1,0 +1,5 @@
+Fixed the empty-password path in [LoginForm.jsx](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-codex-baseline-r3/benchmark-repo/frontend/src/components/LoginForm.jsx) so it returns `{ ok: false, error: "Password is required" }` instead of throwing.
+
+Added a regression test in [components.test.js](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-6-codex-baseline-r3/benchmark-repo/frontend/tests/components.test.js) that verifies empty passwords do not call `authenticate`, while the existing valid-credentials delegation test remains intact.
+
+Verification: `npm test` passed, 4/4 tests.
