@@ -1,0 +1,9 @@
+{
+  "changed_files": [],
+  "allowed_files": [
+    "benchmark-repo/src/api/validators.py",
+    "benchmark-repo/tests/test_validators.py"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": []
+}
