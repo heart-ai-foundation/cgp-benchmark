@@ -1,0 +1,19 @@
+{
+  "run_id": "task-2-codex-baseline-r2",
+  "metrics_base_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
+  "verified_at": "2026-05-16T01:16:44+00:00",
+  "post_run_verification": [],
+  "manual_verification_checks": [
+    "Static docstring structure check"
+  ],
+  "changed_files": [
+    "benchmark-repo/src/models/user.py"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": true,
+  "task_verification_success": true,
+  "evidence_trio_completeness": null,
+  "run_validity": "valid"
+}
