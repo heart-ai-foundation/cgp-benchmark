@@ -1,0 +1,39 @@
+{
+  "run_id": "task-5-aider-cgp-r3",
+  "metrics_base_commit": "fd3463dcb7ee97b5544ee46b4f2fcf1435be5896",
+  "verified_at": "2026-05-16T00:47:39+00:00",
+  "post_run_verification": [
+    {
+      "working_directory": "benchmark-repo",
+      "command": "pytest tests/test_items.py",
+      "result": "failed",
+      "returncode": 1,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.14.4, pytest-9.0.3, pluggy-1.6.0\nrootdir: /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-5-aider-cgp-r3/benchmark-repo\nconfigfile: pyproject.toml\nplugins: anyio-4.12.1\ncollected 13 items\n\ntests/test_items.py .....F.......                                        [100%]\n\n=================================== FAILURES ===================================\n_____________________ test_favorite_item_nonexistent_item ______________________\n\n    def test_favorite_item_nonexistent_item():\n        result = favorite_item(1, 999)\n>       assert result[\"error\"] == \"Item not found\"\nE       assert \"Cannot favor...you don't own\" == 'Item not found'\nE         \nE         - Item not found\nE         + Cannot favorite item you don't own\n\ntests/test_items.py:32: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_items.py::test_favorite_item_nonexistent_item - assert \"Can...\n========================= 1 failed, 12 passed in 0.03s =========================\n",
+      "stderr_tail": ""
+    },
+    {
+      "working_directory": "benchmark-repo",
+      "command": "pytest",
+      "result": "failed",
+      "returncode": 1,
+      "stdout_tail": "============================= test session starts ==============================\nplatform linux -- Python 3.14.4, pytest-9.0.3, pluggy-1.6.0\nrootdir: /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-5-aider-cgp-r3/benchmark-repo\nconfigfile: pyproject.toml\ntestpaths: tests\nplugins: anyio-4.12.1\ncollected 20 items\n\ntests/test_auth.py ..                                                    [ 10%]\ntests/test_items.py .....F.......                                        [ 75%]\ntests/test_users.py ..                                                   [ 85%]\ntests/test_validators.py ...                                             [100%]\n\n=================================== FAILURES ===================================\n_____________________ test_favorite_item_nonexistent_item ______________________\n\n    def test_favorite_item_nonexistent_item():\n        result = favorite_item(1, 999)\n>       assert result[\"error\"] == \"Item not found\"\nE       assert \"Cannot favor...you don't own\" == 'Item not found'\nE         \nE         - Item not found\nE         + Cannot favorite item you don't own\n\ntests/test_items.py:32: AssertionError\n=========================== short test summary info ============================\nFAILED tests/test_items.py::test_favorite_item_nonexistent_item - assert \"Can...\n========================= 1 failed, 19 passed in 0.03s =========================\n",
+      "stderr_tail": ""
+    }
+  ],
+  "manual_verification_checks": [],
+  "changed_files": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py",
+    "evidence/task-5-aider-cgp-r3-evidence.json",
+    "notes/task-5-aider-cgp-r3-design.md",
+    "runs/task-5-aider-cgp-r3-run-record.json"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": [],
+  "work_submitted": true,
+  "verification_command_compliance": false,
+  "task_verification_success": false,
+  "evidence_trio_completeness": 3,
+  "run_validity": "invalid"
+}
