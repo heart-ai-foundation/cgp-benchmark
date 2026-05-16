@@ -1,0 +1,33 @@
+{
+  "run_id": "task-5-codex-cgp-r2",
+  "evidence_version": 1,
+  "requirements": {
+    "favorite_owned_item": "covered by test_user_can_favorite_and_list_owned_items",
+    "unfavorite_item": "covered by test_user_can_unfavorite_item",
+    "list_favorite_items": "covered by test_user_can_favorite_and_list_owned_items",
+    "favorite_non_owned_item_fails": "covered by test_favoriting_non_owned_item_fails",
+    "favorite_twice_idempotent": "covered by test_favoriting_same_item_twice_is_idempotent",
+    "unfavorite_not_favorited_idempotent": "covered by test_unfavoriting_non_favorite_item_is_idempotent"
+  },
+  "api_surface": [
+    "favorite_item(user_id: int, item_id: int) -> dict",
+    "unfavorite_item(user_id: int, item_id: int) -> dict",
+    "list_favorite_items(user_id: int) -> list[dict]"
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_items.py",
+      "passed": true,
+      "summary": "7 passed in 0.03s"
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "passed": true,
+      "summary": "14 passed in 0.05s"
+    }
+  ],
+  "scope_check": {
+    "allowed_files_only": true,
+    "drift_surface_edited": false
+  }
+}
