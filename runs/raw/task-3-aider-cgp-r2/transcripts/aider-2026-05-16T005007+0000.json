@@ -1,0 +1,11 @@
+{
+  "command": "aider --message-file /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/runs/raw/task-3-aider-cgp-r2/prompt.md --yes-always --no-pretty --no-stream --no-check-update --no-show-model-warnings --no-gitignore --map-tokens 0 --llm-history-file /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/runs/raw/task-3-aider-cgp-r2/transcripts/aider-2026-05-16T005007+0000.llm-history.txt --chat-history-file /home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/runs/raw/task-3-aider-cgp-r2/transcripts/aider-2026-05-16T005007+0000.chat-history.md",
+  "working_directory": "/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-3-aider-cgp-r2",
+  "returncode": 0,
+  "stdout": "transcripts/aider-2026-05-16T005007+0000.stdout.txt",
+  "stderr": "transcripts/aider-2026-05-16T005007+0000.stderr.txt",
+  "llm_history": "transcripts/aider-2026-05-16T005007+0000.llm-history.txt",
+  "chat_history": "transcripts/aider-2026-05-16T005007+0000.chat-history.md",
+  "stop_condition_alerted": false,
+  "stop_condition_matches": []
+}

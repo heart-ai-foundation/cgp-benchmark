@@ -1,0 +1,337 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..e981afd 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -1,4 +1,5 @@
+ from src.models.user import User
++from src.api.routes.items import ITEMS
+ 
+ 
+ USERS = [
+@@ -20,3 +21,15 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def get_user_items(user_id: int) -> list[dict]:
++    user = get_user(user_id)
++    if user is None:
++        return []
++    
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if item.id in user.item_ids
++    ]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..afecbdd 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_users, get_user_items
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,22 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_get_user_items_returns_user_items():
++    items = get_user_items(1)
++    assert len(items) == 2
++    item_names = [item["name"] for item in items]
++    assert "Notebook" in item_names
++    assert "Pen" in item_names
++
++
++def test_get_user_items_returns_empty_for_nonexistent_user():
++    items = get_user_items(999)
++    assert items == []
++
++
++def test_get_user_items_returns_correct_items_for_different_user():
++    items = get_user_items(2)
++    assert len(items) == 1
++    assert items[0]["name"] == "Backpack"
+diff --git a/evidence/task-3-aider-cgp-r2-evidence.json b/evidence/task-3-aider-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..aac1db2
+--- /dev/null
++++ b/evidence/task-3-aider-cgp-r2-evidence.json
+@@ -0,0 +1,37 @@
++{
++  "task_id": "task-3-aider-cgp-r2",
++  "completion_status": "implemented",
++  "objective_met": true,
++  "implementation_summary": {
++    "function_name": "get_user_items",
++    "signature": "get_user_items(user_id: int) -> list[dict]",
++    "location": "src/api/routes/users.py",
++    "behavior": "Returns items belonging to specified user, empty list for non-existent user"
++  },
++  "test_coverage": {
++    "tests_added": 3,
++    "scenarios_covered": [
++      "successful_item_retrieval",
++      "nonexistent_user_handling", 
++      "multi_user_filtering"
++    ]
++  },
++  "files_changed": {
++    "src/api/routes/users.py": {
++      "lines_added": 8,
++      "imports_added": 1,
++      "functions_added": 1
++    },
++    "tests/test_users.py": {
++      "lines_added": 15,
++      "imports_modified": 1,
++      "tests_added": 3
++    }
++  },
++  "verification_commands": [
++    "cd benchmark-repo && pytest tests/test_users.py",
++    "cd benchmark-repo && pytest"
++  ],
++  "scope_adherence": "strict",
++  "protocol_followed": "cgp"
++}
+diff --git a/notes/task-3-aider-cgp-r2-design.md b/notes/task-3-aider-cgp-r2-design.md
+new file mode 100644
+index 0000000..0ee6792
+--- /dev/null
++++ b/notes/task-3-aider-cgp-r2-design.md
+@@ -0,0 +1,28 @@
++# Design Note: task-3-aider-cgp-r2
++
++## Objective
++Add a `GET /users/{user_id}/items` equivalent route function to `src/api/routes/users.py` that returns the items belonging to a specific user.
++
++## Implementation Approach
++1. Added `get_user_items(user_id: int) -> list[dict]` function to `users.py`
++2. Function leverages existing `get_user()` to find the user
++3. Filters items from `ITEMS` list based on user's `item_ids` field
++4. Returns items in dictionary format using `item.as_dict()`
++5. Returns empty list for non-existent users
++
++## Design Rationale
++- Reuses existing `get_user()` function for consistency
++- Follows same pattern as `get_item()` in returning dict format
++- Handles edge case of non-existent user gracefully
++- Imports `ITEMS` from items module to access item data
++
++## Test Coverage
++- Tests successful retrieval of user items
++- Tests handling of non-existent user
++- Tests correct filtering for different users
++- Verifies item names and counts match expectations
++
++## Scope
++Changes limited to allowed files:
++- `src/api/routes/users.py` - added function and import
++- `tests/test_users.py` - added comprehensive tests
+diff --git a/runs/task-3-aider-cgp-r2-run-record.json b/runs/task-3-aider-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..ab6a05f
+--- /dev/null
++++ b/runs/task-3-aider-cgp-r2-run-record.json
+@@ -0,0 +1,26 @@
++{
++  "run_id": "task-3-aider-cgp-r2",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-3",
++  "task_name": "user-items-endpoint",
++  "start_time": "2026-05-15T00:00:00Z",
++  "files_modified": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py"
++  ],
++  "functions_added": [
++    "get_user_items"
++  ],
++  "tests_added": [
++    "test_get_user_items_returns_user_items",
++    "test_get_user_items_returns_empty_for_nonexistent_user", 
++    "test_get_user_items_returns_correct_items_for_different_user"
++  ],
++  "imports_added": [
++    "from src.api.routes.items import ITEMS"
++  ],
++  "verification_status": "pending",
++  "scope_compliance": "within_allowed_files",
++  "protocol_compliance": "cgp_followed"
++}
+
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..e981afd 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -1,4 +1,5 @@
+ from src.models.user import User
++from src.api.routes.items import ITEMS
+ 
+ 
+ USERS = [
+@@ -20,3 +21,15 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def get_user_items(user_id: int) -> list[dict]:
++    user = get_user(user_id)
++    if user is None:
++        return []
++    
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if item.id in user.item_ids
++    ]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..afecbdd 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_users, get_user_items
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,22 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_get_user_items_returns_user_items():
++    items = get_user_items(1)
++    assert len(items) == 2
++    item_names = [item["name"] for item in items]
++    assert "Notebook" in item_names
++    assert "Pen" in item_names
++
++
++def test_get_user_items_returns_empty_for_nonexistent_user():
++    items = get_user_items(999)
++    assert items == []
++
++
++def test_get_user_items_returns_correct_items_for_different_user():
++    items = get_user_items(2)
++    assert len(items) == 1
++    assert items[0]["name"] == "Backpack"
+diff --git a/evidence/task-3-aider-cgp-r2-evidence.json b/evidence/task-3-aider-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..aac1db2
+--- /dev/null
++++ b/evidence/task-3-aider-cgp-r2-evidence.json
+@@ -0,0 +1,37 @@
++{
++  "task_id": "task-3-aider-cgp-r2",
++  "completion_status": "implemented",
++  "objective_met": true,
++  "implementation_summary": {
++    "function_name": "get_user_items",
++    "signature": "get_user_items(user_id: int) -> list[dict]",
++    "location": "src/api/routes/users.py",
++    "behavior": "Returns items belonging to specified user, empty list for non-existent user"
++  },
++  "test_coverage": {
++    "tests_added": 3,
++    "scenarios_covered": [
++      "successful_item_retrieval",
++      "nonexistent_user_handling", 
++      "multi_user_filtering"
++    ]
++  },
++  "files_changed": {
++    "src/api/routes/users.py": {
++      "lines_added": 8,
++      "imports_added": 1,
++      "functions_added": 1
++    },
++    "tests/test_users.py": {
++      "lines_added": 15,
++      "imports_modified": 1,
++      "tests_added": 3
++    }
++  },
++  "verification_commands": [
++    "cd benchmark-repo && pytest tests/test_users.py",
++    "cd benchmark-repo && pytest"
++  ],
++  "scope_adherence": "strict",
++  "protocol_followed": "cgp"
++}
+diff --git a/notes/task-3-aider-cgp-r2-design.md b/notes/task-3-aider-cgp-r2-design.md
+new file mode 100644
+index 0000000..0ee6792
+--- /dev/null
++++ b/notes/task-3-aider-cgp-r2-design.md
+@@ -0,0 +1,28 @@
++# Design Note: task-3-aider-cgp-r2
++
++## Objective
++Add a `GET /users/{user_id}/items` equivalent route function to `src/api/routes/users.py` that returns the items belonging to a specific user.
++
++## Implementation Approach
++1. Added `get_user_items(user_id: int) -> list[dict]` function to `users.py`
++2. Function leverages existing `get_user()` to find the user
++3. Filters items from `ITEMS` list based on user's `item_ids` field
++4. Returns items in dictionary format using `item.as_dict()`
++5. Returns empty list for non-existent users
++
++## Design Rationale
++- Reuses existing `get_user()` function for consistency
++- Follows same pattern as `get_item()` in returning dict format
++- Handles edge case of non-existent user gracefully
++- Imports `ITEMS` from items module to access item data
++
++## Test Coverage
++- Tests successful retrieval of user items
++- Tests handling of non-existent user
++- Tests correct filtering for different users
++- Verifies item names and counts match expectations
++
++## Scope
++Changes limited to allowed files:
++- `src/api/routes/users.py` - added function and import
++- `tests/test_users.py` - added comprehensive tests
+diff --git a/runs/task-3-aider-cgp-r2-run-record.json b/runs/task-3-aider-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..ab6a05f
+--- /dev/null
++++ b/runs/task-3-aider-cgp-r2-run-record.json
+@@ -0,0 +1,26 @@
++{
++  "run_id": "task-3-aider-cgp-r2",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-3",
++  "task_name": "user-items-endpoint",
++  "start_time": "2026-05-15T00:00:00Z",
++  "files_modified": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py"
++  ],
++  "functions_added": [
++    "get_user_items"
++  ],
++  "tests_added": [
++    "test_get_user_items_returns_user_items",
++    "test_get_user_items_returns_empty_for_nonexistent_user", 
++    "test_get_user_items_returns_correct_items_for_different_user"
++  ],
++  "imports_added": [
++    "from src.api.routes.items import ITEMS"
++  ],
++  "verification_status": "pending",
++  "scope_compliance": "within_allowed_files",
++  "protocol_compliance": "cgp_followed"
++}
