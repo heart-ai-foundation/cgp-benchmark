@@ -1,0 +1,21 @@
+{
+  "changed_files": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py",
+    "evidence/task-5-aider-cgp-r2-evidence.json",
+    "notes/task-5-aider-cgp-r2-design.md",
+    "runs/task-5-aider-cgp-r2-run-record.json"
+  ],
+  "allowed_files": [
+    "benchmark-repo/src/api/routes/items.py",
+    "benchmark-repo/src/models/item.py",
+    "benchmark-repo/src/models/user.py",
+    "benchmark-repo/tests/test_items.py",
+    "evidence/task-5-aider-cgp-r2-evidence.json",
+    "notes/task-5-aider-cgp-r2-design.md",
+    "runs/task-5-aider-cgp-r2-run-record.json"
+  ],
+  "scope_drift_count": 0,
+  "scope_drift_files": []
+}
