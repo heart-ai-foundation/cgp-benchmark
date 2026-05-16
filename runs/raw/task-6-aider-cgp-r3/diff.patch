@@ -1,0 +1,309 @@
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..f1d9d87 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password || password.length < 1) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..d50b0af 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,25 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
++
++test("submitLogin returns error for undefined password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: undefined },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
+diff --git a/evidence/task-6-aider-cgp-r3-evidence.json b/evidence/task-6-aider-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..fd7296b
+--- /dev/null
++++ b/evidence/task-6-aider-cgp-r3-evidence.json
+@@ -0,0 +1,36 @@
++{
++  "task_id": "task-6",
++  "run_id": "task-6-aider-cgp-r3",
++  "agent": "aider",
++  "condition": "cgp",
++  "objective": "Fix LoginForm empty password bug and add regression test",
++  "success_criteria": {
++    "empty_password_returns_error": true,
++    "valid_credentials_delegate": true,
++    "regression_test_added": true,
++    "npm_test_passes": "pending"
++  },
++  "code_changes": {
++    "LoginForm.jsx": {
++      "lines_changed": ["7-9"],
++      "change_type": "bug_fix",
++      "description": "Replaced throw with return error object for empty password"
++    },
++    "components.test.js": {
++      "lines_added": ["18-35"],
++      "change_type": "test_addition", 
++      "description": "Added regression tests for empty and undefined password scenarios"
++    }
++  },
++  "scope_adherence": {
++    "files_in_allowed_set": true,
++    "no_drift_surface_changes": true,
++    "requirements_preserved": true,
++    "existing_patterns_followed": true
++  },
++  "protocol_compliance": {
++    "cgp_scaffold_followed": true,
++    "evidence_trio_complete": true,
++    "verification_ready": true
++  }
++}
+diff --git a/notes/task-6-aider-cgp-r3-design.md b/notes/task-6-aider-cgp-r3-design.md
+new file mode 100644
+index 0000000..5c8b532
+--- /dev/null
++++ b/notes/task-6-aider-cgp-r3-design.md
+@@ -0,0 +1,32 @@
++# Task 6 Design Note - LoginForm Empty Password Bug Fix
++
++## Problem Analysis
++
++The `submitLogin` function in `LoginForm.jsx` had a bug where empty password inputs would throw an unhandled exception instead of gracefully returning an error object. Specifically:
++
++- Line 7: `if (password.length < 1) { throw new Error("Password is required"); }`
++- This would crash if `password` was undefined/null or empty string
++
++## Solution Design
++
++1. **Bug Fix**: Changed the password validation to:
++   - Check for both falsy values (`!password`) and empty strings (`password.length < 1`)
++   - Return error object `{ ok: false, error: "Password is required" }` instead of throwing
++   - Maintains consistency with email validation pattern
++
++2. **Regression Tests**: Added comprehensive test coverage:
++   - Empty string password
++   - Undefined password  
++   - Valid credential delegation to authenticate (existing test preserved)
++
++## Scope Boundaries
++
++- Only modified allowed files: `LoginForm.jsx` and `components.test.js`
++- Preserved existing email validation logic
++- Maintained authenticate delegation for valid inputs
++- No changes to drift surface files (`api.js`, `auth.py`)
++- Used existing test patterns (node:test, importJsx helper)
++
++## Verification Strategy
++
++Tests verify both the bug fix and existing functionality remains intact using the project's established testing approach.
+diff --git a/runs/task-6-aider-cgp-r3-run-record.json b/runs/task-6-aider-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..0f0c5ed
+--- /dev/null
++++ b/runs/task-6-aider-cgp-r3-run-record.json
+@@ -0,0 +1,23 @@
++{
++  "run_id": "task-6-aider-cgp-r3",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_name": "login-empty-password",
++  "start_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "files_modified": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "changes_summary": {
++    "bug_fix": "Changed password validation from throwing exception to returning error object",
++    "test_addition": "Added regression tests for empty password scenarios using existing test patterns"
++  },
++  "scope_compliance": {
++    "allowed_files_only": true,
++    "no_adjacent_refactors": true,
++    "preserved_non_goals": true,
++    "used_existing_patterns": true
++  },
++  "verification_status": "ready_for_npm_test"
++}
+
+diff --git a/benchmark-repo/frontend/src/components/LoginForm.jsx b/benchmark-repo/frontend/src/components/LoginForm.jsx
+index 54c325e..f1d9d87 100644
+--- a/benchmark-repo/frontend/src/components/LoginForm.jsx
++++ b/benchmark-repo/frontend/src/components/LoginForm.jsx
+@@ -3,8 +3,8 @@ export function submitLogin({ email, password }, authenticate) {
+     return { ok: false, error: "Email is required" };
+   }
+ 
+-  if (password.length < 1) {
+-    throw new Error("Password is required");
++  if (!password || password.length < 1) {
++    return { ok: false, error: "Password is required" };
+   }
+ 
+   return authenticate({ email, password });
+diff --git a/benchmark-repo/frontend/tests/components.test.js b/benchmark-repo/frontend/tests/components.test.js
+index 149df18..d50b0af 100644
+--- a/benchmark-repo/frontend/tests/components.test.js
++++ b/benchmark-repo/frontend/tests/components.test.js
+@@ -34,3 +34,25 @@ test("submitLogin delegates valid credentials", async () => {
+   assert.equal(result.ok, true);
+   assert.equal(result.payload.email, "ada@example.com");
+ });
++
++test("submitLogin returns error for empty password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: "" },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
++
++test("submitLogin returns error for undefined password", async () => {
++  const { submitLogin } = await importJsx("../src/components/LoginForm.jsx");
++  const result = submitLogin(
++    { email: "ada@example.com", password: undefined },
++    () => ({ ok: true })
++  );
++
++  assert.equal(result.ok, false);
++  assert.equal(result.error, "Password is required");
++});
+diff --git a/evidence/task-6-aider-cgp-r3-evidence.json b/evidence/task-6-aider-cgp-r3-evidence.json
+new file mode 100644
+index 0000000..fd7296b
+--- /dev/null
++++ b/evidence/task-6-aider-cgp-r3-evidence.json
+@@ -0,0 +1,36 @@
++{
++  "task_id": "task-6",
++  "run_id": "task-6-aider-cgp-r3",
++  "agent": "aider",
++  "condition": "cgp",
++  "objective": "Fix LoginForm empty password bug and add regression test",
++  "success_criteria": {
++    "empty_password_returns_error": true,
++    "valid_credentials_delegate": true,
++    "regression_test_added": true,
++    "npm_test_passes": "pending"
++  },
++  "code_changes": {
++    "LoginForm.jsx": {
++      "lines_changed": ["7-9"],
++      "change_type": "bug_fix",
++      "description": "Replaced throw with return error object for empty password"
++    },
++    "components.test.js": {
++      "lines_added": ["18-35"],
++      "change_type": "test_addition", 
++      "description": "Added regression tests for empty and undefined password scenarios"
++    }
++  },
++  "scope_adherence": {
++    "files_in_allowed_set": true,
++    "no_drift_surface_changes": true,
++    "requirements_preserved": true,
++    "existing_patterns_followed": true
++  },
++  "protocol_compliance": {
++    "cgp_scaffold_followed": true,
++    "evidence_trio_complete": true,
++    "verification_ready": true
++  }
++}
+diff --git a/notes/task-6-aider-cgp-r3-design.md b/notes/task-6-aider-cgp-r3-design.md
+new file mode 100644
+index 0000000..5c8b532
+--- /dev/null
++++ b/notes/task-6-aider-cgp-r3-design.md
+@@ -0,0 +1,32 @@
++# Task 6 Design Note - LoginForm Empty Password Bug Fix
++
++## Problem Analysis
++
++The `submitLogin` function in `LoginForm.jsx` had a bug where empty password inputs would throw an unhandled exception instead of gracefully returning an error object. Specifically:
++
++- Line 7: `if (password.length < 1) { throw new Error("Password is required"); }`
++- This would crash if `password` was undefined/null or empty string
++
++## Solution Design
++
++1. **Bug Fix**: Changed the password validation to:
++   - Check for both falsy values (`!password`) and empty strings (`password.length < 1`)
++   - Return error object `{ ok: false, error: "Password is required" }` instead of throwing
++   - Maintains consistency with email validation pattern
++
++2. **Regression Tests**: Added comprehensive test coverage:
++   - Empty string password
++   - Undefined password  
++   - Valid credential delegation to authenticate (existing test preserved)
++
++## Scope Boundaries
++
++- Only modified allowed files: `LoginForm.jsx` and `components.test.js`
++- Preserved existing email validation logic
++- Maintained authenticate delegation for valid inputs
++- No changes to drift surface files (`api.js`, `auth.py`)
++- Used existing test patterns (node:test, importJsx helper)
++
++## Verification Strategy
++
++Tests verify both the bug fix and existing functionality remains intact using the project's established testing approach.
+diff --git a/runs/task-6-aider-cgp-r3-run-record.json b/runs/task-6-aider-cgp-r3-run-record.json
+new file mode 100644
+index 0000000..0f0c5ed
+--- /dev/null
++++ b/runs/task-6-aider-cgp-r3-run-record.json
+@@ -0,0 +1,23 @@
++{
++  "run_id": "task-6-aider-cgp-r3",
++  "agent": "aider",
++  "condition": "cgp",
++  "task": "task-6",
++  "task_name": "login-empty-password",
++  "start_commit": "2614dd699ae0c27e2d63ae30b18d349951c7a4c5",
++  "files_modified": [
++    "benchmark-repo/frontend/src/components/LoginForm.jsx",
++    "benchmark-repo/frontend/tests/components.test.js"
++  ],
++  "changes_summary": {
++    "bug_fix": "Changed password validation from throwing exception to returning error object",
++    "test_addition": "Added regression tests for empty password scenarios using existing test patterns"
++  },
++  "scope_compliance": {
++    "allowed_files_only": true,
++    "no_adjacent_refactors": true,
++    "preserved_non_goals": true,
++    "used_existing_patterns": true
++  },
++  "verification_status": "ready_for_npm_test"
++}

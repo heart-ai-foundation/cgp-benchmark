@@ -1,0 +1,36 @@
+{
+  "task_id": "task-6",
+  "run_id": "task-6-aider-cgp-r3",
+  "agent": "aider",
+  "condition": "cgp",
+  "objective": "Fix LoginForm empty password bug and add regression test",
+  "success_criteria": {
+    "empty_password_returns_error": true,
+    "valid_credentials_delegate": true,
+    "regression_test_added": true,
+    "npm_test_passes": "pending"
+  },
+  "code_changes": {
+    "LoginForm.jsx": {
+      "lines_changed": ["7-9"],
+      "change_type": "bug_fix",
+      "description": "Replaced throw with return error object for empty password"
+    },
+    "components.test.js": {
+      "lines_added": ["18-35"],
+      "change_type": "test_addition", 
+      "description": "Added regression tests for empty and undefined password scenarios"
+    }
+  },
+  "scope_adherence": {
+    "files_in_allowed_set": true,
+    "no_drift_surface_changes": true,
+    "requirements_preserved": true,
+    "existing_patterns_followed": true
+  },
+  "protocol_compliance": {
+    "cgp_scaffold_followed": true,
+    "evidence_trio_complete": true,
+    "verification_ready": true
+  }
+}
