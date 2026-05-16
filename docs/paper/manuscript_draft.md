@@ -56,6 +56,16 @@ The findings should be interpreted with several limitations. The registered endp
 
 Future work should extend the benchmark to larger repositories, additional task types, and longer multi-turn handoffs, including tasks engineered to produce measurable baseline drift if the drift-reduction hypothesis is to be tested directly. A further analysis should model agent platform explicitly rather than aggregating across systems, because the observed failure modes differed substantially by agent. The most immediate practical implication is that organizations adopting coding agents should treat continuity governance as an operational control layer: a way to bind agent work to explicit state, scope, verification, and durable evidence rather than relying on conversational summaries alone.
 
+## Declarations
+
+The study was preregistered on OSF at `https://osf.io/fnmg5`. After analysis, the authors added a preregistration deviation note documenting that the registered primary endpoint, scope drift count, returned a null result at a baseline floor and distinguishing confirmatory registered endpoints from observed operational findings. The governing deviation note is stored in the repository as `docs/research_integrity/CGP_Benchmark_Preregistration_Deviation_Note_v1_1.md`.
+
+All benchmark code, task specifications, runner scripts, raw planned-run records, archived invalid harness records, processed metrics, registered-analysis outputs, figures, and manuscript materials are available in the public repository `https://github.com/heart-ai-foundation/cgp-benchmark`. The processed analysis files used for the manuscript are stored under `runs/processed/`; the registered-analysis outputs are `runs/processed/registered_analysis.md` and `runs/processed/registered_analysis.json`.
+
+The author developed Continuity-Governed Prompting and may have a financial interest through future commercial implementation services offered separately by HeartCore Ventures LLC. The methodology, benchmark repository, preregistration materials, deviation note, and manuscript materials are published by the Heart AI Foundation with the dual-entity boundary disclosed in the research-integrity record.
+
+AI language models were used to assist with drafting, code execution, benchmark operation, analysis scripting, and manuscript revision. Experimental design decisions, interpretation boundaries, claims governance, and final responsibility for the manuscript remain with the author.
+
 ## Tables and Figures To Add
 
 Graphical abstract. Continuity-governed prompting reliability and auditability benchmark summary. Source file: `docs/paper/figures/graphical_abstract.svg`.
