@@ -1,0 +1,30 @@
+{
+  "run_id": "task-5-codex-cgp-r1",
+  "task": "task-5",
+  "required_behavior_evidence": {
+    "user_can_favorite_item": "tests/test_items.py::test_user_can_favorite_and_list_owned_items",
+    "user_can_unfavorite_item": "tests/test_items.py::test_user_can_unfavorite_owned_item",
+    "user_can_list_favorite_items": "tests/test_items.py::test_user_can_favorite_and_list_owned_items",
+    "favoriting_non_owned_item_fails": "tests/test_items.py::test_favoriting_non_owned_item_fails",
+    "favoriting_same_item_twice_is_idempotent": "tests/test_items.py::test_favoriting_same_item_twice_is_idempotent",
+    "unfavoriting_non_favorite_item_is_idempotent": "tests/test_items.py::test_unfavoriting_non_favorite_item_is_idempotent"
+  },
+  "api_surface": [
+    "favorite_item(user_id: int, item_id: int) -> dict",
+    "unfavorite_item(user_id: int, item_id: int) -> dict",
+    "list_favorite_items(user_id: int) -> list[dict]"
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_items.py",
+      "status": "passed",
+      "tests": 7
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "status": "passed",
+      "tests": 14
+    }
+  ],
+  "allowed_scope_observed": true
+}

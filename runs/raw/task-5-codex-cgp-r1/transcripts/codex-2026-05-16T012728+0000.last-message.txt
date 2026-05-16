@@ -1,0 +1,11 @@
+Implemented the favorite items feature within the allowed files.
+
+Key changes:
+- Added `User.favorite_item_ids` plus idempotent favorite/unfavorite helpers in [user.py](</home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-5-codex-cgp-r1/benchmark-repo/src/models/user.py:11>).
+- Added `favorite_item`, `unfavorite_item`, and `list_favorite_items` in [items.py](</home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-5-codex-cgp-r1/benchmark-repo/src/api/routes/items.py:27>).
+- Added tests for listing, ownership failure, and idempotency in [test_items.py](</home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-5-codex-cgp-r1/benchmark-repo/tests/test_items.py:28>).
+- Wrote the required evidence trio under `notes/`, `runs/`, and `evidence/`.
+
+Verification passed:
+- `cd benchmark-repo && pytest tests/test_items.py`: 7 passed
+- `cd benchmark-repo && pytest`: 14 passed
