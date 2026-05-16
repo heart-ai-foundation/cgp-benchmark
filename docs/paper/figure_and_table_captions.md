@@ -1,9 +1,5 @@
 # Figure and Table Captions
 
-## Graphical Abstract
-
-Continuity-Governed Prompting reliability and auditability benchmark. The graphical abstract shows the controlled task set, the contrast between ordinary baseline prompting and the CGP scaffold, the isolated 144-run execution and capture process, and the observed operational validity movement from 77.8% under baseline prompting to 94.4% under CGP. The bottom panel states the governing interpretation boundary: the registered scope-drift endpoint was null at a baseline floor, while CGP improved task engagement and evidence completeness.
-
 ## Figure 1
 
 Benchmark run-capture pipeline. Each benchmark run began with a task specification containing allowed files and verification commands, then proceeded through either a baseline prompt or a CGP prompt that added manifest, lock, stop-condition, and evidence-trio requirements. Runs were executed in isolated git worktrees, captured as transcripts and diffs, and scored into run-level metrics. CGP evidence files were treated as allowed operational evidence when computing scope drift.

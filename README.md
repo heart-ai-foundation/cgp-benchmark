@@ -6,6 +6,10 @@ Canonical repository target:
 
 `github.com/heart-ai-foundation/cgp-benchmark`
 
+Manuscript DOI:
+
+`10.5281/zenodo.20234367`
+
 ## Epistemic Status
 
 The registered primary endpoint was scope drift. The completed primary dataset showed baseline scope drift at the floor: 0 baseline scope-drift events in the preregistered primary dataset, 1 CGP scope-drift event, and an exact paired Wilcoxon two-sided p value of 1.0000. Across all planned primary plus companion-extension runs, scope drift occurred once under baseline and once under CGP. This benchmark therefore does not support a claim that CGP reduced scope drift in this run.

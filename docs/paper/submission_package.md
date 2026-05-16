@@ -12,6 +12,10 @@ Dylan D. Mobley, Heart AI Foundation.
 
 Dylan D. Mobley.
 
+## Preprint DOI
+
+`10.5281/zenodo.20234367`
+
 ## Article Type
 
 Empirical software-engineering benchmark / methods evaluation.
@@ -22,6 +26,7 @@ Main manuscript:
 
 - `docs/paper/preprint_manuscript.md`
 - `docs/paper/manuscript_draft.md`
+- `docs/paper/preprint/cgp_reliability_auditability_preprint.pdf`
 
 Figures:
 
@@ -81,4 +86,4 @@ The OSF preregistration body should remain unchanged. The v1.1 deviation note sh
 2. Follow the preprint-first strategy in `docs/paper/venue_strategy.md`.
 3. Complete the checks in `docs/paper/preprint_checklist.md`.
 4. Convert citations from Pandoc citation syntax to the target venue style if needed.
-5. Generate the final PDF or LaTeX package after installing a renderer or choosing a venue template.
+5. If submitting to a venue, regenerate the PDF or LaTeX package in that venue's required format.

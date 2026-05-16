@@ -242,7 +242,9 @@ def render_tex() -> str:
 \maketitle
 
 \noindent Repository: \url{{https://github.com/heart-ai-foundation/cgp-benchmark}}\\
-OSF registration: \url{{https://osf.io/fnmg5}}
+OSF registration: \url{{https://osf.io/fnmg5}}\\
+Zenodo DOI: \url{{https://doi.org/10.5281/zenodo.20234367}}\\
+ORCID: \url{{https://orcid.org/0009-0002-3560-3955}}
 
 {body}
 
