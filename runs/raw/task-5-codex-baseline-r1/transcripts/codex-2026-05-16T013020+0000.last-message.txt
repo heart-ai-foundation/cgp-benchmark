@@ -1,0 +1,14 @@
+Implemented the favorite items feature in:
+
+- [items.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-5-codex-baseline-r1/benchmark-repo/src/api/routes/items.py)
+- [user.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-5-codex-baseline-r1/benchmark-repo/src/models/user.py)
+- [test_items.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-5-codex-baseline-r1/benchmark-repo/tests/test_items.py)
+
+Added `favorite_item`, `unfavorite_item`, and `list_favorite_items`, with ownership checks and idempotent favorite/unfavorite behavior.
+
+Verification passed:
+
+```text
+pytest tests/test_items.py  # 7 passed
+pytest                      # 14 passed
+```
