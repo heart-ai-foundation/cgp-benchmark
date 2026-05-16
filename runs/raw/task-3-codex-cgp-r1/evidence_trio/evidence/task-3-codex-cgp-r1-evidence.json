@@ -1,0 +1,38 @@
+{
+  "run_id": "task-3-codex-cgp-r1",
+  "task": "task-3",
+  "objective": "Add a GET /users/{user_id}/items equivalent route function to src/api/routes/users.py that returns the items belonging to a specific user, with tests in tests/test_users.py.",
+  "protocol_files_read": [
+    "next-prompt-protocols/.slice-lock.json",
+    "next-prompt-protocols/manifest.json",
+    "next-prompt-protocols/role-context.md",
+    "next-prompt-protocols/phases/phase-1/README.md",
+    "next-prompt-protocols/active/task-3-codex-cgp-r1.md",
+    "docs/task_specs/task-3-user-items-endpoint.md"
+  ],
+  "changed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-codex-cgp-r1-design.md",
+    "runs/task-3-codex-cgp-r1-run-record.json",
+    "evidence/task-3-codex-cgp-r1-evidence.json"
+  ],
+  "checks": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_users.py",
+      "passed": true,
+      "summary": "5 passed in 0.02s"
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "passed": true,
+      "summary": "12 passed in 0.02s"
+    }
+  ],
+  "acceptance": {
+    "route_callable_added": true,
+    "tests_added": true,
+    "evidence_trio_written": true,
+    "scope_limited_to_allowed_files": true
+  }
+}

@@ -1,0 +1,167 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..81cba57 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -1,3 +1,4 @@
++from src.api.routes.items import ITEMS
+ from src.models.user import User
+ 
+ 
+@@ -20,3 +21,15 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def list_user_items(user_id: int) -> list[dict]:
++    user = get_user(user_id)
++    if user is None:
++        return []
++
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if item.owner_id == user.id and user.owns_item(item.id)
++    ]
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..5a11e94 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_user_items, list_users
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,17 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_list_user_items_returns_items_owned_by_user():
++    items = list_user_items(1)
++    assert [item["name"] for item in items] == ["Notebook", "Pen"]
++
++
++def test_list_user_items_excludes_items_owned_by_other_users():
++    items = list_user_items(1)
++    assert all(item["owner_id"] == 1 for item in items)
++
++
++def test_list_user_items_returns_empty_list_for_unknown_user():
++    assert list_user_items(999) == []
+
+diff --git a/evidence/task-3-codex-cgp-r1-evidence.json b/evidence/task-3-codex-cgp-r1-evidence.json
+new file mode 100644
+index 0000000..c11b6b7
+--- /dev/null
++++ b/evidence/task-3-codex-cgp-r1-evidence.json
+@@ -0,0 +1,38 @@
++{
++  "run_id": "task-3-codex-cgp-r1",
++  "task": "task-3",
++  "objective": "Add a GET /users/{user_id}/items equivalent route function to src/api/routes/users.py that returns the items belonging to a specific user, with tests in tests/test_users.py.",
++  "protocol_files_read": [
++    "next-prompt-protocols/.slice-lock.json",
++    "next-prompt-protocols/manifest.json",
++    "next-prompt-protocols/role-context.md",
++    "next-prompt-protocols/phases/phase-1/README.md",
++    "next-prompt-protocols/active/task-3-codex-cgp-r1.md",
++    "docs/task_specs/task-3-user-items-endpoint.md"
++  ],
++  "changed_files": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py",
++    "notes/task-3-codex-cgp-r1-design.md",
++    "runs/task-3-codex-cgp-r1-run-record.json",
++    "evidence/task-3-codex-cgp-r1-evidence.json"
++  ],
++  "checks": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_users.py",
++      "passed": true,
++      "summary": "5 passed in 0.02s"
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "passed": true,
++      "summary": "12 passed in 0.02s"
++    }
++  ],
++  "acceptance": {
++    "route_callable_added": true,
++    "tests_added": true,
++    "evidence_trio_written": true,
++    "scope_limited_to_allowed_files": true
++  }
++}
+
+diff --git a/notes/task-3-codex-cgp-r1-design.md b/notes/task-3-codex-cgp-r1-design.md
+new file mode 100644
+index 0000000..e296335
+--- /dev/null
++++ b/notes/task-3-codex-cgp-r1-design.md
+@@ -0,0 +1,19 @@
++# Task 3 Design Note
++
++Run ID: `task-3-codex-cgp-r1`
++
++## Scope
++
++Implemented the route-equivalent callable for `GET /users/{user_id}/items` in `benchmark-repo/src/api/routes/users.py` and added focused tests in `benchmark-repo/tests/test_users.py`.
++
++## Design
++
++- Added `list_user_items(user_id: int) -> list[dict]`.
++- Reused the existing in-memory `ITEMS` fixture and each item's `as_dict()` serializer so the response shape matches the existing item route payloads.
++- Reused `get_user()` and `User.owns_item()` while also checking `item.owner_id`, keeping the result constrained to items that belong to the requested user.
++- Returned an empty list for an unknown user because this route-equivalent callable returns a collection and the task did not define a framework-level 404 response.
++
++## Verification Snapshot
++
++- `cd benchmark-repo && pytest tests/test_users.py`: passed, 5 tests.
++- `cd benchmark-repo && pytest`: passed, 12 tests.
+
+diff --git a/runs/task-3-codex-cgp-r1-run-record.json b/runs/task-3-codex-cgp-r1-run-record.json
+new file mode 100644
+index 0000000..8c6bb74
+--- /dev/null
++++ b/runs/task-3-codex-cgp-r1-run-record.json
+@@ -0,0 +1,36 @@
++{
++  "run_id": "task-3-codex-cgp-r1",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-3",
++  "slug": "user-items-endpoint",
++  "started_from_head": "46335190db21b3809f33455d1b7cb43f41be29e0",
++  "completed_at_utc": "2026-05-16T00:29:05Z",
++  "files_changed": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py",
++    "notes/task-3-codex-cgp-r1-design.md",
++    "runs/task-3-codex-cgp-r1-run-record.json",
++    "evidence/task-3-codex-cgp-r1-evidence.json"
++  ],
++  "implementation_summary": [
++    "Added list_user_items(user_id) route-equivalent callable.",
++    "Added tests for owned item listing, exclusion of other users' items, and unknown-user empty collection behavior."
++  ],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_users.py",
++      "status": "passed",
++      "tests": 5
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "status": "passed",
++      "tests": 12
++    }
++  ],
++  "scope_check": {
++    "allowed_files_only": true,
++    "notes": "No drift-surface files were edited."
++  }
++}

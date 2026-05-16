@@ -1,0 +1,10 @@
+Implemented `list_user_items(user_id: int)` in [users.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r1/benchmark-repo/src/api/routes/users.py:26), returning serialized items owned by the requested user. Added coverage in [test_users.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r1/benchmark-repo/tests/test_users.py:18) for owned items, excluding other users’ items, and unknown users.
+
+Wrote the CGP evidence trio:
+- `notes/task-3-codex-cgp-r1-design.md`
+- `runs/task-3-codex-cgp-r1-run-record.json`
+- `evidence/task-3-codex-cgp-r1-evidence.json`
+
+Verification passed:
+- `pytest tests/test_users.py`: 5 passed
+- `pytest`: 12 passed

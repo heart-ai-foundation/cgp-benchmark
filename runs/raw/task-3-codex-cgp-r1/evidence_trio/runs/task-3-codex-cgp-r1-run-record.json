@@ -1,0 +1,36 @@
+{
+  "run_id": "task-3-codex-cgp-r1",
+  "agent": "codex",
+  "condition": "cgp",
+  "task": "task-3",
+  "slug": "user-items-endpoint",
+  "started_from_head": "46335190db21b3809f33455d1b7cb43f41be29e0",
+  "completed_at_utc": "2026-05-16T00:29:05Z",
+  "files_changed": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-codex-cgp-r1-design.md",
+    "runs/task-3-codex-cgp-r1-run-record.json",
+    "evidence/task-3-codex-cgp-r1-evidence.json"
+  ],
+  "implementation_summary": [
+    "Added list_user_items(user_id) route-equivalent callable.",
+    "Added tests for owned item listing, exclusion of other users' items, and unknown-user empty collection behavior."
+  ],
+  "verification": [
+    {
+      "command": "cd benchmark-repo && pytest tests/test_users.py",
+      "status": "passed",
+      "tests": 5
+    },
+    {
+      "command": "cd benchmark-repo && pytest",
+      "status": "passed",
+      "tests": 12
+    }
+  ],
+  "scope_check": {
+    "allowed_files_only": true,
+    "notes": "No drift-surface files were edited."
+  }
+}
