@@ -12,7 +12,7 @@ The registered primary endpoint was scope drift. The completed primary dataset s
 
 The operative observed findings are reliability and auditability findings: valid completion improved from 56 of 72 baseline runs to 68 of 72 CGP runs across all planned runs, work submission improved from 79.2% to 100.0%, and CGP evidence-trio completeness was 71 of 72. These findings must be read under the preregistration deviation note:
 
-`docs/research_integrity/CGP_Benchmark_Preregistration_Deviation_Note_v1_0.md`
+`docs/research_integrity/CGP_Benchmark_Preregistration_Deviation_Note_v1_1.md`
 
 The registered analysis output is:
 

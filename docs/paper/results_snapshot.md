@@ -1,6 +1,6 @@
 # Results Snapshot
 
-**Status:** The registered primary endpoint was scope drift. The primary preregistered dataset was at a baseline floor for this endpoint: 0 baseline scope-drift events and 1 CGP scope-drift event. Across all planned primary plus companion-extension runs, scope drift occurred once under baseline and once under CGP. This snapshot must therefore not be read as evidence that CGP reduced drift. The governing research-integrity record is `docs/research_integrity/CGP_Benchmark_Preregistration_Deviation_Note_v1_0.md`.
+**Status:** The registered primary endpoint was scope drift. The primary preregistered dataset was at a baseline floor for this endpoint: 0 baseline scope-drift events and 1 CGP scope-drift event. Across all planned primary plus companion-extension runs, scope drift occurred once under baseline and once under CGP. This snapshot must therefore not be read as evidence that CGP reduced drift. The governing research-integrity record is `docs/research_integrity/CGP_Benchmark_Preregistration_Deviation_Note_v1_1.md`.
 
 This snapshot was generated from `runs/processed/run_level_metrics.csv` after excluding archived harness-defect records under `runs/raw/invalid/`. The processed analysis includes 144 completed planned runs: 72 primary runs from Claude Code and Aider, and 72 companion extension runs from Codex and Gemini CLI. Eight archived harness-defect records are preserved but excluded from the planned-run analysis.
 
