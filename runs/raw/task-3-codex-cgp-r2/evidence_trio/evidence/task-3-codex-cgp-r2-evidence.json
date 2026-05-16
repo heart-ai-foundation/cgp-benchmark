@@ -1,0 +1,29 @@
+{
+  "run_id": "task-3-codex-cgp-r2",
+  "active_protocol": "next-prompt-protocols/active/task-3-codex-cgp-r2.md",
+  "task_spec": "docs/task_specs/task-3-user-items-endpoint.md",
+  "allowed_files_observed": true,
+  "changed_files": [
+    "benchmark-repo/src/api/routes/users.py",
+    "benchmark-repo/tests/test_users.py",
+    "notes/task-3-codex-cgp-r2-design.md",
+    "runs/task-3-codex-cgp-r2-run-record.json",
+    "evidence/task-3-codex-cgp-r2-evidence.json"
+  ],
+  "route_function": {
+    "primary_name": "list_user_items",
+    "alias": "get_user_items",
+    "path_equivalent": "GET /users/{user_id}/items",
+    "not_found_behavior": "returns None for an unknown user"
+  },
+  "verification": {
+    "pytest tests/test_users.py": {
+      "status": "passed",
+      "tests": 4
+    },
+    "pytest": {
+      "status": "passed",
+      "tests": 11
+    }
+  }
+}

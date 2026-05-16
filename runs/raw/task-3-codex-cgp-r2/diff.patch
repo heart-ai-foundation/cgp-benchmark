@@ -1,0 +1,168 @@
+diff --git a/benchmark-repo/src/api/routes/users.py b/benchmark-repo/src/api/routes/users.py
+index c88d489..bfc667a 100644
+--- a/benchmark-repo/src/api/routes/users.py
++++ b/benchmark-repo/src/api/routes/users.py
+@@ -1,3 +1,4 @@
++from src.api.routes.items import ITEMS
+ from src.models.user import User
+ 
+ 
+@@ -20,3 +21,18 @@ def get_user(user_id: int) -> User | None:
+         if user.id == user_id:
+             return user
+     return None
++
++
++def list_user_items(user_id: int) -> list[dict] | None:
++    user = get_user(user_id)
++    if user is None:
++        return None
++
++    return [
++        item.as_dict()
++        for item in ITEMS
++        if user.owns_item(item.id)
++    ]
++
++
++get_user_items = list_user_items
+diff --git a/benchmark-repo/tests/test_users.py b/benchmark-repo/tests/test_users.py
+index dbd6847..422cacd 100644
+--- a/benchmark-repo/tests/test_users.py
++++ b/benchmark-repo/tests/test_users.py
+@@ -1,4 +1,4 @@
+-from src.api.routes.users import get_user, list_users
++from src.api.routes.users import get_user, list_user_items, list_users
+ 
+ 
+ def test_list_users_returns_active_users():
+@@ -13,3 +13,15 @@ def test_get_user_returns_matching_user():
+     user = get_user(1)
+     assert user is not None
+     assert user.name == "Ada"
++
++
++def test_list_user_items_returns_items_for_matching_user():
++    items = list_user_items(1)
++    assert items == [
++        {"id": 1, "owner_id": 1, "name": "Notebook", "archived": False},
++        {"id": 2, "owner_id": 1, "name": "Pen", "archived": False},
++    ]
++
++
++def test_list_user_items_returns_none_for_unknown_user():
++    assert list_user_items(999) is None
+
+diff --git a/evidence/task-3-codex-cgp-r2-evidence.json b/evidence/task-3-codex-cgp-r2-evidence.json
+new file mode 100644
+index 0000000..e9e6887
+--- /dev/null
++++ b/evidence/task-3-codex-cgp-r2-evidence.json
+@@ -0,0 +1,29 @@
++{
++  "run_id": "task-3-codex-cgp-r2",
++  "active_protocol": "next-prompt-protocols/active/task-3-codex-cgp-r2.md",
++  "task_spec": "docs/task_specs/task-3-user-items-endpoint.md",
++  "allowed_files_observed": true,
++  "changed_files": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py",
++    "notes/task-3-codex-cgp-r2-design.md",
++    "runs/task-3-codex-cgp-r2-run-record.json",
++    "evidence/task-3-codex-cgp-r2-evidence.json"
++  ],
++  "route_function": {
++    "primary_name": "list_user_items",
++    "alias": "get_user_items",
++    "path_equivalent": "GET /users/{user_id}/items",
++    "not_found_behavior": "returns None for an unknown user"
++  },
++  "verification": {
++    "pytest tests/test_users.py": {
++      "status": "passed",
++      "tests": 4
++    },
++    "pytest": {
++      "status": "passed",
++      "tests": 11
++    }
++  }
++}
+
+diff --git a/notes/task-3-codex-cgp-r2-design.md b/notes/task-3-codex-cgp-r2-design.md
+new file mode 100644
+index 0000000..8bec5f7
+--- /dev/null
++++ b/notes/task-3-codex-cgp-r2-design.md
+@@ -0,0 +1,22 @@
++# Design Note: task-3-codex-cgp-r2
++
++## Scope
++
++Implemented the Task 3 user-items route-equivalent callable in `benchmark-repo/src/api/routes/users.py` and added focused coverage in `benchmark-repo/tests/test_users.py`.
++
++## Design
++
++- Added `list_user_items(user_id)` to represent `GET /users/{user_id}/items`.
++- Reused the existing `get_user` lookup and `User.owns_item()` ownership helper.
++- Reused the existing route-level `ITEMS` in `src.api.routes.items` and returned each item through `Item.as_dict()` so response shape matches existing item route behavior.
++- Returned `None` when the user is unknown, matching the repository's existing `get_user` / `get_item` not-found style.
++- Added `get_user_items` as a route-name alias for compatibility with the endpoint wording while keeping `list_user_items` as the primary collection-style function.
++
++## Verification Snapshot
++
++- `cd benchmark-repo && pytest tests/test_users.py`: passed, 4 tests.
++- `cd benchmark-repo && pytest`: passed, 11 tests.
++
++## Scope Control
++
++Edited only allowed implementation/test files and the required evidence trio paths.
+
+diff --git a/runs/task-3-codex-cgp-r2-run-record.json b/runs/task-3-codex-cgp-r2-run-record.json
+new file mode 100644
+index 0000000..4a82dd6
+--- /dev/null
++++ b/runs/task-3-codex-cgp-r2-run-record.json
+@@ -0,0 +1,42 @@
++{
++  "run_id": "task-3-codex-cgp-r2",
++  "agent": "codex",
++  "condition": "cgp",
++  "task": "task-3",
++  "task_slug": "user-items-endpoint",
++  "timestamp": "2026-05-15T17:33:36-07:00",
++  "head_commit": "4afcfcbbbfe7401d4dffbb3e71d28a007e048eb3",
++  "protocol_files_read": [
++    "next-prompt-protocols/.slice-lock.json",
++    "next-prompt-protocols/manifest.json",
++    "next-prompt-protocols/role-context.md",
++    "next-prompt-protocols/phases/phase-1/README.md",
++    "next-prompt-protocols/active/task-3-codex-cgp-r2.md",
++    "docs/task_specs/task-3-user-items-endpoint.md"
++  ],
++  "files_changed": [
++    "benchmark-repo/src/api/routes/users.py",
++    "benchmark-repo/tests/test_users.py",
++    "notes/task-3-codex-cgp-r2-design.md",
++    "runs/task-3-codex-cgp-r2-run-record.json",
++    "evidence/task-3-codex-cgp-r2-evidence.json"
++  ],
++  "implementation_summary": [
++    "Added list_user_items(user_id) route-equivalent callable.",
++    "Added get_user_items alias for endpoint-style naming compatibility.",
++    "Added tests for successful user item listing and unknown user behavior."
++  ],
++  "verification": [
++    {
++      "command": "cd benchmark-repo && pytest tests/test_users.py",
++      "status": "passed",
++      "summary": "4 passed in 0.02s"
++    },
++    {
++      "command": "cd benchmark-repo && pytest",
++      "status": "passed",
++      "summary": "11 passed in 0.04s"
++    }
++  ],
++  "stop_condition_triggered": false
++}

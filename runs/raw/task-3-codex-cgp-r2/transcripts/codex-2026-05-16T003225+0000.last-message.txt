@@ -1,0 +1,13 @@
+Implemented Task 3.
+
+Changed:
+- [users.py](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r2/benchmark-repo/src/api/routes/users.py): added `list_user_items(user_id)` plus `get_user_items` alias.
+- [test_users.py](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r2/benchmark-repo/tests/test_users.py): added coverage for matching user items and unknown user behavior.
+- Wrote the required evidence trio:
+  - [design note](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r2/notes/task-3-codex-cgp-r2-design.md)
+  - [run record](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r2/runs/task-3-codex-cgp-r2-run-record.json)
+  - [evidence JSON](/home/dylan/EmpathyEthics/Heart AI Foundation/cgp-benchmark/worktrees/task-3-codex-cgp-r2/evidence/task-3-codex-cgp-r2-evidence.json)
+
+Verification passed:
+- `pytest tests/test_users.py`: 4 passed
+- `pytest`: 11 passed
