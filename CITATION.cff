@@ -1,10 +1,12 @@
 cff-version: 1.2.0
-title: "CGP Drift Reduction Benchmark"
-message: "If you use this benchmark, please cite the repository and any associated DOI."
-type: software
+title: "Reliability and Auditability Effects of Continuity-Governed Prompting: A Controlled Benchmark of Agent-Assisted Coding Workflows"
+message: "If you use this benchmark or manuscript, cite the Zenodo DOI and the public repository."
+type: article
 authors:
   - family-names: Mobley
     given-names: Dylan D.
-date-released: 2026-05-14
+date-released: 2026-05-16
+doi: "10.5281/zenodo.20234367"
 license: MIT
 repository-code: "https://github.com/heart-ai-foundation/cgp-benchmark"
+url: "https://doi.org/10.5281/zenodo.20234367"

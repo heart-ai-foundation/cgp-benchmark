@@ -6,9 +6,11 @@ Canonical repository target:
 
 `github.com/heart-ai-foundation/cgp-benchmark`
 
-Manuscript DOI:
+Official manuscript DOI:
 
 `10.5281/zenodo.20234367`
+
+Publication date: May 16, 2026.
 
 ## Epistemic Status
 
