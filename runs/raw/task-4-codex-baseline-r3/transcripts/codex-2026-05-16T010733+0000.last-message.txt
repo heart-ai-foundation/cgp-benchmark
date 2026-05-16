@@ -1,0 +1,5 @@
+Refactored [src/utils/config.py](/home/dylan/EmpathyEthics/Heart%20AI%20Foundation/cgp-benchmark/worktrees/task-4-codex-baseline-r3/benchmark-repo/src/utils/config.py) by extracting page-size validation, feature parsing, and default config construction into small helpers. `parse_config(raw: dict) -> dict` keeps the same signature and behavior, including fresh default `features` lists per call.
+
+Verification passed:
+- `pytest` → 9 passed
+- Import/signature/call check → passed
