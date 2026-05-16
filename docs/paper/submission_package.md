@@ -78,6 +78,7 @@ The OSF preregistration body should remain unchanged. The v1.1 deviation note sh
 ## Open Items Before Preprint/PDF
 
 1. Confirm that `CGP_Benchmark_Preregistration_Deviation_Note_v1_1.md` has been added to OSF as a supplemental record.
-2. Decide whether to target a preprint-first workflow or a specific journal/conference template.
-3. Convert citations from Pandoc citation syntax to the target venue style if needed.
-4. Generate the final PDF or LaTeX package after venue choice.
+2. Follow the preprint-first strategy in `docs/paper/venue_strategy.md`.
+3. Complete the checks in `docs/paper/preprint_checklist.md`.
+4. Convert citations from Pandoc citation syntax to the target venue style if needed.
+5. Generate the final PDF or LaTeX package after installing a renderer or choosing a venue template.
